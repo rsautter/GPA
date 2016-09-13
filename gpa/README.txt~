@@ -1,0 +1,6 @@
+Para compilar o código:
+
+python compile.py build_ext --inplace
+
+Para executar:
+
