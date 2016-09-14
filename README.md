@@ -1,8 +1,17 @@
 # Concentric GPA
 This is a concentric GPA prototype developed in Cython + Python
 
+### Requirements
+ - Python 2.7 or greater
+ - Matplotlib
+ - Cython
+ - Numpy
+
 ### Compilation
-python compile.py build_ext --inplace
+
+Since this code contains 
+
+    python compile.py build_ext --inplace
 
 ### Execution
 
