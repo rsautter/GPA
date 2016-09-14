@@ -19,7 +19,7 @@ If you want to analyse a single image, and/or if you want to display it:
 
     python main.py filename tol rad_tol
 
-If you want to compute multiple images, and/or want to display it:
+If you want to compute multiple images:
 
     python main.py -l filelist tol rad_tol output
 
