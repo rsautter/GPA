@@ -24,11 +24,12 @@ or
 ### Execution Examples
 #### Single file
 #### Multiple files
-
-\#	Ga	Nc	Nv
-test/m2.txt	1.67999994755	67	25
-test/m3.txt	1.46153843403	32	13
-test/m4.txt	1.89075624943	344	119
+------- | ------- | ------- | -------
+\# | Ga	| Nc |	Nv
+------- | ------- | ------- | -------
+test/m2.txt |	1.67999994755	| 67	| 25
+test/m3.txt	| 1.46153843403	| 32	| 13
+test/m4.txt	| 1.89075624943 |	344	| 119
 
 
 ## References
