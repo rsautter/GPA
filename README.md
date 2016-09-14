@@ -28,6 +28,7 @@ or
 
 Must output the image:
 
+![mapExampleIt19](/gpa/Figures/exampleOutput_m4.png)
 
 #### Multiple files
 
