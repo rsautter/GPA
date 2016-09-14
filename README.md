@@ -15,7 +15,7 @@ This code uses the Cython library, to improve the perfomence. To compile the cyt
 
 ### Execution
 
-If you want to analyse a single image, and/or want to display it:
+If you want to analyse a single image, and/or if you want to display it:
 
     python main.py filename tol rad_tol
 
