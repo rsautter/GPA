@@ -9,7 +9,8 @@ This is a Concentric Gradient Pattern Analysis (CGPA) prototype developed in Cyt
 
 ### Compilation
 
-This code uses the Cython library, to improve the perfomence. Go to the gpa Folder and type:
+This code uses the Cython library, to improve the perfomence. 
+Go to the gpa Folder and type:
 
     python compile.py build_ext --inplace
 
