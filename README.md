@@ -23,9 +23,17 @@ or
 
 ### Execution Examples
 #### Single file
+
+   python main.py test/m4.txt 0.02 1
+
+Must output the image:
+
+
 #### Multiple files
 
-Must outputs
+    python main.py -l configexample.txt 0.03 1 gas.csv
+
+Must outputs in file gas.csv:
 
 \# | Ga	| Nc |	Nv
 ------- | ------- | ------- | -------
