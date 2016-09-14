@@ -9,22 +9,24 @@ This is a concentric GPA prototype developed in Cython + Python
 
 ### Compilation
 
-Since this code contains 
+This code uses the Cython library, to improve the perfomence. To compile the cython part:
 
     python compile.py build_ext --inplace
 
 ### Execution
 
+If you want to analyse a single image, and/or want to display it:
+
     python main.py filename tol rad_tol
 
-or
+If you want to compute multiple images, and/or want to display it:
 
     python main.py -l filelist tol rad_tol output
 
 ### Execution Examples
 #### Single file
 
-   python main.py test/m4.txt 0.02 1
+    python main.py test/m4.txt 0.02 1
 
 Must output the image:
 
@@ -45,4 +47,4 @@ test/m4.txt	| 1.89075624943 |	344	| 119
 
 ## References
 https://en.wikipedia.org/wiki/Gradient_pattern_analysis
-
+http://cython.org/
