@@ -30,19 +30,10 @@ def invertY(m):
     return mat
     #
 def plot_matrix2(g):
-    #plt.suptitle("Ga: "+str(g.Ga),fontsize=18)
-    #ax = plt.subplot(131,projection='3d')
+    plt.suptitle("Ga: "+str(g.Ga),fontsize=18)
     sbplt = plt.subplot(131)
-    #plt.title("A",fontsize=20)
     plt.title("Original Image")
-    #X = np.arange(0, len(g.mat), 1)
-    #Y = np.arange(0, len(g.mat[0]), 1)
-    #X, Y = np.meshgrid(X, Y)
-    #ax.plot_surface(X, Y, g.mat,rstride=1, cstride=1,cmap=plt.get_cmap('jet'),linewidth=0, antialiased=False, shade=False)
     plt.contour(invertY(g.mat), cmap=plt.get_cmap('gray'), origin='lower')
-    #plt.gca().invert_yaxis()
-
-    #plt.gca().invert_yaxis()
 
     # plotting the asymmetric gradient field
     plt.subplot(132)
@@ -100,7 +91,7 @@ def plot_matrix(g):
 
 
 if __name__ == "__main__":
-    if('-h' in sys.argv) or ('--help' in sys.argv) or ((sys.argv[1] == "-l") and len(sys.argv) != 7) or ((sys.argv[1] != "-l") and (len(sys.argv) != 5)):
+    if('-h' in sys.argv) or ('--help' in sys.argv) or ((sys.argv[1] == "-l") and len(sys.argv) != 6) or ((sys.argv[1] != "-l") and (len(sys.argv) != 4)):
         print('================================')
         print('Syntax:')
         print('python main.py filename tol rad_tol')
@@ -118,24 +109,12 @@ if __name__ == "__main__":
         inputMatrix=inputMatrix.astype(np.float32)
         gaObject = ga(inputMatrix)
         gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-        tempos = []
-        #for i in range(30):
-        #    tempo =  timeit.time.clock()
         gaObject.evaluate(tol,rad_tol)
-        #     t = timeit.time.clock()-tempo
-        #    print("Tempo: ", t)
-        #    tempos.append(t)
-
+        
         print("Nc", gaObject.n_edges)
         print("Nv", gaObject.n_points)
         print("Ga ((Nc-Nv)/Nv) ",gaObject.Ga)
-        np.savetxt("tempos.csv",tempos)
-        np.savetxt("gradient_dx.txt", gaObject.gradient_dx,delimiter=',')
-        np.savetxt("gradient_dy.txt", gaObject.gradient_dy,delimiter=',')
-        np.savetxt("gradient_a_dx.txt", gaObject.gradient_asymmetric_dx,delimiter=',')
-        np.savetxt("gradient_a_dy.txt", gaObject.gradient_asymmetric_dy,delimiter=',')
-    
-    #plot3D(gaObject)
+        
         plot_matrix2(gaObject)
     else:
         files = [line.rstrip() for line in open(sys.argv[2])]
@@ -144,6 +123,7 @@ if __name__ == "__main__":
         gas = []        
         nc = []
         nv = []
+        inputFiles = []
 
         for f in files:
             inputMatrix = np.loadtxt(f)
@@ -155,6 +135,7 @@ if __name__ == "__main__":
             gas.append(gaObject.Ga)
             nc.append(gaObject.n_edges)
             nv.append(gaObject.n_points)
-        np.savetxt(sys.argv[5],np.array([gas,nc,nv]).T, delimiter=',')
+            inputFiles.append(f)
+        np.savetxt(sys.argv[5], np.array([inputFiles,gas,nc,nv]).T, fmt="%s", header="Ga,Nc,Nv", delimiter=',')
        
     plt.show()
