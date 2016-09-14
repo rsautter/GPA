@@ -17,11 +17,13 @@ This code uses the Cython library, to improve the perfomence. To compile the cyt
 
 If you want to analyse a single image, and/or if you want to display it:
 
-    python main.py filename tol rad_tol
+    python main.py filename tol posTol
 
 If you want to compute multiple images:
 
-    python main.py -l filelist tol rad_tol output
+    python main.py -l filelist tol posTol output
+
+The parameter tol is the vectorial modulus and phase tolerance (float), and posTol is the position tolerance (integer)
 
 ### Execution Examples
 #### Single file
