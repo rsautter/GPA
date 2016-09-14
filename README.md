@@ -1,5 +1,5 @@
-# Concentric GPA
-This is a concentric GPA prototype developed in Cython + Python
+# Concentric Gradient Pattern Analysis
+This is a Concentric Gradient Pattern Analysis (CGPA) prototype developed in Cython + Python
 
 ### Requirements
  - Python 2.7 or greater
