@@ -101,7 +101,7 @@ def printError():
 if __name__ == "__main__":
     if('-h' in sys.argv) or ('--help' in sys.argv):
         printError()
-    if(sys.argv[3] == "-l") and (len(sys.argv) != 7):
+    if(sys.argv[2] == "-l") and (len(sys.argv) != 7):
         printError()
     if(sys.argv[2] != "-l") and (len(sys.argv) != 5):
         printError()        
