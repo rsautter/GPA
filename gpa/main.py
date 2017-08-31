@@ -30,22 +30,22 @@ def invertY(m):
     return mat
     #
 def plot_matrix2(g):
-    plt.suptitle("Ga: "+str(g.G2),fontsize=18)
+    plt.suptitle("Ga: "+str(max(g.G2,g.G1)),fontsize=18)
     sbplt = plt.subplot(131)
     plt.title("Original Image")
-    plt.contour(invertY(g.mat), cmap=plt.get_cmap('gray'), origin='lower')
+    plt.contour(g.mat, cmap=plt.get_cmap('gray'), origin='lower')
 
     # plotting the asymmetric gradient field
     plt.subplot(132)
-    plt.quiver(g.gradient_asymmetric_dy,g.gradient_asymmetric_dx, scale =1.0/0.09)
+    plt.quiver(g.gradient_asymmetric_dx,g.gradient_asymmetric_dy, scale =1.0/0.01)
     plt.title("Asymmetric Gradient Field")
     #plt.title("C",fontsize=20)
 
     # plotting the triangulation
     if g.n_edges > 0:
         plt.subplot(133)
-        plt.xlim(0,len(g.mat[0]))
-        plt.ylim(0,len(g.mat))
+        #plt.xlim(0,len(g.mat[0]))
+        #plt.ylim(0,len(g.mat))
         plt.triplot(g.triangulation_points[:,0], g.triangulation_points[:,1], g.triangles.simplices.copy())
         plt.title("Triangulation")
         #plt.title("D",fontsize=20)
@@ -81,8 +81,8 @@ def plot_matrix(g):
     # plotting the triangulation
     if g.n_edges > 0:
         plt.subplot(224)
-        plt.xlim(-1,len(g.mat[0])+1)
-        plt.ylim(-1,len(g.mat)+1)
+        #plt.xlim(-1,len(g.mat[0])+1)
+        #plt.ylim(-1,len(g.mat)+1)
         plt.triplot(g.triangulation_points[:,0], g.triangulation_points[:,1], g.triangles.simplices.copy())
         plt.title("Triangulation")
         #plt.title("D",fontsize=20)
@@ -117,7 +117,7 @@ if __name__ == "__main__":
         gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
         gaObject.evaluate(tol,rad_tol,1.8,[sys.argv[1]])
         if(sys.argv[1] == "G1"):
-            print("G1 ",gaObject.G1)
+            print("Nc,Nv,G1 ",gaObject.n_edges,gaObject.n_points,gaObject.G1)
         if(sys.argv[1] == "G2"):
             print("G2 ",gaObject.G2)       
         plot_matrix2(gaObject)
