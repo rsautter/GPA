@@ -31,8 +31,8 @@ cdef class GPA:
         self.mat = mat
 
         # default value
-        self.setPosition(len(mat)/2,len(mat[0])/2)
-        self.r = int(max(len(mat)/2,len(mat[0])/2))
+        self.setPosition(float(len(mat))/2.0,float(len(mat[0]))/2.0)
+        self.r = max(float(len(mat))/2.0,float(len(mat[0]))/2.0)
    
         # percentual Ga proprieties
         self.cols = len(self.mat[0])
@@ -103,17 +103,17 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef void _update_asymmetric_mat(self,int[:] index_dist,int[:,:] dists,float mtol,float ftol,float ptol):
+    cdef void _update_asymmetric_mat(self,float[:] index_dist,float[:,:] dists,float mtol,float ftol,float ptol):
         cdef int ind, lx, px, py, px2, py2, i, j
         cdef int[:] x, y
 
         # distances loop
         removedP = []
-        for ind in range(0, len(index_dist), 1):
+        for ind in range(0, len(index_dist)):
             x2, y2 =[], []
             for py in range(self.rows):
                 for px in range(self.cols):
-                    if (fabs(dists[py, px]-ind) <= fabs(ptol)):
+                    if (fabs(dists[py, px]-index_dist[ind]) <= fabs(ptol)):
                         x2.append(px)
                         y2.append(py)
             x, y =numpy.array(x2,dtype=numpy.int32), numpy.array(y2,dtype=numpy.int32)
@@ -125,7 +125,7 @@ cdef class GPA:
                 if (self.mods[py, px]/self.maxGrad <= mtol):
                     self.gradient_asymmetric_dx[py, px] = 0.0
                     self.gradient_asymmetric_dy[py, px] = 0.0
-                for j in range(i+1,lx):
+                for j in range(lx):
                     px2, py2 = x[j], y[j]
                     if (fabs(self.mods[py, px]- self.mods[py2, px2] )<= mtol*self.maxGrad):
                         if (fabs(self._angleDifference(self.phases[py, px], self.phases[py2, px2])-M_PI)  <= ftol):
@@ -134,6 +134,14 @@ cdef class GPA:
                             self.gradient_asymmetric_dx[py2, px2] = 0.0
                             self.gradient_asymmetric_dy[py2, px2] = 0.0
                             break
+
+        #Remove boundaries that may cause some trouble
+        for py in range(self.rows):
+            self.gradient_asymmetric_dx[py, 0] = 0.0
+            self.gradient_asymmetric_dy[py, self.cols-1] = 0.0
+        for px in range(self.cols):
+            self.gradient_asymmetric_dx[0, px] = 0.0
+            self.gradient_asymmetric_dy[self.rows-1, px] = 0.0
 
         if(len(removedP)>0):
             self.removedP = numpy.array(removedP, dtype=numpy.int32)
@@ -218,17 +226,19 @@ cdef class GPA:
         self._setGradients()
         cdef int[:] i
         cdef int x, y
-        
+        cdef float minimo, maximo
 
         self.cols = len(self.mat[0])
         self.rows = len(self.mat)
 
-        cdef numpy.ndarray dists = numpy.array([[int(sqrt(pow(x-self.cx, 2.0)+pow(y-self.cy, 2.0))) \
+        cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
                                                   for x in range(self.cols)] for y in range(self.rows)])
-        cdef numpy.ndarray uniq = numpy.unique(dists)
+        minimo, maximo = numpy.min(dists),numpy.max(dists)
+        sequence = numpy.arange(minimo,maximo,ptol/2.0).astype(dtype=numpy.float32)
+        cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
         
         # removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
-        self._update_asymmetric_mat(uniq.astype(dtype=numpy.int32), dists.astype(dtype=numpy.int32), mtol, ftol, ptol)
+        self._update_asymmetric_mat(uniq.astype(dtype=numpy.float32), dists.astype(dtype=numpy.float32), mtol, ftol, ptol)
        
         #gradient moments:
         retorno = []

@@ -115,10 +115,11 @@ if __name__ == "__main__":
         inputMatrix=inputMatrix.astype(np.float32)
         gaObject = ga(inputMatrix)
         gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-        gaObject.evaluate(tol,rad_tol,0.0,[sys.argv[1]])
-        
-        print("Ga ((Nc-Nv)/Nv) ",gaObject.G1)
-        
+        gaObject.evaluate(tol,rad_tol,1.0,[sys.argv[1]])
+        if(sys.argv[1] == "G1"):
+            print("G1 ",gaObject.G1)
+        if(sys.argv[1] == "G2"):
+            print("G2 ",gaObject.G2)       
         plot_matrix2(gaObject)
     else:
         files = [line.rstrip() for line in open(sys.argv[3])]
@@ -131,7 +132,7 @@ if __name__ == "__main__":
             inputMatrix=inputMatrix.astype(np.float32)
             gaObject = ga(inputMatrix)
             gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-            gaObject.evaluate(tol,rad_tol,float(0.0),[sys.argv[1]])
+            gaObject.evaluate(tol,rad_tol,float(1.0),[sys.argv[1]])
             if(sys.argv[1] == "G1"):
                 print(f+" - G1 -",gaObject.G1)
                 newline = [f,gaObject.G1,gaObject.n_edges,gaObject.n_points]
