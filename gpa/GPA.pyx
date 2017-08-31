@@ -78,7 +78,7 @@ cdef class GPA:
         self.gradient_asymmetric_dy = numpy.array([[gy[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float32)
 
         # calculating the phase and mod of each vector
-        self.phases = numpy.array([[atan2(gy[j, i],gx[j, i]) if atan2(gy[j, i],gx[j, i]) > 0.0 else 2.0*M_PI+atan2(gy[j, i],gx[j, i]) 
+        self.phases = numpy.array([[atan2(gy[j, i],gx[j, i])
                                      for i in range(w) ] for j in range(h)],dtype=numpy.float32)
         self.mods = numpy.array([[sqrt(pow(gy[j, i],2.0)+pow(gx[j, i],2.0)) for i in range(w) ] for j in range(h)],dtype=numpy.float32)
    
@@ -108,7 +108,6 @@ cdef class GPA:
         cdef int[:] x, y
 
         # distances loop
-        removedP = []
         for ind in range(0, len(index_dist)):
             x2, y2 =[], []
             for py in range(self.rows):
@@ -136,29 +135,30 @@ cdef class GPA:
                             break
 
         #Remove boundaries that may cause some trouble
-        for py in range(self.rows):
-            self.gradient_asymmetric_dx[py, 0] = 0.0
-            self.gradient_asymmetric_dy[py, self.cols-1] = 0.0
-        for px in range(self.cols):
-            self.gradient_asymmetric_dx[0, px] = 0.0
-            self.gradient_asymmetric_dy[self.rows-1, px] = 0.0
+        #for py in range(self.rows):
+        #    self.gradient_asymmetric_dx[py, 0] = 0.0
+        #    self.gradient_asymmetric_dy[py, self.cols-1] = 0.0
+        #for px in range(self.cols):
+        #    self.gradient_asymmetric_dx[0, px] = 0.0
+        #    self.gradient_asymmetric_dy[self.rows-1, px] = 0.0
 
-        if(len(removedP)>0):
-            self.removedP = numpy.array(removedP, dtype=numpy.int32)
         self.totalVet = 0
         self.totalAssimetric = 0
         nremovedP = []
+        removedP = []
         for j in range(self.rows):
             for i in range(self.cols):
-                if (self.gradient_asymmetric_dy[j,i] != 0.0) and (self.gradient_asymmetric_dx[j,i] != 0.0):
-                    nremovedP.append([j,i])
+                if (self.gradient_asymmetric_dy[j,i] == 0.0) and (self.gradient_asymmetric_dx[j,i] == 0.0):
+                    removedP.append([j,i])
                     self.totalVet = self.totalVet+1
                 else:
-                    removedP.append([j,i])
+                    nremovedP.append([j,i])
                     self.totalVet = self.totalVet+1
                     self.totalAssimetric = self.totalAssimetric+1
         if(len(nremovedP)>0):
-            self.nremovedP = numpy.array(nremovedP, dtype=numpy.int32)  
+            self.nremovedP = numpy.array(nremovedP,dtype=numpy.int32)
+        if(len(removedP)>0):
+            self.removedP = numpy.array(removedP,dtype=numpy.int32)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
@@ -215,7 +215,8 @@ cdef class GPA:
         else:
             self.totalAssimetric = 0
         self.phaseDiversity = self._vectorialVariety()
-        self.G2 = (float(self.totalAssimetric)/float(self.totalVet))*(2.0-self.phaseDiversity)
+        self.G2 = round((self.totalAssimetric)/float(self.totalVet)*(2.0-self.phaseDiversity),5)
+        
 
     @cython.boundscheck(False)
     @cython.wraparound(False)

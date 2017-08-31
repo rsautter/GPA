@@ -115,7 +115,7 @@ if __name__ == "__main__":
         inputMatrix=inputMatrix.astype(np.float32)
         gaObject = ga(inputMatrix)
         gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-        gaObject.evaluate(tol,rad_tol,1.0,[sys.argv[1]])
+        gaObject.evaluate(tol,rad_tol,1.8,[sys.argv[1]])
         if(sys.argv[1] == "G1"):
             print("G1 ",gaObject.G1)
         if(sys.argv[1] == "G2"):
@@ -132,7 +132,7 @@ if __name__ == "__main__":
             inputMatrix=inputMatrix.astype(np.float32)
             gaObject = ga(inputMatrix)
             gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-            gaObject.evaluate(tol,rad_tol,float(1.0),[sys.argv[1]])
+            gaObject.evaluate(tol,rad_tol,float(1.8),[sys.argv[1]])
             if(sys.argv[1] == "G1"):
                 print(f+" - G1 -",gaObject.G1)
                 newline = [f,gaObject.G1,gaObject.n_edges,gaObject.n_points]
