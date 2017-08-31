@@ -18,11 +18,11 @@ Go to the gpa Folder and type:
 
 If you want to analyse a single image, and/or if you want to display it:
 
-    python main.py filename tol posTol
+    python main.py G2 filename tol posTol
 
 If you want to compute multiple images:
 
-    python main.py -l filelist tol posTol output
+    python main.py G1 -l filelist tol posTol output
 
 The parameter tol is the vectorial modulus and phase tolerance (float), and posTol is the position tolerance (integer)
 
@@ -37,15 +37,16 @@ Must output the image:
 
 #### Multiple files
 
-    python main.py -l configexample.txt 0.03 1 gas.csv
+    python main.py G1 -l configexample.txt 0.03 1 gas.csv
 
 Must outputs in file gas.csv:
 
 \# | Ga	| Nc |	Nv
 ------- | ------- | ------- | -------
-test/m2.txt |	1.67999994755	| 67	| 25
-test/m3.txt	| 1.46153843403	| 32	| 13
-test/m4.txt	| 1.89075624943 |	344	| 119
+
+test/m2.txt | 1.70833337307 | 130 | 48
+test/m3.txt | 1.60526311398 | 99 | 38
+test/m4.txt | 1.93684208393 | 558 | 190
 
 
 ## References
