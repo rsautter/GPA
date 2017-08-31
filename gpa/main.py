@@ -30,7 +30,7 @@ def invertY(m):
     return mat
     #
 def plot_matrix2(g):
-    plt.suptitle("Ga: "+str(g.Ga),fontsize=18)
+    plt.suptitle("Ga: "+str(g.G2),fontsize=18)
     sbplt = plt.subplot(131)
     plt.title("Original Image")
     plt.contour(invertY(g.mat), cmap=plt.get_cmap('gray'), origin='lower')
@@ -89,53 +89,59 @@ def plot_matrix(g):
 
     plt.show()
 
-
-if __name__ == "__main__":
-    if('-h' in sys.argv) or ('--help' in sys.argv) or ((sys.argv[1] == "-l") and len(sys.argv) != 6) or ((sys.argv[1] != "-l") and (len(sys.argv) != 4)):
+def printError():
         print('================================')
         print('Syntax:')
-        print('python main.py filename tol rad_tol')
-        print('python main.py -l filelist tol rad_tol output')
+        print('python main.py Gn filename tol rad_tol')
+        print('python main.py Gn -l filelist tol rad_tol output')
         print('================================')
         print('')
-        exit()
-    if(sys.argv[1] != "-l" ):  
-        fileName = sys.argv[1]
-        tol = float(sys.argv[2])
-        rad_tol = float(sys.argv[3])
+        exit() 
+
+if __name__ == "__main__":
+    if('-h' in sys.argv) or ('--help' in sys.argv):
+        printError()
+    if(sys.argv[3] == "-l") and (len(sys.argv) != 7):
+        printError()
+    if(sys.argv[2] != "-l") and (len(sys.argv) != 5):
+        printError()        
+    if not("-l" in sys.argv):  
+        fileName = sys.argv[2]
+        tol = float(sys.argv[3])
+        rad_tol = float(sys.argv[4])
 
         print("Reading "+fileName)
         inputMatrix = np.loadtxt(fileName)
         inputMatrix=inputMatrix.astype(np.float32)
         gaObject = ga(inputMatrix)
         gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-        gaObject.evaluate(tol,rad_tol)
+        gaObject.evaluate(tol,rad_tol,0.0,[sys.argv[1]])
         
-        print("Nc", gaObject.n_edges)
-        print("Nv", gaObject.n_points)
-        print("Ga ((Nc-Nv)/Nv) ",gaObject.Ga)
+        print("Ga ((Nc-Nv)/Nv) ",gaObject.G1)
         
         plot_matrix2(gaObject)
     else:
-        files = [line.rstrip() for line in open(sys.argv[2])]
-        tol = float(sys.argv[3])
-        rad_tol = float(sys.argv[4])
-        gas = []        
-        nc = []
-        nv = []
-        inputFiles = []
+        files = [line.rstrip() for line in open(sys.argv[3])]
+        tol = float(sys.argv[4])
+        rad_tol = float(sys.argv[5])
+        save = []
 
         for f in files:
             inputMatrix = np.loadtxt(f)
             inputMatrix=inputMatrix.astype(np.float32)
             gaObject = ga(inputMatrix)
             gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-            gaObject.evaluate(tol,rad_tol)
-            print(f+" - Ga -",gaObject.Ga)
-            gas.append(gaObject.Ga)
-            nc.append(gaObject.n_edges)
-            nv.append(gaObject.n_points)
-            inputFiles.append(f)
-        np.savetxt(sys.argv[5], np.array([inputFiles,gas,nc,nv]).T, fmt="%s", header="Ga,Nc,Nv", delimiter=',')
+            gaObject.evaluate(tol,rad_tol,float(0.0),[sys.argv[1]])
+            if(sys.argv[1] == "G1"):
+                print(f+" - G1 -",gaObject.G1)
+                newline = [f,gaObject.G1,gaObject.n_edges,gaObject.n_points]
+                save.append(newline)
+                np.savetxt(sys.argv[6], np.array(save), fmt="%s", header="Ga,Nc,Nv", delimiter=',')
+            else:
+                print(f+" - G2 -",gaObject.G2)
+                newline = [f,gaObject.G2,float(gaObject.totalAssimetric)/float(gaObject.totalVet),gaObject.phaseDiversity]
+                save.append(newline)
+                np.savetxt(sys.argv[6], np.array(save), fmt="%s", header="G2,Na,Diversity", delimiter=',')
+        
        
     plt.show()
