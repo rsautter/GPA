@@ -126,21 +126,13 @@ cdef class GPA:
                     self.gradient_asymmetric_dy[py, px] = 0.0
                 for j in range(lx):
                     px2, py2 = x[j], y[j]
-                    if (fabs(self.mods[py, px]- self.mods[py2, px2] )<= mtol*self.maxGrad):
-                        if (fabs(self._angleDifference(self.phases[py, px], self.phases[py2, px2])-M_PI)  <= ftol):
+                    if (fabs((self.mods[py, px]- self.mods[py2, px2])/self.maxGrad )<= mtol):
+                        if (fabs(self._angleDifference(self.phases[py, px], self.phases[py2, px2])-M_PI)  <= ftol) :
                             self.gradient_asymmetric_dx[py, px] = 0.0
                             self.gradient_asymmetric_dy[py, px] = 0.0
                             self.gradient_asymmetric_dx[py2, px2] = 0.0
                             self.gradient_asymmetric_dy[py2, px2] = 0.0
                             break
-
-        #Remove boundaries that may cause some trouble
-        #for py in range(self.rows):
-        #    self.gradient_asymmetric_dx[py, 0] = 0.0
-        #    self.gradient_asymmetric_dy[py, self.cols-1] = 0.0
-        #for px in range(self.cols):
-        #    self.gradient_asymmetric_dx[0, px] = 0.0
-        #    self.gradient_asymmetric_dy[self.rows-1, px] = 0.0
 
         self.totalVet = 0
         self.totalAssimetric = 0
@@ -148,7 +140,7 @@ cdef class GPA:
         removedP = []
         for j in range(self.rows):
             for i in range(self.cols):
-                if (self.gradient_asymmetric_dy[j,i] == 0.0) and (self.gradient_asymmetric_dx[j,i] == 0.0):
+                if (sqrt(pow(self.gradient_asymmetric_dy[j,i],2.0)+pow(self.gradient_asymmetric_dx[j,i],2.0)) <= mtol):
                     removedP.append([j,i])
                     self.totalVet = self.totalVet+1
                 else:
@@ -158,7 +150,7 @@ cdef class GPA:
         if(len(nremovedP)>0):
             self.nremovedP = numpy.array(nremovedP,dtype=numpy.int32)
         if(len(removedP)>0):
-            self.removedP = numpy.array(removedP,dtype=numpy.int32)
+            self.removedP = numpy.array(removedP,dtype=numpy.int32)	
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
@@ -210,12 +202,12 @@ cdef class GPA:
     @cython.nonecheck(False)
     @cython.cdivision(True)
     cdef void _G2(self):
-        if(len(self.nremovedP[0])>0):
+        if(len(self.nremovedP[:,0])>3):
             self.totalAssimetric = len(self.nremovedP[:,0])
         else:
             self.totalAssimetric = 0
         self.phaseDiversity = self._vectorialVariety()
-        self.G2 = round((self.totalAssimetric)/float(self.totalVet)*(2.0-self.phaseDiversity),5)
+        self.G2 = round((self.totalAssimetric)/float(self.totalVet)*(2.0-self.phaseDiversity),3)
         
 
     @cython.boundscheck(False)
@@ -274,20 +266,10 @@ cdef class GPA:
         dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float32)
         for i in range(w):
            for j in range(h):
-              #y gradient:
-              if(j+1<h) and (j-1>-1):
-                 dy[j, i] = (mat[j+1, i] - mat[j-1, i])/2.0
-              elif(j+1<h):
-                 dy[j, i] = (mat[j+1, i] - mat[j, i])/1.0
-              elif(j-1>-1):
-                 dy[j, i] = (mat[j, i] - mat[j-1, i])/1.0
-              #x gradient:
-              if(i+1<w) and (i-1>-1):
-                 dx[j, i] = (mat[j, i+1] - mat[j, i-1])/2.0
-              elif(i+1<w):
-                 dx[j, i] = (mat[j, i+1] - mat[j, i])/1.0
-              elif(i-1>-1):
-                 dx[j, i] = (mat[j, i] - mat[j, i-1])/1.0
+              j2 = (j-1) if j>0 else len(mat)-1
+              i2 = (i-1) if i>0 else len(mat[j])-1
+              dy[j, i] = (mat[(j+1)%len(mat), i] - mat[j2, i])/2.0
+              dx[j, i] = (mat[j, (i+1)%len(mat[j])] - mat[j, i2])/2.0
         return dy,dx
 
     @cython.boundscheck(False)
@@ -307,12 +289,12 @@ cdef class GPA:
         self.n_points = len(self.triangulation_points)
         if self.n_points < 3:
             self.n_edges = 0
-            self.G1 = 0
+            self.G1 = 0.0
         else:
             self.triangles = Delanuay(self.triangulation_points)
             neigh = self.triangles.vertex_neighbor_vertices
             self.n_edges = len(neigh[1])/2
-            self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
+            self.G1 = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
         return self.G1
 
                  
