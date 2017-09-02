@@ -29,7 +29,7 @@ The parameter tol is the vectorial modulus and phase tolerance (float), and posT
 ### Execution Examples
 #### Single file
 
-    python main.py test/m4.txt 0.02 1
+    python main.py G1 test/m4.txt 0.02 1
 
 Must output the image:
 
