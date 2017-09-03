@@ -21,6 +21,7 @@ cdef class GPA:
     cdef public object triangulation_points,triangles
     cdef public int totalAssimetric, totalVet
     cdef public float phaseDiversity, maxGrad
+    cdef public object boundaryType 
 
     cdef public int n_edges, n_points
     cdef public float G1, G2
@@ -29,6 +30,7 @@ cdef class GPA:
     def __cinit__(self, mat):
         # setting matrix,and calculating the gradient field
         self.mat = mat
+        self.boundaryType = "periodic"
 
         # default value
         self.setPosition(float(len(mat))/2.0,float(len(mat[0]))/2.0)
@@ -260,16 +262,34 @@ cdef class GPA:
     @cython.cdivision(True)
     cdef tuple gradient(self,float[:,:] mat):
         cdef float[:,:] dx, dy
-        cdef int i, j,w,h
+        cdef float divx, divy
+        cdef int i, j,w,h,i1,j1,i2,j2
         w, h = len(mat[0]),len(mat)
         dx = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float32)
         dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float32)
         for i in range(w):
            for j in range(h):
-              j2 = (j-1) if j>0 else len(mat)-1
-              i2 = (i-1) if i>0 else len(mat[j])-1
-              dy[j, i] = (mat[(j+1)%len(mat), i] - mat[j2, i])/2.0
-              dx[j, i] = (mat[j, (i+1)%len(mat[j])] - mat[j, i2])/2.0
+              if(self.boundaryType == "periodic"):
+                 divx,divy = 2.0, 2.0
+                 i1 = (i+1)%len(mat[j])
+                 j1 = (j+1)%len(mat)
+                 j2 = (j-1) if j>0 else len(mat)-1
+                 i2 = (i-1) if i>0 else len(mat[j])-1
+              elif(self.boundaryType == "finited"):
+                 divy =  2.0 if (j<len(mat)-1 and j>0) else 1.0
+                 divx =  2.0 if (i<len(mat[j])-1 and i>0) else 1.0
+                 i1 = (i+1) if i<len(mat[j])-1 else i
+                 j1 = (j+1) if j<len(mat)-1 else j
+                 i2 = (i-1) if i>0 else i
+                 j2 = (j-1) if j>0 else j
+              else:
+                 divx,divy = 2.0, 2.0
+                 i1 = (i+1)%len(mat[j])
+                 j1 = (j+1)%len(mat)
+                 j2 = (j-1) if j>0 else len(mat)-1
+                 i2 = (i-1) if i>0 else len(mat[j])-1
+              dy[j, i] = (mat[j1, i] - mat[j2, i])/divy
+              dx[j, i] = (mat[j, i1] - mat[j, i2])/divx
         return dy,dx
 
     @cython.boundscheck(False)
