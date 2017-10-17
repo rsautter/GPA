@@ -275,7 +275,7 @@ cdef class GPA:
                  j1 = (j+1)%len(mat)
                  j2 = (j-1) if j>0 else len(mat)-1
                  i2 = (i-1) if i>0 else len(mat[j])-1
-              elif(self.boundaryType == "finited"):
+              elif(self.boundaryType == "reflexive"):
                  divy =  2.0 if (j<len(mat)-1 and j>0) else 1.0
                  divx =  2.0 if (i<len(mat[j])-1 and i>0) else 1.0
                  i1 = (i+1) if i<len(mat[j])-1 else i
