@@ -30,7 +30,7 @@ cdef class GPA:
     def __cinit__(self, mat):
         # setting matrix,and calculating the gradient field
         self.mat = mat
-        self.boundaryType = "periodic"
+        self.boundaryType = "reflexive"
 
         # default value
         self.setPosition(float(len(mat))/2.0,float(len(mat[0]))/2.0)
