@@ -1,7 +1,9 @@
 import numpy
-from libc.math cimport pow, fabs, sqrt, atan2, M_PI, sin, cos,tan
-from math import radians
+import time
+from libc.math cimport pow, fabs, sqrt, M_PI, sin, cos,tan,floor
+from math import radians, atan2,factorial
 from scipy.spatial import Delaunay as Delanuay
+import matplotlib.pyplot as plt
 
 from cpython cimport bool
 cimport numpy
@@ -20,17 +22,18 @@ cdef class GPA:
     cdef int[:,:] removedP, nremovedP
     cdef public object triangulation_points,triangles
     cdef public int totalAssimetric, totalVet
-    cdef public float phaseDiversity, maxGrad
-    cdef public object boundaryType 
+    cdef public float phaseDiversity,modDiversity, maxGrad,t1,t2,t3
+    cdef public object boundaryType,ignoreBoundary 
 
     cdef public int n_edges, n_points
-    cdef public float G1, G2
+    cdef public float G1, G2, G3
 
     #@profile
     def __cinit__(self, mat):
         # setting matrix,and calculating the gradient field
         self.mat = mat
         self.boundaryType = "reflexive"
+        self.ignoreBoundary = False
 
         # default value
         self.setPosition(float(len(mat))/2.0,float(len(mat[0]))/2.0)
@@ -80,7 +83,7 @@ cdef class GPA:
         self.gradient_asymmetric_dy = numpy.array([[gy[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float32)
 
         # calculating the phase and mod of each vector
-        self.phases = numpy.array([[atan2(gy[j, i],gx[j, i])
+        self.phases = numpy.array([[atan2(gy[j, i],gx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
                                      for i in range(w) ] for j in range(h)],dtype=numpy.float32)
         self.mods = numpy.array([[sqrt(pow(gy[j, i],2.0)+pow(gx[j, i],2.0)) for i in range(w) ] for j in range(h)],dtype=numpy.float32)
    
@@ -126,15 +129,21 @@ cdef class GPA:
                 if (self.mods[py, px]/self.maxGrad <= mtol):
                     self.gradient_asymmetric_dx[py, px] = 0.0
                     self.gradient_asymmetric_dy[py, px] = 0.0
+                if(self.ignoreBoundary):
+                    if(px<2 or px>self.rows-2 or py<2 or py>self.cols-2):
+                        self.gradient_asymmetric_dx[py, px] = 0.0
+                        self.gradient_asymmetric_dy[py, px] = 0.0
+                        continue
                 for j in range(lx):
                     px2, py2 = x[j], y[j]
                     if (fabs((self.mods[py, px]- self.mods[py2, px2])/self.maxGrad )<= mtol):
                         if (fabs(self._angleDifference(self.phases[py, px], self.phases[py2, px2])-M_PI)  <= ftol) :
-                            self.gradient_asymmetric_dx[py, px] = 0.0
-                            self.gradient_asymmetric_dy[py, px] = 0.0
-                            self.gradient_asymmetric_dx[py2, px2] = 0.0
-                            self.gradient_asymmetric_dy[py2, px2] = 0.0
-                            break
+                            if not((self.ignoreBoundary) and (px2<2 or px2>self.rows-2 or py2<2 or py2>self.cols-2)):
+                                self.gradient_asymmetric_dx[py, px] = 0.0
+                                self.gradient_asymmetric_dy[py, px] = 0.0
+                                self.gradient_asymmetric_dx[py2, px2] = 0.0
+                                self.gradient_asymmetric_dy[py2, px2] = 0.0
+                                break
 
         self.totalVet = 0
         self.totalAssimetric = 0
@@ -149,6 +158,11 @@ cdef class GPA:
                     nremovedP.append([j,i])
                     self.totalVet = self.totalVet+1
                     self.totalAssimetric = self.totalAssimetric+1
+        if(self.ignoreBoundary):
+            self.totalVet = self.rows*self.cols-2*self.rows-2*self.cols+4
+        else:
+            self.totalVet = self.rows*self.cols
+        print(self.rows,self.cols, self.totalVet)
         if(len(nremovedP)>0):
             self.nremovedP = numpy.array(nremovedP,dtype=numpy.int32)
         if(len(removedP)>0):
@@ -158,7 +172,24 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef float _vectorialVariety(self):
+    cdef float distAngle(self,float a1,float a2):
+        v1 = [cos(a1),sin(a1)]
+        v2 = [cos(a2),sin(a2)] 
+        return (numpy.dot(v1,v2)+1.0)/2.0
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    @cython.nonecheck(False)
+    @cython.cdivision(True)
+    cdef float sumAngle(self,float a1,float a2):
+        turns = floor((a1+a2)/(2.0*M_PI)) 
+        return a1+a2-turns*2.0*M_PI
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    @cython.nonecheck(False)
+    @cython.cdivision(True)
+    cdef float _modVariety(self):
         cdef int i
         cdef float somax,somay, phase, alinhamento, mod, smod
         somax = 0.0
@@ -177,27 +208,52 @@ cdef class GPA:
         alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod
         return alinhamento
 
+#    @cython.boundscheck(False)
+#    @cython.wraparound(False)
+#    @cython.nonecheck(False)
+#    @cython.cdivision(True)
+#    cdef float _phaseVariety(self):
+#        cdef int x1, y1, x2, y2, i, j, div
+#        cdef float somaPhases
+#        sumPhases = 0.0
+#        for i in range(self.totalAssimetric):
+#            x1,y1 = self.nremovedP[i,0],self.nremovedP[i,1]
+#            for j in range(i+1,self.totalAssimetric):
+#                x2,y2 = self.nremovedP[j,0],self.nremovedP[j,1]
+#                sumPhases += self.distAngle(self.phases[x1,y1],self.phases[x2,y2])
+#        div = (self.totalAssimetric)*(self.totalAssimetric-1)/2
+#        return sumPhases / float(div)
+
+    #Versao similar G2
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    @cython.nonecheck(False)
+    @cython.cdivision(True)
+    cdef float _phaseVariety(self):
+        cdef int x1, y1, x2, y2, i, j, div
+        cdef float sumAll,sumx,sumy,angle2
+        sumx = 0.0
+        sumy = 0.0
+        sumAll = 0.0
+        for i in range(self.totalAssimetric):
+            x1,y1 = self.nremovedP[i,0],self.nremovedP[i,1]
+            sumx += cos(self.phases[x1,y1])
+            sumy += sin(self.phases[x1,y1])
+            sumAll = self.sumAngle(sumAll,self.phases[x1,y1])
+        angle2 = atan2(sumy,sumx) if atan2(sumy,sumx)>0 else atan2(sumy,sumx)+2.0*M_PI 
+        return self.distAngle(sumAll,angle2)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef float _modDiversity(self):
-        #unused variety equation
-        cdef int i, j
-        cdef float total, modDiversity
-        total = float(self.totalAssimetric*(self.totalAssimetric-1))/2.0
-        modDiversity = 0.0
-        if(self.totalAssimetric<2):
-            return 0.0
-        maxMod = 0.0
-        for i in range(self.totalAssimetric):
-            if fabs(self.mods[self.nremovedP[i,0],self.nremovedP[i,1]]) > maxMod:
-                maxMod = fabs(self.mods[self.nremovedP[i,0],self.nremovedP[i,1]])
-        for i in range(self.totalAssimetric):
-            for j in range(i+1,self.totalAssimetric): 
-                modDiversity += fabs(self.mods[self.nremovedP[i,0],self.nremovedP[i,1]]/maxMod-self.mods[self.nremovedP[j,0],self.nremovedP[j,1]]/maxMod)/total
-        return modDiversity
+    cdef void _G3(self):
+        if(len(self.nremovedP[:,0])>3):
+            self.totalAssimetric = len(self.nremovedP[:,0])
+        else:
+            self.totalAssimetric = 0
+        self.phaseDiversity = self._phaseVariety()
+        self.G3 = ((self.totalAssimetric)/float(self.totalVet))*(2.0-self.phaseDiversity)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
@@ -208,8 +264,8 @@ cdef class GPA:
             self.totalAssimetric = len(self.nremovedP[:,0])
         else:
             self.totalAssimetric = 0
-        self.phaseDiversity = self._vectorialVariety()
-        self.G2 = round((self.totalAssimetric)/float(self.totalVet)*(2.0-self.phaseDiversity),3)
+        self.modDiversity = self._modVariety()
+        self.G2 = ((self.totalAssimetric)/float(self.totalVet))*(2.0-self.modDiversity)
         
 
     @cython.boundscheck(False)
@@ -218,7 +274,9 @@ cdef class GPA:
     @cython.cdivision(True)
     # This function estimates both asymmetric gradient coeficient (geometric and algebric), with the given tolerances
     cpdef list evaluate(self,float mtol, float ftol,float ptol,list moment=["G2"]):
+        self.t1 = time.clock()
         self._setGradients()
+        self.t1 = time.clock() - self.t1
         cdef int[:] i
         cdef int x, y
         cdef float minimo, maximo
@@ -233,15 +291,26 @@ cdef class GPA:
         cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
         
         # removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
+        self.t2 = time.clock()
         self._update_asymmetric_mat(uniq.astype(dtype=numpy.float32), dists.astype(dtype=numpy.float32), mtol, ftol, ptol)
-       
+        self.t2 = time.clock()-self.t2
+
         #gradient moments:
         retorno = []
+        if("G3" in moment):
+            self.t3 = time.clock()
+            self._G3()
+            self.t3 = time.clock() - self.t3
+            retorno.append(self.G3)
         if("G2" in moment):
+            self.t3 = time.clock()
             self._G2()
+            self.t3 = time.clock() - self.t3
             retorno.append(self.G2)
         if("G1" in moment):
+            self.t3 = time.clock()
             self._G1(mtol)
+            self.t3 = time.clock() - self.t3
             retorno.append(self.G1)
         return retorno
 

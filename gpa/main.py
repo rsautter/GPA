@@ -37,7 +37,7 @@ def plot_matrix2(g):
 
     # plotting the asymmetric gradient field
     plt.subplot(132)
-    plt.quiver(g.gradient_asymmetric_dx,g.gradient_asymmetric_dy, scale =1.0/0.01)
+    plt.quiver(g.gradient_asymmetric_dx,g.gradient_asymmetric_dy, scale =1.0/0.1)
     plt.title("Asymmetric Gradient Field")
     #plt.title("C",fontsize=20)
 
@@ -119,8 +119,18 @@ if __name__ == "__main__":
         if(sys.argv[1] == "G1"):
             print("Nc,Nv,G1 ",gaObject.n_edges,gaObject.n_points,gaObject.G1)
         if(sys.argv[1] == "G2"):
-            print("G2 ",gaObject.G2)       
-        plot_matrix2(gaObject)
+            print("G2 ",gaObject.G2) 
+            print("Asymmetric ",gaObject.totalAssimetric)
+            print("V Total ",gaObject.totalVet)  
+            print("Diversity ",gaObject.modDiversity)
+            print("T1,T2,T3 ", gaObject.t1,gaObject.t2,gaObject.t3) 
+        if(sys.argv[1] == "G3"):
+            print("G3 ",gaObject.G3) 
+            print("Asymmetric ",gaObject.totalAssimetric)
+            print("V Total ",gaObject.totalVet)  
+            print("Diversity ",gaObject.phaseDiversity)
+            print("T1,T2,T3 ", gaObject.t1,gaObject.t2,gaObject.t3)   
+        #plot_matrix2(gaObject)
     else:
         files = [line.rstrip() for line in open(sys.argv[3])]
         tol = float(sys.argv[4])
@@ -135,14 +145,20 @@ if __name__ == "__main__":
             gaObject.evaluate(tol,rad_tol,float(0.5),[sys.argv[1]])
             if(sys.argv[1] == "G1"):
                 print(f+" - G1 -",gaObject.G1)
-                newline = [f,gaObject.G1,gaObject.n_edges,gaObject.n_points]
+                newline = [f,gaObject.G1,gaObject.n_edges,gaObject.n_points,gaObject.t1,gaObject.t2,gaObject.t3]
                 save.append(newline)
-                np.savetxt(sys.argv[6], np.array(save), fmt="%s", header="Ga,Nc,Nv", delimiter=',')
-            else:
+                np.savetxt(sys.argv[6], np.array(save), fmt="%s", header="Ga,Nc,Nv,t1,t2,t3", delimiter=',')
+            elif(sys.argv[1] == "G2"):
                 print(f+" - G2 -",gaObject.G2)
-                newline = [f,gaObject.G2,float(gaObject.totalAssimetric)/float(gaObject.totalVet),gaObject.phaseDiversity]
+                newline = [f,gaObject.G2,float(gaObject.totalAssimetric)/float(gaObject.totalVet),gaObject.modDiversity,gaObject.t1,gaObject.t2,gaObject.t3]
                 save.append(newline)
-                np.savetxt(sys.argv[6], np.array(save), fmt="%s", header="G2,Na,Diversity", delimiter=',')
+                np.savetxt(sys.argv[6], np.array(save), fmt="%s", header="G2,Na,Diversity,t1,t2,t3", delimiter=',')
+            elif(sys.argv[1] == "G3"):
+                print(f+" - G3 -",gaObject.G3)
+                newline = [f,gaObject.G3,float(gaObject.totalAssimetric)/float(gaObject.totalVet),gaObject.phaseDiversity,gaObject.t1,gaObject.t2,gaObject.t3]
+                save.append(newline)
+                np.savetxt(sys.argv[6], np.array(save), fmt="%s", header="G3,Na,Diversity,t1,t2,t3", delimiter=',')
+            
         
        
     plt.show()
