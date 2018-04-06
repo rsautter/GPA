@@ -23,10 +23,11 @@ cdef class GPA:
     cdef public object triangulation_points,triangles
     cdef public int totalAssimetric, totalVet
     cdef public float phaseDiversity,modDiversity, maxGrad,t1,t2,t3
-    cdef public object boundaryType,ignoreBoundary 
+    cdef public object boundaryType,ignoreBoundary,cvet
 
     cdef public int n_edges, n_points
     cdef public float G1, G2, G3
+    cdef public object G4
 
     #@profile
     def __cinit__(self, mat):
@@ -64,6 +65,7 @@ cdef class GPA:
     cdef void _setGradients(self):
         cdef int w, h,i,j
         cdef float[:,:] gx, gy
+        
         gy, gx = self.gradient(self.mat)
         w, h = len(gx[0]),len(gx)
         
@@ -208,40 +210,50 @@ cdef class GPA:
         alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod
         return alinhamento
 
-#    @cython.boundscheck(False)
-#    @cython.wraparound(False)
-#    @cython.nonecheck(False)
-#    @cython.cdivision(True)
-#    cdef float _phaseVariety(self):
-#        cdef int x1, y1, x2, y2, i, j, div
-#        cdef float somaPhases
-#        sumPhases = 0.0
-#        for i in range(self.totalAssimetric):
-#            x1,y1 = self.nremovedP[i,0],self.nremovedP[i,1]
-#            for j in range(i+1,self.totalAssimetric):
-#                x2,y2 = self.nremovedP[j,0],self.nremovedP[j,1]
-#                sumPhases += self.distAngle(self.phases[x1,y1],self.phases[x2,y2])
-#        div = (self.totalAssimetric)*(self.totalAssimetric-1)/2
-#        return sumPhases / float(div)
-
-    #Versao similar G2
+    # Versao proposta
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
     cdef float _phaseVariety(self):
         cdef int x1, y1, x2, y2, i, j, div
-        cdef float sumAll,sumx,sumy,angle2
-        sumx = 0.0
-        sumy = 0.0
-        sumAll = 0.0
-        for i in range(self.totalAssimetric):
+        cdef float sumPhases, variety
+        sumPhases = 0.0
+        for i in range(self.totalAssimetric-1):
             x1,y1 = self.nremovedP[i,0],self.nremovedP[i,1]
-            sumx += cos(self.phases[x1,y1])
-            sumy += sin(self.phases[x1,y1])
-            sumAll = self.sumAngle(sumAll,self.phases[x1,y1])
-        angle2 = atan2(sumy,sumx) if atan2(sumy,sumx)>0 else atan2(sumy,sumx)+2.0*M_PI 
-        return self.distAngle(sumAll,angle2)
+            for j in range(i+1,self.totalAssimetric):
+                x2,y2 = self.nremovedP[j,0],self.nremovedP[j,1]
+                sumPhases += self.distAngle(self.phases[x1,y1],self.phases[x2,y2])
+        div = ((self.totalAssimetric)*(self.totalAssimetric-1))/2
+        variety = sumPhases / float(div)
+        return variety
+    
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    @cython.nonecheck(False)
+    @cython.cdivision(True)
+    cdef void _G4(self):
+        cdef int w, h 
+        cdef float sumMod
+        cdef float[:,:] nmods
+        w, h = self.cols,self.rows
+        if(len(self.nremovedP[:,0])>3):
+            self.totalAssimetric = len(self.nremovedP[:,0])
+        else:
+            self.totalAssimetric = 0
+        nmods = self.mods
+        sumMod = 0.0 
+        for i in self.nremovedP:
+            sumMod += self.mods[i[0],i[1]]
+        for i in range(len(nmods)):
+            for j in range(len(nmods[i])):
+                nmods[i,j] = nmods[i,j]/sumMod
+        self.cvet = numpy.array([-nmods[i[0],i[1]]*numpy.log(nmods[i[0],i[1]])+1.0j*nmods[i[0],i[1]]*self.phases[i[0],i[1]]
+                                 if nmods[i[0],i[1]] > 0.0 else
+                                 1.0j*nmods[i[0],i[1]]*self.phases[i[0],i[1]]
+                    for i in self.nremovedP],dtype=numpy.complex64)
+        self.G4 = numpy.sum(self.cvet)
+
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
@@ -297,6 +309,11 @@ cdef class GPA:
 
         #gradient moments:
         retorno = []
+        if("G4" in moment):
+            self.t3 = time.clock()
+            self._G4()
+            self.t3 = time.clock() - self.t3
+            retorno.append(self.G4)
         if("G3" in moment):
             self.t3 = time.clock()
             self._G3()
