@@ -47,6 +47,12 @@ test/m2.txt | 1.70833337307 | 130 | 48
 test/m3.txt | 1.60526311398 | 99 | 38
 test/m4.txt | 1.93684208393 | 558 | 190
 
+## Log
+
+Aug. 30, 2017 - Added the First Gradient Moment (G1)
+
+Mar. 27, 2018 - Added the Third and Fourth Gradient Moments (G3 and G4)
+
 
 ## References
 https://en.wikipedia.org/wiki/Gradient_pattern_analysis
