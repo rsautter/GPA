@@ -1,5 +1,5 @@
 # Concentric Gradient Pattern Analysis
-This is a Concentric Gradient Pattern Analysis (CGPA) prototype developed in Cython + Python
+This is a Concentric Gradient Pattern Analysis (CGPA) prototype developed in Cython.
 
 ### Requirements
  - Python 2.7 or greater
@@ -9,7 +9,7 @@ This is a Concentric Gradient Pattern Analysis (CGPA) prototype developed in Cyt
 
 ### Compilation
 
-This code uses the Cython library, to improve the perfomence. 
+This code uses the Cython library, to improve its performance. 
 Go to the gpa Folder and type:
 
     python compile.py build_ext --inplace
@@ -18,18 +18,18 @@ Go to the gpa Folder and type:
 
 If you want to analyse a single image, and/or if you want to display it:
 
-    python main.py G2 filename tol posTol
+    python runGPA.py Gn filename tol posTol
 
-If you want to compute multiple images:
+If you want to compute GPA for multiple images:
 
-    python main.py G1 -l filelist tol posTol output
+    python runGPA.py Gn  filelist tol posTol
 
-The parameter tol is the vectorial modulus and phase tolerance (float), and posTol is the position tolerance (integer)
+The parameters tol and rad_tol are the vectorial modulus and phase tolerance (float). Gn is the gradient moment (G1, G2, G3, or G4). 
 
 ### Execution Examples
 #### Single file
 
-    python main.py G1 test/m4.txt 0.02 1
+    python runGPA.py G1 test/m4.txt 0.05 0.05
 
 Must output the image:
 
@@ -37,21 +37,26 @@ Must output the image:
 
 #### Multiple files
 
-    python main.py G1 -l configexample.txt 0.03 1 gas.csv
+    python main.py G1 configexample.txt 0.01 0.01
 
-Must outputs in file gas.csv:
+Must write in result.csv:
 
-\# | Ga	| Nc |	Nv
-------- | ------- | ------- | -------
-test/m2.txt | 1.70833337307 | 130 | 48
-test/m3.txt | 1.60526311398 | 99 | 38
-test/m4.txt | 1.93684208393 | 558 | 190
+File | G1	| Nc |	Nv | t1 | t2 | t3
+------- | ------- | ------- | ------- | ------- | ------- | -------
+test/m2.txt | 1.82899999619 | 314 | 111| 0.0005| 0.001| 0.001
+test/m3.txt | 1.81700003147 | 338 | 120| 0.0006| 0.001| 0.001
+test/m4.txt | 1.96000003815 | 950 | 321| 0.0005| 0.001| 0.001
+
 
 ## Log
 
+Nov. 26, 2018 - Changed the user interface (it automatically identifies whether the file is a list or a data)
+              - Results now are saved at reult.csv
+              - Tests repeated 
+Mar. 27, 2018 - Added the Third and Fourth Gradient Moments (G3 and G4)
 Aug. 30, 2017 - Added the First Gradient Moment (G1)
 
-Mar. 27, 2018 - Added the Third and Fourth Gradient Moments (G3 and G4)
+
 
 
 ## References
