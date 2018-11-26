@@ -51,8 +51,8 @@ test/m4.txt | 1.96000003815 | 950 | 321| 0.0005| 0.001| 0.001
 ## Log
 
 Nov. 26, 2018 - Changed the user interface (it automatically identifies whether the file is a list or a data)\
-              - Results now are saved at reult.csv \
-              - Tests updated
+    &nbsp;&nbsp;&nbsp; - Results now are saved at reult.csv \
+    &nbsp;&nbsp;&nbsp;&nbsp; - Tests updated
               
 Mar. 27, 2018 - Added the Third and Fourth Gradient Moments (G3 and G4)
 
