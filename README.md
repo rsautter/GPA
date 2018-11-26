@@ -6,6 +6,7 @@ This is a Concentric Gradient Pattern Analysis (CGPA) prototype developed in Cyt
  - Matplotlib
  - Cython
  - Numpy
+ - Pandas
 
 ### Compilation
 
