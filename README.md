@@ -51,6 +51,7 @@ test/m4.txt | 1.96000003815 | 950 | 321| 0.0005| 0.001| 0.001
 
 ## Log
 
+Nov. 27, 2018 - Added the FFT-Hilbert approach (file fragGPA.py)
 Nov. 26, 2018 - Changed the user interface (it automatically identifies whether the file is a list or a data)\
 &emsp;&emsp; &emsp; &emsp; &emsp; - Results are saved at reult.csv\
 &emsp;&emsp; &emsp; &emsp; &emsp; - Tests updated
