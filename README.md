@@ -48,6 +48,11 @@ test/m2.txt | 1.82899999619 | 314 | 111| 0.0005| 0.001| 0.001
 test/m3.txt | 1.81700003147 | 338 | 120| 0.0006| 0.001| 0.001
 test/m4.txt | 1.96000003815 | 950 | 321| 0.0005| 0.001| 0.001
 
+#### Fragmentation example
+
+    python fragGPA.py G2 test/t1350.csv 0.01 0.01
+
+![mapExampleIt19](/gpa/Figures/frag1350.png)
 
 ## Log
 
