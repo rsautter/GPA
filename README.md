@@ -32,7 +32,7 @@ The parameters tol and rad_tol are the vectorial modulus and phase tolerance (fl
 
     python runGPA.py G1 test/m4.txt 0.05 0.05
 
-Must output the image:
+Must show the image:
 
 ![mapExampleIt19](/gpa/Figures/exampleOutput_m4.png)
 
