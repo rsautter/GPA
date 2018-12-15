@@ -77,7 +77,7 @@ def crop_center(img,cropx,cropy):
     cx,cy = int(x*cropx), int(y*cropy)
     return img[cy:y-cy,cx:x-cx] 
 
-def fragGPA(inputMatrix,gn,tol,rad_tol,bandwidth=0.4,nbands=50,hbands=5):
+def fragGPA(inputMatrix,gn,tol,rad_tol,bandwidth=0.4,nbands=20,hbands=5):
    '''
    Description:
       Measures the GPA, for a set of filtered images (made with butterworth).

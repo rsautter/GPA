@@ -16,7 +16,7 @@ cimport cython
 cdef class GPA:
     cdef public float[:,:] mat,gradient_dx,gradient_dy,gradient_asymmetric_dy,gradient_asymmetric_dx
     cdef public float cx, cy, r
-    cdef int rows, cols
+    cdef public int rows, cols
     
     cdef float[:,:] phases, mods
     cdef int[:,:] removedP, nremovedP
@@ -164,7 +164,6 @@ cdef class GPA:
             self.totalVet = self.rows*self.cols-2*self.rows-2*self.cols+4
         else:
             self.totalVet = self.rows*self.cols
-        print(self.rows,self.cols, self.totalVet)
         if(len(nremovedP)>0):
             self.nremovedP = numpy.array(nremovedP,dtype=numpy.int32)
         if(len(removedP)>0):
@@ -175,9 +174,7 @@ cdef class GPA:
     @cython.nonecheck(False)
     @cython.cdivision(True)
     cdef float distAngle(self,float a1,float a2):
-        v1 = [cos(a1),sin(a1)]
-        v2 = [cos(a2),sin(a2)] 
-        return (numpy.dot(v1,v2)+1.0)/2.0
+        return (cos(a1)*cos(a2)+sin(a1)*sin(a2)+1.0)/2.0
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
