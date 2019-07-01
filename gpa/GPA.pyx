@@ -1,5 +1,4 @@
 import numpy
-import time
 from libc.math cimport pow, fabs, sqrt, M_PI, sin, cos,tan,floor
 from math import radians, atan2,factorial
 from scipy.spatial import Delaunay as Delanuay
@@ -14,37 +13,31 @@ cimport cython
 @cython.nonecheck(False)
 @cython.cdivision(True)
 cdef class GPA:
-    cdef public float[:,:] mat,gradient_dx,gradient_dy,gradient_asymmetric_dy,gradient_asymmetric_dx
-    cdef public float cx, cy, r
+    cdef public double[:,:] mat,gradient_dx,gradient_dy,gradient_asymmetric_dy,gradient_asymmetric_dx
+    cdef public double cx, cy
     cdef public int rows, cols
     
-    cdef float[:,:] phases, mods
+    cdef double[:,:] phases, mods
     cdef int[:,:] removedP, nremovedP
     cdef public object triangulation_points,triangles
     cdef public int totalAssimetric, totalVet
-    cdef public float phaseDiversity,modDiversity, maxGrad,t1,t2,t3
+    cdef public double phaseDiversity,modDiversity, maxGrad,mtol,ftol
     cdef public object boundaryType,ignoreBoundary,cvet
 
     cdef public int n_edges, n_points
-    cdef public float G1, G2, G3
+    cdef public double G1, G2, G3
     cdef public object G4
 
     #@profile
-    def __cinit__(self, mat):
+    def __cinit__(self, double mtol,double ftol):
         # setting matrix,and calculating the gradient field
-        self.mat = mat
         self.boundaryType = "reflexive"
         self.ignoreBoundary = False
+        self.mtol = mtol
+        self.ftol = ftol
 
-        # default value
-        self.setPosition(float(len(mat))/2.0,float(len(mat[0]))/2.0)
-        self.r = max(float(len(mat))/2.0,float(len(mat[0]))/2.0)
    
         # percentual Ga proprieties
-        self.cols = len(self.mat[0])
-        self.rows = len(self.mat)
-        self.totalVet = self.rows * self.cols
-        self.totalAssimetric = self.rows * self.cols
         self.removedP = numpy.array([[]],dtype=numpy.int32)
         self.nremovedP = numpy.array([[]],dtype=numpy.int32)
         self.triangulation_points = []
@@ -54,7 +47,7 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cpdef void setPosition(self, float cx, float cy):
+    cpdef void setPosition(self, double cx, double cy):
         self.cx = cx
         self.cy = cy
 
@@ -64,7 +57,7 @@ cdef class GPA:
     @cython.cdivision(True)
     cdef void _setGradients(self):
         cdef int w, h,i,j
-        cdef float[:,:] gx, gy
+        cdef double[:,:] gx, gy
         
         gy, gx = self.gradient(self.mat)
         w, h = len(gx[0]),len(gx)
@@ -77,23 +70,24 @@ cdef class GPA:
                     self.maxGrad = sqrt(pow(gy[j, i],2.0)+pow(gx[j, i],2.0))
         
         #initialization
-        self.gradient_dx=numpy.array([[gx[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float32)
-        self.gradient_dy=numpy.array([[gy[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float32)
+        self.gradient_dx=numpy.array([[gx[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float)
+        self.gradient_dy=numpy.array([[gy[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float)
 
         # copying gradient field to asymmetric gradient field
-        self.gradient_asymmetric_dx = numpy.array([[gx[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float32)
-        self.gradient_asymmetric_dy = numpy.array([[gy[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float32)
-
+        self.gradient_asymmetric_dx = numpy.array([[gx[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float)
+        self.gradient_asymmetric_dy = numpy.array([[gy[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float)
+        
+        
         # calculating the phase and mod of each vector
         self.phases = numpy.array([[atan2(gy[j, i],gx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
-                                     for i in range(w) ] for j in range(h)],dtype=numpy.float32)
-        self.mods = numpy.array([[sqrt(pow(gy[j, i],2.0)+pow(gx[j, i],2.0)) for i in range(w) ] for j in range(h)],dtype=numpy.float32)
+                                     for i in range(w) ] for j in range(h)],dtype=numpy.float)
+        self.mods = numpy.array([[sqrt(pow(gy[j, i],2.0)+pow(gx[j, i],2.0)) for i in range(w) ] for j in range(h)],dtype=numpy.float)
    
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef float _min(self,float a, float b):
+    cdef double _min(self,double a, double b):
         if a < b:
             return a
         else:
@@ -103,14 +97,14 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef float _angleDifference(self, float a1,float a2):
+    cdef double _angleDifference(self, double a1,double a2):
         return self._min(fabs(a1-a2), fabs(fabs(a1-a2)-2.0*M_PI))
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef void _update_asymmetric_mat(self,float[:] index_dist,float[:,:] dists,float mtol,float ftol,float ptol):
+    cdef void _update_asymmetric_mat(self,double[:] index_dist,double[:,:] dists,double mtol,double ftol,double ptol):
         cdef int ind, lx, px, py, px2, py2, i, j
         cdef int[:] x, y
 
@@ -173,14 +167,14 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef float distAngle(self,float a1,float a2):
+    cdef double distAngle(self,double a1,double a2):
         return (cos(a1)*cos(a2)+sin(a1)*sin(a2)+1.0)/2.0
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef float sumAngle(self,float a1,float a2):
+    cdef double sumAngle(self,double a1,double a2):
         turns = floor((a1+a2)/(2.0*M_PI)) 
         return a1+a2-turns*2.0*M_PI
 
@@ -188,9 +182,9 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef float _modVariety(self):
+    cdef double _modVariety(self):
         cdef int i
-        cdef float somax,somay, phase, alinhamento, mod, smod
+        cdef double somax,somay, phase, alinhamento, mod, smod
         somax = 0.0
         somay = 0.0
         smod = 0.0
@@ -212,9 +206,9 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef float _phaseVariety(self):
+    cdef double _phaseVariety(self):
         cdef int x1, y1, x2, y2, i, j, div
-        cdef float sumPhases, variety
+        cdef double sumPhases, variety
         sumPhases = 0.0
         for i in range(self.totalAssimetric-1):
             x1,y1 = self.nremovedP[i,0],self.nremovedP[i,1]
@@ -231,8 +225,8 @@ cdef class GPA:
     @cython.cdivision(True)
     cdef void _G4(self):
         cdef int w, h 
-        cdef float sumMod
-        cdef float[:,:] nmods
+        cdef double sumMod
+        cdef double[:,:] nmods
         w, h = self.cols,self.rows
         if(len(self.nremovedP[:,0])>3):
             self.totalAssimetric = len(self.nremovedP[:,0])
@@ -282,49 +276,42 @@ cdef class GPA:
     @cython.nonecheck(False)
     @cython.cdivision(True)
     # This function estimates both asymmetric gradient coeficient (geometric and algebric), with the given tolerances
-    cpdef list evaluate(self,float mtol, float ftol,float ptol,list moment=["G2"]):
-        self.t1 = time.clock()
-        self._setGradients()
-        self.t1 = time.clock() - self.t1
+    cpdef list evaluate(self,double[:,:] mat,list moment=["G2"]):
         cdef int[:] i
         cdef int x, y
-        cdef float minimo, maximo
-
+        cdef double minimo, maximo
+        
+        self.mat = mat
         self.cols = len(self.mat[0])
         self.rows = len(self.mat)
+        self.totalVet =self.rows*self.cols
+        self.setPosition(float(self.rows/2),float(self.cols/2))
+        self._setGradients()
+        
 
         cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
                                                   for x in range(self.cols)] for y in range(self.rows)])
+        
         minimo, maximo = numpy.min(dists),numpy.max(dists)
-        sequence = numpy.arange(minimo,maximo,ptol/2.0).astype(dtype=numpy.float32)
+        sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float)
         cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
         
         # removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
-        self.t2 = time.clock()
-        self._update_asymmetric_mat(uniq.astype(dtype=numpy.float32), dists.astype(dtype=numpy.float32), mtol, ftol, ptol)
-        self.t2 = time.clock()-self.t2
-
+        self._update_asymmetric_mat(uniq.astype(dtype=numpy.float), dists.astype(dtype=numpy.float), self.mtol, self.ftol, numpy.float(1.41))
+        
         #gradient moments:
         retorno = []
         if("G4" in moment):
-            self.t3 = time.clock()
             self._G4()
-            self.t3 = time.clock() - self.t3
             retorno.append(self.G4)
         if("G3" in moment):
-            self.t3 = time.clock()
             self._G3()
-            self.t3 = time.clock() - self.t3
             retorno.append(self.G3)
         if("G2" in moment):
-            self.t3 = time.clock()
             self._G2()
-            self.t3 = time.clock() - self.t3
             retorno.append(self.G2)
         if("G1" in moment):
-            self.t3 = time.clock()
-            self._G1(mtol)
-            self.t3 = time.clock() - self.t3
+            self._G1(self.mtol)
             retorno.append(self.G1)
         return retorno
 
@@ -343,13 +330,13 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    cdef tuple gradient(self,float[:,:] mat):
-        cdef float[:,:] dx, dy
-        cdef float divx, divy
+    cdef tuple gradient(self,double[:,:] mat):
+        cdef double[:,:] dx, dy
+        cdef double divx, divy
         cdef int i, j,w,h,i1,j1,i2,j2
         w, h = len(mat[0]),len(mat)
-        dx = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float32)
-        dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float32)
+        dx = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float)
+        dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float)
         for i in range(w):
            for j in range(h):
               if(self.boundaryType == "periodic"):
@@ -379,9 +366,9 @@ cdef class GPA:
     @cython.wraparound(False)
     @cython.nonecheck(False)
     @cython.cdivision(True)
-    def _G1(self,float tol):
+    def _G1(self,double tol):
         cdef int w, h, i, j
-        cdef float mod
+        cdef double mod
 
         for i in range(self.rows):
             for j in range(self.cols):

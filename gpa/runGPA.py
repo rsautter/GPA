@@ -36,11 +36,11 @@ def plot_matrix2(g):
 
 def singleFile(fileName, tol, rad_tol):
    print("Reading "+fileName)
-   inputMatrix = pd.read_csv(fileName, sep = "\s+|,| ",engine="python").as_matrix()
-   inputMatrix=inputMatrix.astype(np.float32)
-   gaObject = ga(inputMatrix)
+   inputMatrix = pd.read_csv(fileName, sep = "\s+|,| ",engine="python").values
+   inputMatrix=inputMatrix.astype(np.float)
+   gaObject = ga(tol,rad_tol)
    gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-   gaObject.evaluate(tol,rad_tol,1.0,[sys.argv[1]])
+   gaObject.evaluate(inputMatrix,[sys.argv[1]])
    if(sys.argv[1] == "G1"):
       print("G1: "+str(gaObject.G1))
       print("Nc: "+str(gaObject.n_edges))
@@ -49,19 +49,16 @@ def singleFile(fileName, tol, rad_tol):
       print("G2 "+str(gaObject.G2)) 
       print("Number of Vectors: "+str(gaObject.totalVet)) 
       print("Asymmetric: "+str(gaObject.totalAssimetric))
-      print("Diversity: "+str(gaObject.modDiversity))
-      print("T1,T2,T3 ", gaObject.t1,gaObject.t2,gaObject.t3) 
+      print("Diversity: "+str(gaObject.modDiversity)) 
    if(sys.argv[1] == "G3"):
       print("G3 ",gaObject.G3) 
       print("Number of Vectors: "+str(gaObject.totalVet))  
       print("Asymmetric: "+str(gaObject.totalAssimetric))
-      print("Diversity: "+str(gaObject.phaseDiversity))
-      print("T1,T2,T3 ", gaObject.t1,gaObject.t2,gaObject.t3) 
+      print("Diversity: "+str(gaObject.phaseDiversity)) 
    if(sys.argv[1] == "G4"):
       print("G4 "+str(gaObject.G4)) 
       print("Number of Vectors:  "+str(gaObject.totalVet)) 
       print("Asymmetric: "+str(gaObject.totalAssimetric))
-      print("T1,T2,T3 ", gaObject.t1,gaObject.t2,gaObject.t3)
    plot_matrix2(gaObject)
    plt.show()
 
@@ -72,10 +69,10 @@ def multipleFiles(filename,tol, rad_tol):
 
    for f in files:
       inputMatrix = pd.read_csv(f, sep = "\s+|,| ",engine="python").as_matrix()
-      inputMatrix=inputMatrix.astype(np.float32)
-      gaObject = ga(inputMatrix)
+      inputMatrix=inputMatrix.astype(np.float)
+      gaObject = ga(tol,rad_tol)
       gaObject.cx, gaObject.cy = len(inputMatrix[0])/2., len(inputMatrix)/2.
-      gaObject.evaluate(tol,rad_tol,float(0.5),[sys.argv[1]])
+      gaObject.evaluate(inputMatrix,[sys.argv[1]])
       if(sys.argv[1] == "G1"):
          print(f+" - G1 -",gaObject.G1)
          newline = [f,gaObject.G1,gaObject.n_edges,gaObject.n_points,gaObject.t1,gaObject.t2,gaObject.t3]

@@ -109,14 +109,12 @@ def fragGPA(inputMatrix,gn,tol,rad_tol,bandwidth=0.4,nbands=20,hbands=5):
    for fb in seq:
       avg =np.average(fb)
       fsfreq = filterFreq(sfreq,3,fb)
-      filtered = np.real(np.fft.ifft2(np.fft.ifftshift(fsfreq))).astype(np.float32)
+      filtered = np.real(np.fft.ifft2(np.fft.ifftshift(fsfreq))).astype(np.float)
       filtered = crop_center(filtered,avg/4.0,avg/4.0)
       imgList.append(filtered)
       avgFreq.append(np.average(fb))
-      gaObject = ga(filtered)
-      gaObject.cy, gaObject.cx = filtered.shape
-      gaObject.cy, gaObject.cx = float(gaObject.cy)/2.0, float(gaObject.cx)/2.0
-      gaObject.evaluate(tol,rad_tol,1.0,[gn])
+      gaObject = ga(tol,rad_tol)
+      gaObject.evaluate(filtered,[gn])
       if(gn == "G1"):
          glist.append(gaObject.G1)
       elif(gn == "G2"):
@@ -132,11 +130,11 @@ def fragGPA(inputMatrix,gn,tol,rad_tol,bandwidth=0.4,nbands=20,hbands=5):
    xs = np.linspace(min(avgFreq),max(avgFreq),dim*dim)
    ys = interp(xs)
    hcurve = hilbert.HilbertCurve(hbands,2)
-   layer = np.array([[ys[hcurve.distance_from_coordinates([i,j])] for i in range(dim)] for j in range(dim)]).astype(np.float32)
+   layer = np.array([[ys[hcurve.distance_from_coordinates([i,j])] for i in range(dim)] for j in range(dim)]).astype(np.float)
 
    # Now measures the gradient moment   
-   gaObject = ga(layer)
-   gaObject.evaluate(1.0/float(dim*dim),1.0/float(dim*dim),1.0,[gn])
+   gaObject = ga(1.0/float(dim*dim),1.0/float(dim*dim))
+   gaObject.evaluate(layer,[gn])
    if(gn == "G1"):
       gssa = gaObject.G1
    elif(gn == "G2"):
@@ -151,8 +149,8 @@ def fragGPA(inputMatrix,gn,tol,rad_tol,bandwidth=0.4,nbands=20,hbands=5):
 
 def singleFile(fileName, gn, tol, rad_tol):
    print("Reading "+fileName)
-   inputMatrix = pd.read_csv(fileName, sep = "\s+|,| ",engine="python").as_matrix()
-   inputMatrix = inputMatrix.astype(np.float32)
+   inputMatrix = pd.read_csv(fileName, sep = "\s+|,| ",engine="python").values
+   inputMatrix = inputMatrix.astype(np.float)
    glist,avgFreq,imgList,interp,affMat,gssa = fragGPA(inputMatrix,gn,tol,rad_tol)
    print("Gradient symmetry self-affinity: "+str(round(gssa,3)))
    
@@ -168,23 +166,22 @@ def singleFile(fileName, gn, tol, rad_tol):
    plt.xlabel("Average frequency band (%)")
    plt.ylabel(gn)
    
-      
    plt.subplot(gs[0,2])
    plt.axis('off')
    plt.imshow(imgList[0],cmap='jet')
-   plt.title("Band "+str(100.0*avgFreq[0]))
+   plt.title("Band %.2f" % (100.0*avgFreq[0]))
    plt.subplot(gs[0,3])
    plt.axis('off')
-   plt.imshow(imgList[len(imgList)/4],cmap='jet')
-   plt.title("Band "+str(100.0*avgFreq[len(imgList)/4]))
+   plt.imshow(imgList[int(len(imgList)/4)],cmap='jet')
+   plt.title("Band %.2f "% (100.0*avgFreq[int(len(imgList)/4)]) )
    plt.subplot(gs[1,2])
    plt.axis('off')
-   plt.imshow(imgList[3*len(imgList)/4],cmap='jet')
-   plt.title("Band "+str(100.0*avgFreq[3*len(imgList)/4]))
+   plt.imshow(imgList[int(3*len(imgList)/4)],cmap='jet')
+   plt.title("Band %.2f" % (100.0*avgFreq[int(3*len(imgList)/4)]) )
    plt.subplot(gs[1,3])
    plt.axis('off')
-   plt.imshow(imgList[len(imgList)-1],cmap='jet')
-   plt.title("Band "+str(100.0*avgFreq[len(imgList)-1]))
+   plt.imshow(imgList[int(len(imgList)-1)],cmap='jet')
+   plt.title("Band %.2f" % (100.0*avgFreq[int(len(imgList)-1)]))
 
    inset_axes(mainAxes,width="20%",height="20%",loc=2)
    plt.imshow(affMat)
@@ -205,8 +202,8 @@ def multipleFiles(fileName,gn, tol, rad_tol):
    header = "File,Gssa,time"
 
    for f in files:
-      inputMatrix = pd.read_csv(f, sep = "\s+|,| ",engine="python").as_matrix()
-      inputMatrix=inputMatrix.astype(np.float32)
+      inputMatrix = pd.read_csv(f, sep = "\s+|,| ",engine="python").values
+      inputMatrix=inputMatrix.astype(np.float)
       t = time.clock()
       glist,avgFreq,imgList,interp,affMat,gssa = fragGPA(inputMatrix,gn,tol,rad_tol)
       t = time.clock()-t
