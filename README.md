@@ -1,5 +1,5 @@
 # Gradient Pattern Analysis
-This is a Gradient Pattern Analysis (CGPA) prototype developed in Cython.
+This is a Gradient Pattern Analysis (GPA) prototype developed in Cython.
 
 ### Requirements
  - Python 2.7 or greater
