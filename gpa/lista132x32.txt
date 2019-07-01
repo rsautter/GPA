@@ -1,6 +1,0 @@
-../teste1/32x32/bessel_32.txt
-../teste1/32x32/gaussian_32.txt
-../teste1/32x32/noise_32.txt
-../teste1/32x32/noise+bessel_32.txt
-../teste1/32x32/noise+bessel+gaussian_32.txt
-../teste1/32x32/shuffle_32.txt
