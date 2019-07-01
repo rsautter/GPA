@@ -55,7 +55,9 @@ test/m4.txt | 1.96000003815 | 950 | 321| 0.0005| 0.001| 0.001
 ![mapExampleIt19](/gpa/Figures/frag1350.png)
 
 ## Log
-
+Jul. 01, 2019 - Changed GPA constructor, it receives modular and angular tolerance as input.
+&emsp;&emsp; &emsp; &emsp; &emsp; - Now the evaluation function receives the matrix as an argument.
+&emsp;&emsp; &emsp; &emsp; &emsp; - ScaleGPA has now a better performance.
 Nov. 27, 2018 - Added the FFT-Hilbert approach (file fragGPA.py)\
 Nov. 26, 2018 - Changed the user interface (it automatically identifies whether the file is a list or a data)\
 &emsp;&emsp; &emsp; &emsp; &emsp; - Results are saved at reult.csv\
