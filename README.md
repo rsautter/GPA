@@ -19,11 +19,11 @@ Go to the gpa Folder and type:
 
 If you want to analyse a single image, and/or if you want to display it:
 
-    python runGPA.py Gn filename tol posTol
+    python runGPA.py Gn filename tolerance angular_Tolerance
 
 If you want to compute GPA for multiple images:
 
-    python runGPA.py Gn  filelist tol posTol
+    python runGPA.py Gn  filelist tolerance angular_Tolerance
 
 The parameters tol and rad_tol are the vectorial modulus and phase tolerance (float). Gn is the gradient moment (G1, G2, G3, or G4). 
 
