@@ -68,6 +68,7 @@ def multipleFiles(filename,tol, rad_tol):
    header = ""
 
    for f in files:
+      print(f)
       inputMatrix = pd.read_csv(f, sep = "\s+|,| ",engine="python").as_matrix()
       inputMatrix=inputMatrix.astype(np.float)
       gaObject = ga(tol,rad_tol)
@@ -75,23 +76,23 @@ def multipleFiles(filename,tol, rad_tol):
       gaObject.evaluate(inputMatrix,[sys.argv[1]])
       if(sys.argv[1] == "G1"):
          print(f+" - G1 -",gaObject.G1)
-         newline = [f,gaObject.G1,gaObject.n_edges,gaObject.n_points,gaObject.t1,gaObject.t2,gaObject.t3]
+         newline = [f,gaObject.G1,gaObject.n_edges,gaObject.n_points]
          save.append(newline)
-         header="G1,Nc,Nv,t1,t2,t3"
+         header="G1,Nc,Nv"
       elif(sys.argv[1] == "G2"):
          print(f+" - G2 -",gaObject.G2)
-         newline = [f,gaObject.G2,float(gaObject.totalAssimetric)/          float(gaObject.totalVet),gaObject.modDiversity,gaObject.t1,gaObject.t2,gaObject.t3]
+         newline = [f,gaObject.G2,float(gaObject.totalAssimetric)/float(gaObject.totalVet),gaObject.modDiversity]
          save.append(newline)
-         header = "File,G2,Va,Md,t1,t2,t3"
+         header = "File,G2,Va,Md"
       elif(sys.argv[1] == "G3"):
          print(f+" - G3 -",gaObject.G3)
-         newline = [f,gaObject.G3,float(gaObject.totalAssimetric)/float(gaObject.totalVet),gaObject.phaseDiversity,gaObject.t1,gaObject.t2,gaObject.t3]
+         newline = [f,gaObject.G3,float(gaObject.totalAssimetric)/float(gaObject.totalVet),gaObject.phaseDiversity]
          save.append(newline)
-         header = "File,G3,Va,Fd,t1,t2,t3"
+         header = "File,G3,Va,Fd"
       elif(sys.argv[1] == "G4"):
          print(f+" - G4 -",gaObject.G4)
-         header = "File,G4,Va,t1,t2,t3"
-         newline = [f,gaObject.G4,float(gaObject.totalAssimetric)/float(gaObject.totalVet),gaObject.t1,gaObject.t2,gaObject.t3]
+         header = "File,G4,Va"
+         newline = [f,gaObject.G4,float(gaObject.totalAssimetric)/float(gaObject.totalVet)]
          save.append(newline)
          
    np.savetxt("result.csv", np.array(save), fmt="%s", header=header, delimiter=',',comments='')
