@@ -9,7 +9,7 @@ This is a Gradient Pattern Analysis (GPA) prototype developed in Cython.
 ### Install
     pip install git+https://github.com/rsautter/GPA
     
-To collab:
+To colab:
 
     !pip install git+https://github.com/rsautter/GPA
     
