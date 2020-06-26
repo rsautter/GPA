@@ -23,7 +23,8 @@ To get a better performance, edit compile.py and run:
 Obs: Requires Cython
 
 ## Log
-Jun. 26, 2020 - Changed deploy system to 
+Jun. 26, 2020 - Changed deploy system to setuptools
+
 Jul. 01, 2019 - Changed GPA constructor, it receives modular and angular tolerance as input.\
 &emsp;&emsp; &emsp; &emsp; &emsp; - Now the evaluation function receives the matrix as an argument.\
 &emsp;&emsp; &emsp; &emsp; &emsp; - ScaleGPA has now a better performance.\
