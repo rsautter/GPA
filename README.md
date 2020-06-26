@@ -4,7 +4,7 @@ This is a Gradient Pattern Analysis (GPA) prototype developed in Cython.
 ### Requirements
  - Python 2.7 or greater
  - Numpy
- - Cython (for an optimized compilation)
+ - Cython 
  
 ### Install
     pip install git+https://github.com/rsautter/GPA
@@ -18,9 +18,7 @@ To colab:
 This code uses the Cython library, to improve its performance. 
 To get a better performance, edit compile.py and run:
 
-    python compile.py build_ext --inplace
-
-Obs: Requires Cython
+    pip install .
 
 ## Log
 Jun. 26, 2020 - Changed deploy system to setuptools
