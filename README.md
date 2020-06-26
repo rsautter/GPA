@@ -3,58 +3,27 @@ This is a Gradient Pattern Analysis (GPA) prototype developed in Cython.
 
 ### Requirements
  - Python 2.7 or greater
- - Matplotlib
- - Cython
  - Numpy
- - Pandas
+ - Cython (for an optimized compilation)
+ 
+### Install
+    pip install git+https://github.com/rsautter/GPA
+    
+To collab:
 
+    !pip install git+https://github.com/rsautter/GPA
+    
 ### Compilation
 
 This code uses the Cython library, to improve its performance. 
-Go to the gpa Folder and type:
+To get a better performance, edit compile.py and run:
 
     python compile.py build_ext --inplace
 
-### Execution
-
-If you want to analyse a single image, and/or if you want to display it:
-
-    python runGPA.py Gn filename tolerance angular_Tolerance
-
-If you want to compute GPA for multiple images:
-
-    python runGPA.py Gn  filelist tolerance angular_Tolerance
-
-The parameters tol and rad_tol are the vectorial modulus and phase tolerance (float). Gn is the gradient moment (G1, G2, G3, or G4). 
-
-### Execution Examples
-#### Single file
-
-    python runGPA.py G1 test/m4.txt 0.05 0.05
-
-Must show the image:
-
-![mapExampleIt19](/gpa/Figures/exampleOutput_m4.png)
-
-#### Multiple files
-
-    python main.py G1 configexample.txt 0.01 0.01
-
-Must write in result.csv:
-
-File | G1	| Nc |	Nv | t1 | t2 | t3
-------- | ------- | ------- | ------- | ------- | ------- | -------
-test/m2.txt | 1.82899999619 | 314 | 111| 0.0005| 0.001| 0.001
-test/m3.txt | 1.81700003147 | 338 | 120| 0.0006| 0.001| 0.001
-test/m4.txt | 1.96000003815 | 950 | 321| 0.0005| 0.001| 0.001
-
-#### Fragmentation example
-
-    python fragGPA.py G2 test/t1350.csv 0.01 0.01
-
-![mapExampleIt19](/gpa/Figures/frag1350.png)
+Obs: Requires Cython
 
 ## Log
+Jun. 26, 2020 - Changed deploy system to 
 Jul. 01, 2019 - Changed GPA constructor, it receives modular and angular tolerance as input.\
 &emsp;&emsp; &emsp; &emsp; &emsp; - Now the evaluation function receives the matrix as an argument.\
 &emsp;&emsp; &emsp; &emsp; &emsp; - ScaleGPA has now a better performance.\
