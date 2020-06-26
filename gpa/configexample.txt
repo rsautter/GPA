@@ -1,3 +1,0 @@
-test/m2.txt
-test/m3.txt
-test/m4.txt
