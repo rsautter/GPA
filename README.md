@@ -1,5 +1,5 @@
 # Gradient Pattern Analysis
-This is a Gradient Pattern Analysis (GPA) prototype developed in Cython.
+Gradient Pattern Analysis (GPA) prototype developed in Cython.
 
 ### Requirements
  - Python 2.7 or greater
@@ -16,7 +16,7 @@ To colab:
     
 ### Compilation
 
-This code uses the Cython library, to improve its performance. 
+This code uses the Cython library, which transform pseudo-python code into C code. 
 To get a better performance, edit compile.py and run:
 
     pip install .
