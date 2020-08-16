@@ -221,10 +221,6 @@ cdef class GPA:
         cdef double sumMod
         cdef double[:,:] nmods
         w, h = self.cols,self.rows
-        if(len(self.nremovedP[:,0])>3):
-            self.totalAssimetric = len(self.nremovedP[:,0])
-        else:
-            self.totalAssimetric = 0
         nmods = self.mods
         sumMod = 0.0 
         for i in self.nremovedP:
@@ -244,10 +240,6 @@ cdef class GPA:
     @cython.nonecheck(False)
     @cython.cdivision(True)
     cdef void _G3(self):
-        if(len(self.nremovedP[:,0])>3):
-            self.totalAssimetric = len(self.nremovedP[:,0])
-        else:
-            self.totalAssimetric = 0
         self.phaseDiversity = self._phaseVariety()
         self.G3 = ((self.totalAssimetric)/float(self.totalVet))*(2.0-self.phaseDiversity)
 
@@ -256,10 +248,6 @@ cdef class GPA:
     @cython.nonecheck(False)
     @cython.cdivision(True)
     cdef void _G2(self):
-        if(len(self.nremovedP[:,0])>0):
-            self.totalAssimetric = len(self.nremovedP[:,0])
-        else:
-            self.totalAssimetric = 0
         self.modDiversity = self._modVariety()
         self.G2 = ((self.totalAssimetric)/float(self.totalVet))*(2.0-self.modDiversity)
         
