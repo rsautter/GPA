@@ -22,6 +22,9 @@ To get a better performance, edit compile.py and run:
     pip install .
 
 ## Log
+Apr. 18, 2021 - Added symmetrical and full analysis.\
+&emsp;&emsp; &emsp; &emsp; &emsp; - renamed evaluate to __call__ 
+&emsp;&emsp; &emsp; &emsp; &emsp; - vectors are now classified into symmetrical, asymmetrical and unknown.
 Jun. 26, 2020 - Changed deploy system to setuptools
 
 Jul. 01, 2019 - Changed GPA constructor, it receives modular and angular tolerance as input.\

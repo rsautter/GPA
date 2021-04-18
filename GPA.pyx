@@ -87,7 +87,7 @@ cdef class GPA:
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	cpdef char* version(self):
-		return "GPA - 3.0"
+		return "GPA - 3.1"
 	
 
 	@cython.boundscheck(False)
@@ -150,15 +150,27 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	cdef void _G3(self,int symm):
+	cdef void _G3(self,str symm):
 		cdef int x1, y1, x2, y2, i, j, div
 		cdef double sumPhases, alinhamento,nterms,angle
 		cdef int[:,:] targetMat,opositeMat
 		cdef int[:,:] targetList
 
+		if symm == 'S':# Symmetrical matrix 
+			targetMat = self.symmetricalP
+			opositeMat = self.asymmetricalP
+		elif symm == 'A':# Asymmetrical matrix 
+			targetMat = self.asymmetricalP
+			opositeMat = self.symmetricalP
+		elif symm == 'F': # Full Matrix, including unknown vectors
+			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+		elif symm == 'K': # Full Matrix, excluding unknown vectors
+			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int)
+			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+		else:
+			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
 		
-		targetMat = self.symmetricalP if symm>0 else  self.asymmetricalP
-		opositeMat = self.asymmetricalP if symm>0 else  self.symmetricalP
 	
 		targetList = numpy.zeros((numpy.sum(targetMat),2),dtype=numpy.int32)
 		
@@ -192,7 +204,7 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	cdef void _G2(self,int symm):
+	cdef void _G2(self,str symm):
 		cdef int i
 		cdef double somax, somay, phase, alinhamento, mod, smod, maxEntropy
 		cdef int[:,:] targetMat,opositeMat
@@ -200,8 +212,21 @@ cdef class GPA:
 		somax = 0.0
 		somay = 0.0
 		smod = 0.0
-		targetMat = self.symmetricalP if symm>0 else  self.asymmetricalP
-		opositeMat = self.asymmetricalP if symm>0 else  self.symmetricalP
+		
+		if symm == 'S':# Symmetrical matrix
+			targetMat = self.symmetricalP
+			opositeMat = self.asymmetricalP
+		elif symm == 'A':# Asymmetrical matrix
+			targetMat = self.asymmetricalP
+			opositeMat = self.symmetricalP
+		elif symm == 'F':# Full Matrix, including unknown vectors
+			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+		elif symm == 'K': # Full Matrix, excluding unknown vectors
+			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int)
+			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+		else:
+			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
 		
 		if numpy.sum(targetMat)<1:
 			self.G2 = 0.0
@@ -209,7 +234,7 @@ cdef class GPA:
 		
 		alinhamento = 0.0
 		
-		if symm<1:
+		if symm != 'S':
 			for i in range(self.rows):
 				for j in range(self.cols):
 					if targetMat[i,j] == 1:
@@ -238,8 +263,7 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	# This function estimates both asymmetric gradient coeficient (geometric and algebric), with the given tolerances
-	cpdef list evaluate(self,double[:,:] mat,list moment=["G2"],int symmetrycalGrad=0):
+	def __call__(self,double[:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):
 		cdef int[:] i
 		cdef int x, y
 		cdef double minimo, maximo
@@ -305,20 +329,27 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	def _G1(self,int symm):
+	def _G1(self,str symm):
 		cdef int w, h, i, j
+		cdef int[:,:] targetMat
 		self.triangulation_points = []
-		
-		if symm == 0:
-			for i in range(self.rows):
-				for j in range(self.cols):
-					if self.asymmetricalP[i,j] > 0:
-						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
+
+
+		if symm == 'S':# Symmetrical matrix 
+			targetMat = self.symmetricalP
+		elif symm == 'A':# Asymmetrical matrix 
+			targetMat = self.asymmetricalP
+		elif symm == 'F': # Full Matrix, including unknown vectors
+			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+		elif symm == 'K': # Full Matrix, excluding unknown vectors
+			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int)
 		else:
-			for i in range(self.rows):
-				for j in range(self.cols):
-					if self.symmetricalP[i,j] > 0:
-						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
+			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		
+		for i in range(self.rows):
+			for j in range(self.cols):
+				if targetMat[i,j] > 0:
+					self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
 					
 		self.triangulation_points = numpy.array(self.triangulation_points)
 		self.n_points = len(self.triangulation_points)
