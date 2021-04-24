@@ -198,7 +198,7 @@ cdef class GPA3D:
 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP,dtype=numpy.int32)
+			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=numpy.int32)
 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 		else:
 			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
@@ -270,7 +270,7 @@ cdef class GPA3D:
 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP,dtype=numpy.int32)
+			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=numpy.int32)
 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 		else:
 			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
