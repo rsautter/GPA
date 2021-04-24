@@ -35,7 +35,7 @@ cdef class GPA:
 		# percentual Ga proprieties
 		self.symmetricalP = numpy.array([[]],dtype=numpy.int32)
 		self.asymmetricalP = numpy.array([[]],dtype=numpy.int32)
-		unknownP = numpy.array([[]],dtype=numpy.int32)
+		self.unknownP = numpy.array([[]],dtype=numpy.int32)
 		self.triangulation_points = []
 
 	@cython.boundscheck(False)
@@ -143,69 +143,46 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	cdef double distAngle(self,double a1,double a2):
-		return (cos(a1)*cos(a2)+sin(a1)*sin(a2)+1)/2
+	def _G1(self,str symm):
+		cdef int w, h, i, j
+		cdef int[:,:] targetMat
+		self.triangulation_points = []
 
-	@cython.boundscheck(False)
-	@cython.wraparound(False)
-	@cython.nonecheck(False)
-	@cython.cdivision(True)
-	cdef void _G3(self,str symm):
-		cdef int x1, y1, x2, y2, i, j, div
-		cdef double sumPhases, alinhamento,nterms,angle
-		cdef int[:,:] targetMat,opositeMat
-		cdef int[:,:] targetList
 
 		if symm == 'S':# Symmetrical matrix 
 			targetMat = self.symmetricalP
-			opositeMat = self.asymmetricalP
 		elif symm == 'A':# Asymmetrical matrix 
 			targetMat = self.asymmetricalP
-			opositeMat = self.symmetricalP
 		elif symm == 'F': # Full Matrix, including unknown vectors
 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
-			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
 		elif symm == 'K': # Full Matrix, excluding unknown vectors
 			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int)
-			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
 		else:
 			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
 		
-	
-		targetList = numpy.zeros((numpy.sum(targetMat),2),dtype=numpy.int32)
-		
-		i = 0
-		for ty in range(self.rows):
-			for tx in range(self.cols):
-				if targetMat[ty,tx]>0:
-					targetList[i,0] = ty
-					targetList[i,1] = tx
-					i = i+1
-		
-		sumPhases = 0.0
-		nterms = 0.0
-		alinhamento = 0.0
-		for i in range(len(targetList)):
-			x1, y1 = targetList[i,0],targetList[i,1] 
-			y2, x2  = x1-int(self.cx), y1-int(self.cy)
-			angle = atan2(y2,x2) if atan2(y2,x2)>0 else atan2(y2,x2)+2.0*M_PI
-			sumPhases += self.distAngle(self.phases[x1,y1],angle)
-			nterms = nterms + 1.0
-		if nterms>0.0:
-			alinhamento = sumPhases / nterms
+		for i in range(self.rows):
+			for j in range(self.cols):
+					if targetMat[i,j] > 0:
+						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
+					
+		self.triangulation_points = numpy.array(self.triangulation_points)
+		self.n_points = len(self.triangulation_points)
+		if self.n_points < 3:
+			self.n_edges = 0
+			self.G1 = 0.0
 		else:
-			alinhamento = 0.0
-		if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
-			self.G3 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento
-		else: 
-			self.G3 = 0.0
+			self.triangles = Delanuay(self.triangulation_points)
+			neigh = self.triangles.vertex_neighbor_vertices
+			self.n_edges = len(neigh[1])/2
+			self.G1 = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
+		return self.G1
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	cdef void _G2(self,str symm):
-		cdef int i
+		cdef int i,j
 		cdef double somax, somay, phase, alinhamento, mod, smod, maxEntropy
 		cdef int[:,:] targetMat,opositeMat
 		cdef double[:,:] probabilityMat
@@ -263,10 +240,113 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
+	cdef double distAngle(self,double a1,double a2):
+		return (cos(a1)*cos(a2)+sin(a1)*sin(a2)+1)/2
+
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	cdef void _G3(self,str symm):
+		cdef int x1, y1, x2, y2, i, j, div
+		cdef double sumPhases, alinhamento,nterms,angle
+		cdef int[:,:] targetMat,opositeMat
+		cdef int[:,:] targetList
+
+		if symm == 'S':# Symmetrical matrix 
+			targetMat = self.symmetricalP
+			opositeMat = self.asymmetricalP
+		elif symm == 'A':# Asymmetrical matrix 
+			targetMat = self.asymmetricalP
+			opositeMat = self.symmetricalP
+		elif symm == 'F': # Full Matrix, including unknown vectors
+			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+		elif symm == 'K': # Full Matrix, excluding unknown vectors
+			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int)
+			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+		else:
+			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		
+	
+		targetList = numpy.zeros((numpy.sum(targetMat),2),dtype=numpy.int32)
+		
+		i = 0
+		for ty in range(self.rows):
+			for tx in range(self.cols):
+				if targetMat[ty,tx]>0:
+					targetList[i,0] = ty
+					targetList[i,1] = tx
+					i = i+1
+		
+		sumPhases = 0.0
+		nterms = 0.0
+		alinhamento = 0.0
+		for i in range(len(targetList)):
+			x1, y1 = targetList[i,0],targetList[i,1] 
+			y2, x2  = x1-int(self.cx), y1-int(self.cy)
+			angle = atan2(y2,x2) if atan2(y2,x2)>0 else atan2(y2,x2)+2.0*M_PI
+			sumPhases += self.distAngle(self.phases[x1,y1],angle)
+			nterms = nterms + 1.0
+		if nterms>0.0:
+			alinhamento = sumPhases / nterms
+		else:
+			alinhamento = 0.0
+		if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
+			self.G3 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento
+		else: 
+			self.G3 = 0.0
+			
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def _G4(self,str symm):
+		cdef int w, h, i, j
+		cdef int[:,:] targetMat
+
+		if symm == 'S':# Symmetrical matrix 
+			targetMat = self.symmetricalP
+		elif symm == 'A':# Asymmetrical matrix 
+			targetMat = self.asymmetricalP
+		elif symm == 'F': # Full Matrix, including unknown vectors
+			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
+		elif symm == 'K': # Full Matrix, excluding unknown vectors
+			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int)
+		else:
+			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		
+		self.G4 = 0.0+0.0j
+		
+		for i in range(self.rows):
+			for j in range(self.cols):
+				if targetMat[i,j] > 0:
+					if self.mods[i,j] > 1e-6:
+						self.G4 = self.G4 - self.mods[i,j]*numpy.log(self.mods[i,j])
+						
+						'''
+						Atencao:
+						A parte a seguir do codigo nao esta descrita em artigo, eh uma normalizacao das fases.
+						Como o intervalo das fases eh entre 0 e 2pi o valor pode explodir conforme o tamanho da matriz.
+						A solucao foi normalizar ao inytervalo -pi a pi o angulo.
+						'''
+						
+						if self.phases[i,j] > numpy.pi:
+							self.G4 = self.G4 - 1j*self.mods[i,j]*(2.0*numpy.pi-self.phases[i,j])
+						else:
+							self.G4 = self.G4 - 1j*self.mods[i,j]*(self.phases[i,j])
+
+		return self.G4
+
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
 	def __call__(self,double[:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):
 		cdef int[:] i
 		cdef int x, y
 		cdef double minimo, maximo
+		cdef dict retorno
 		
 		self.mat = mat
 		self.cols = len(self.mat[0])
@@ -286,20 +366,20 @@ cdef class GPA:
 		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float), dists.astype(dtype=numpy.float), self.tol, numpy.float(1.41))
 		
 		#gradient moments:
-		retorno = []
+		retorno = {}
 		for gmoment in moment:
-			#if("G4" == gmoment):
-			#	self._G4()
-			#	retorno.append(self.G4)
+			if("G4" == gmoment):
+				self._G4(symmetrycalGrad)
+				retorno["G4"] = self.G4
 			if("G3" == gmoment):
 				self._G3(symmetrycalGrad)
-				retorno.append(self.G3)
+				retorno["G3"] = self.G3
 			if("G2" == gmoment):
 				self._G2(symmetrycalGrad)
-				retorno.append(self.G2)
+				retorno["G2"] = self.G2
 			if("G1" == gmoment):
 				self._G1(symmetrycalGrad)
-				retorno.append(self.G1)
+				retorno["G1"] = self.G1
 		return retorno
    
 	@cython.boundscheck(False)
@@ -325,41 +405,7 @@ cdef class GPA:
 				dx[j, i] = (mat[j, i1] - mat[j, i2])/divx
 		return dy,dx
 
-	@cython.boundscheck(False)
-	@cython.wraparound(False)
-	@cython.nonecheck(False)
-	@cython.cdivision(True)
-	def _G1(self,str symm):
-		cdef int w, h, i, j
-		cdef int[:,:] targetMat
-		self.triangulation_points = []
+	
 
-
-		if symm == 'S':# Symmetrical matrix 
-			targetMat = self.symmetricalP
-		elif symm == 'A':# Asymmetrical matrix 
-			targetMat = self.asymmetricalP
-		elif symm == 'F': # Full Matrix, including unknown vectors
-			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int)
-		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
-		
-		for i in range(self.rows):
-			for j in range(self.cols):
-				if targetMat[i,j] > 0:
-					self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
-					
-		self.triangulation_points = numpy.array(self.triangulation_points)
-		self.n_points = len(self.triangulation_points)
-		if self.n_points < 3:
-			self.n_edges = 0
-			self.G1 = 0.0
-		else:
-			self.triangles = Delanuay(self.triangulation_points)
-			neigh = self.triangles.vertex_neighbor_vertices
-			self.n_edges = len(neigh[1])/2
-			self.G1 = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
-		return self.G1
+	
 
