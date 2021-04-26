@@ -172,7 +172,8 @@ cdef class GPA3D:
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
 			self.G1 = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
-		return self.G1
+		if self.G1<0.0:
+			self.G1 = 0.0
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
