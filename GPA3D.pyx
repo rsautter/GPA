@@ -48,7 +48,7 @@ cdef class GPA3D:
 
 	@cython.cdivision(True)
 	cdef double getMod(self,x,y,z):
-		return sqrt(pow(x,2.0)+pow(y,2.0)+pow(z,2.0))
+		return sqrt(pow(x,2.0)+pow(y,2.0)+pow(z,2.0))/self.maxGrad
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -308,13 +308,28 @@ cdef class GPA3D:
 		else: 
 			self.G3 = 0.0
 			
-	
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def __call__(self,double[:,:,:] mat=None, double[:,:,:] gx=None,double[:,:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):
+		if (mat is None) and (gx is None) and (gy is None):
+			raise Exception("Matrix or gradient must be stated!")
+		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
+			raise Exception("Gradient must have 2 components (gx and gy)")
+		if not(mat is None) and not(gx is None):
+			raise Exception("Matrix or gradient must be stated, not both")
+		
+		if not(mat is None):
+			return self._eval(mat,moment,symmetrycalGrad)
+		else:
+			return self._evalGradient(gx,gy,moment,symmetrycalGrad)
 			
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	def __call__(self,double[:,:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):
+	def _eval(self,double[:,:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):
 		cdef int[:] i
 		cdef int x, y
 		cdef double minimo, maximo

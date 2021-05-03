@@ -51,30 +51,46 @@ cdef class GPA:
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	cdef void _setGradients(self):
-		cdef int w, h,i,j
 		cdef double[:,:] gx, gy
-		
 		gy, gx = self.gradient(self.mat)
-		w, h = len(gx[0]),len(gx)
+		#initialization
+		self.gradient_dx = gx
+		self.gradient_dy = gy
+
+		self._setMaxGrad()
+		self._setModulusPhase()
 		
-	   
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	cdef void _setMaxGrad(self):
+		cdef int i,j,w,h
 		self.maxGrad = -1.0
+		w, h = self.cols, self.rows 
 		for i in range(w):
 			for j in range(h):
-				if(self.maxGrad<0.0) or (sqrt(pow(gy[j, i],2.0)+pow(gx[j, i],2.0))>self.maxGrad):
-					self.maxGrad = sqrt(pow(gy[j, i],2.0)+pow(gx[j, i],2.0))
+				if(self.maxGrad<0.0) or (sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))>self.maxGrad):
+					self.maxGrad = sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))
 		if self.maxGrad < 1e-5:
 			self.maxGrad = 1.0
 		
-		#initialization
-		self.gradient_dx=numpy.array([[gx[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float)
-		self.gradient_dy=numpy.array([[gy[j, i] for i in range(w) ] for j in range(h)],dtype=numpy.float)
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	cdef void _setModulusPhase(self):
+		cdef int w, h, i, j
+		cdef double[:,:] gx, gy
 		
-		# calculating the phase and mod of each vector
-		self.phases = numpy.array([[atan2(gy[j, i],gx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
+		gx = self.gradient_dx
+		gy = self.gradient_dy
+		w, h = self.cols, self.rows 
+		
+		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
 									 for i in range(w) ] for j in range(h)],dtype=numpy.float)
-		self.mods = numpy.array([[self.getMod(gx[j, i], gy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float)
-
+		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float)
+		
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
@@ -87,9 +103,8 @@ cdef class GPA:
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	cpdef char* version(self):
-		return "GPA - 3.1"
+		return "GPA - 3.2"
 	
-
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
@@ -155,17 +170,16 @@ cdef class GPA:
 			targetMat = self.asymmetricalP
 		elif symm == 'F': # Full Matrix, including unknown vectors
 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int32)
 		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm)
 		
 		for i in range(self.rows):
 			for j in range(self.cols):
 					if targetMat[i,j] > 0:
-						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
-					
+						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])		
 		self.triangulation_points = numpy.array(self.triangulation_points)
+		if len(self.triangulation_points>1):
+			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
 		self.n_points = len(self.triangulation_points)
 		if self.n_points < 3:
 			self.n_edges = 0
@@ -200,11 +214,8 @@ cdef class GPA:
 		elif symm == 'F':# Full Matrix, including unknown vectors
 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int32)
-			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
 		
 		if numpy.sum(targetMat)<1:
 			self.G2 = 0.0
@@ -216,8 +227,8 @@ cdef class GPA:
 			for i in range(self.rows):
 				for j in range(self.cols):
 					if targetMat[i,j] == 1:
-						somax += self.gradient_dx[i,j]
-						somay += self.gradient_dy[i,j]
+						somax += self.gradient_dx[i,j]/self.maxGrad
+						somay += self.gradient_dy[i,j]/self.maxGrad
 						smod += self.mods[i,j]
 			if smod <= 0.0:
 				alinhamento = 0.0
@@ -263,11 +274,8 @@ cdef class GPA:
 		elif symm == 'F': # Full Matrix, including unknown vectors
 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int32)
-			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
 		
 	
 		targetList = numpy.zeros((numpy.sum(targetMat),2),dtype=numpy.int32)
@@ -312,10 +320,8 @@ cdef class GPA:
 			targetMat = self.asymmetricalP
 		elif symm == 'F': # Full Matrix, including unknown vectors
 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = numpy.logical_or(self.symmetricalP,self.asymmetricalP).astype(numpy.int32)
 		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+			raise Exception("Unknown analysis type (should be S,A or F ), got: "+symm)
 		
 		self.G4 = 0.0+0.0j
 		
@@ -343,7 +349,24 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	def __call__(self,double[:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):
+	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):
+		if (mat is None) and (gx is None) and (gy is None):
+			raise Exception("Matrix or gradient must be stated!")
+		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
+			raise Exception("Gradient must have 2 components (gx and gy)")
+		if not(mat is None) and not(gx is None):
+			raise Exception("Matrix or gradient must be stated, not both")
+		
+		if not(mat is None):
+			return self._eval(mat,moment,symmetrycalGrad)
+		else:
+			return self._evalGradient(gx,gy,moment,symmetrycalGrad)
+
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def _eval(self,double[:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):
 		cdef int[:] i
 		cdef int x, y
 		cdef double minimo, maximo
@@ -354,6 +377,55 @@ cdef class GPA:
 		self.rows = len(self.mat)
 		self.setPosition(float(self.rows/2),float(self.cols/2))
 		self._setGradients()
+		
+
+		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
+												  for x in range(self.cols)] for y in range(self.rows)])
+		
+		minimo, maximo = numpy.min(dists),numpy.max(dists)
+		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float)
+		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
+		
+		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
+		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float), dists.astype(dtype=numpy.float), self.tol, numpy.float(1.41))
+		
+		#gradient moments:
+		retorno = {}
+		for gmoment in moment:
+			if("G4" == gmoment):
+				self._G4(symmetrycalGrad)
+				retorno["G4"] = self.G4
+			if("G3" == gmoment):
+				self._G3(symmetrycalGrad)
+				retorno["G3"] = self.G3
+			if("G2" == gmoment):
+				self._G2(symmetrycalGrad)
+				retorno["G2"] = self.G2
+			if("G1" == gmoment):
+				self._G1(symmetrycalGrad)
+				retorno["G1"] = self.G1
+		return retorno
+	
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def _evalGradient(self,double[:,:] gradient_dx, double[:,:] gradient_dy, list moment=["G2"],str symmetrycalGrad='A'):
+		cdef int[:] i
+		cdef int x, y
+		cdef double minimo, maximo
+		cdef dict retorno
+		
+		self.cols = len(self.gradient_dx[0])
+		self.rows = len(self.gradient_dx)
+		
+		self.gradient_dx = gradient_dx
+		self.gradient_dy = gradient_dy
+		
+		self._setMaxGrad()
+		self._setModulusPhase()
+		
+		self.setPosition(float(self.rows/2),float(self.cols/2))
 		
 
 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
