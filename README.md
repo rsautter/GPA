@@ -23,7 +23,7 @@ To get a better performance, edit compile.py and run:
 
 ## Log
 Apr. 18, 2021 - Added symmetrical and full analysis.\
-&emsp;&emsp; &emsp; &emsp; &emsp; - now uses \_\_call\_\_ function to measure the gradient moments 
+&emsp;&emsp; &emsp; &emsp; &emsp; - now uses \_\_call\_\_ function to measure the gradient moments.\
 &emsp;&emsp; &emsp; &emsp; &emsp; - vectors are now classified into symmetrical, asymmetrical and unknown.
 Jun. 26, 2020 - Changed deploy system to setuptools
 
