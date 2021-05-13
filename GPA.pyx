@@ -416,8 +416,8 @@ cdef class GPA:
 		cdef double minimo, maximo
 		cdef dict retorno
 		
-		self.cols = len(self.gradient_dx[0])
-		self.rows = len(self.gradient_dx)
+		self.cols = len(gradient_dx[0])
+		self.rows = len(gradient_dx)
 		
 		self.gradient_dx = gradient_dx
 		self.gradient_dy = gradient_dy

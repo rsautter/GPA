@@ -60,27 +60,59 @@ cdef class GPA3D:
 		
 		gx, gy, gz = self.gradient(self.mat)
 		
+		self._setMaxGrad()
+		self._setModulusPhase()
+
+		
+	
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	cdef void _setMaxGrad(self):
+		cdef int i,j,k,w,h,d
+		cdef double[:,:,:] gx, gy, gz
+		
+		gx = self.gradient_dx
+		gy = self.gradient_dy
+		gz = self.gradient_dz
+		
+		
 		self.maxGrad = -1.0
-		for i in range(self.rows):
-			for j in range(self.cols):
-				for k in range(self.depth):
-					if self.maxGrad<0.0 or abs(self.getMod(gx[i,j,k],gy[i,j,k],gz[i,j,k]))>self.maxGrad:
+		w, h, d = self.cols, self.rows, self.depth 
+		for i in range(w):
+			for j in range(h):
+				for k in range(d):
+					if self.maxGrad<0.0 or sqrt(pow(gx[i,j,k],2.0)+pow(gy[i,j,k],2.0)+pow(gz[i,j,k],2.0))>self.maxGrad:
 						self.maxGrad = abs(self.getMod(gx[i,j,k],gy[i,j,k],gz[i,j,k]))
-		#initialization
-		self.gradient_dx = numpy.array([[[gx[i,j,k]/self.maxGrad for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth)],dtype=numpy.float)
-		self.gradient_dy = numpy.array([[[gy[i,j,k]/self.maxGrad for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth)],dtype=numpy.float)
-		self.gradient_dz = numpy.array([[[gz[i,j,k]/self.maxGrad for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth)],dtype=numpy.float)
+		if self.maxGrad < 1e-5:
+			self.maxGrad = 1.0
+
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	cdef void _setModulusPhase(self):
+		cdef int w, h, i, j
+		cdef double[:,:,:] gx, gy, gz
+		
+		gx = self.gradient_dx
+		gy = self.gradient_dy
+		gz = self.gradient_dz
+		w, h = self.cols, self.rows 
 		
 		self.phasesTheta = numpy.array([[[atan2(gy[j, i,k],gx[j, i,k]) if atan2(gy[j, i,k],gx[j, i,k])>0 else atan2(gy[j, i,k],gx[j, i,k])+2.0*M_PI for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth) ],dtype=numpy.float)
 		self.phasesPhi = numpy.array([[[atan2(sqrt(gy[j, i,k]**2+gx[j, i,k]**2),gz[j, i,k]) if atan2(sqrt(gy[j, i,k]**2+gx[j, i,k]**2),gz[j, i])>0 else atan2(sqrt(gy[j, i,k]**2+gx[j, i,k]**2),gz[j, i,k])+2.0*M_PI for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth) ],dtype=numpy.float)
 		self.mods = numpy.array([[[self.getMod(gx[j, i, k], gy[j, i, k],gz[j, i, k]) for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth)],dtype=numpy.float)
+		
+
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	cpdef char* version(self):
-		return "GPA - 3.1"
+		return "GPA - 3.2"
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -312,18 +344,18 @@ cdef class GPA3D:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	def __call__(self,double[:,:,:] mat=None, double[:,:,:] gx=None,double[:,:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):
-		if (mat is None) and (gx is None) and (gy is None):
+	def __call__(self,double[:,:,:] mat=None, double[:,:,:] gx=None,double[:,:,:] gy=None,double[:,:,:] gz=None,list moment=["G2"],str symmetrycalGrad='A'):
+		if (mat is None) and (gx is None) and (gy is None) and (gx is None):
 			raise Exception("Matrix or gradient must be stated!")
-		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
-			raise Exception("Gradient must have 2 components (gx and gy)")
+		if (mat is None) and ((gy is None) or (gx is None) or (gz is None)):
+			raise Exception("Gradient must have 3 components (gx, gy and gz)")
 		if not(mat is None) and not(gx is None):
 			raise Exception("Matrix or gradient must be stated, not both")
 		
 		if not(mat is None):
 			return self._eval(mat,moment,symmetrycalGrad)
 		else:
-			return self._evalGradient(gx,gy,moment,symmetrycalGrad)
+			return self._evalGradient(gx,gy,gz,moment,symmetrycalGrad)
 			
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -342,6 +374,56 @@ cdef class GPA3D:
 		
 		self.setPosition(float(self.rows/2),float(self.cols/2),float(self.depth/2))
 		self._setGradients()
+		
+
+		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
+												  for x in range(self.cols)] for y in range(self.rows)])
+		
+		minimo, maximo = numpy.min(dists),numpy.max(dists)
+		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float)
+		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
+		
+		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
+		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float), dists.astype(dtype=numpy.float), self.tol, numpy.float(1.41))
+		
+		#gradient moments:
+		retorno = {}
+		for gmoment in moment:
+			
+			#if("G4" == gmoment):
+			#	self._G4(symmetrycalGrad)
+			#	retorno["G4"] = self.G4
+			if("G3" == gmoment):
+				self._G3(symmetrycalGrad)
+				retorno["G3"] = self.G3
+			if("G2" == gmoment):
+				self._G2(symmetrycalGrad)
+				retorno["G2"] = self.G2
+			if("G1" == gmoment):
+				self._G1(symmetrycalGrad)
+				retorno["G1"] = self.G1
+		return retorno
+		
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def _evalGradient(self,double[:,:,:] gx, double[:,:,:] gy, double[:,:,:] gz,list moment=["G2"],str symmetrycalGrad='A'):
+		cdef int[:] i
+		cdef int x, y
+		cdef double minimo, maximo
+		cdef dict retorno
+		
+		self.gradient_dx = gx
+		self.gradient_dy = gy
+		self.gradient_dz = gz
+		self.depth = len(self.gx[0,0])
+		self.cols = len(self.gx[0])
+		self.rows = len(self.gx)
+		
+		self.setPosition(float(self.rows/2),float(self.cols/2),float(self.depth/2))
+		self._setMaxGrad()
+		self._setModulusPhase()
 		
 
 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
