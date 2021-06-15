@@ -30,11 +30,6 @@ cdef class GPA3D:
 	#@profile
 	def __cinit__(self, double tol):
 		self.tol = tol
-   
-		# percentual Ga proprieties
-		self.removedP = numpy.array([[[]]],dtype=numpy.int32)
-		self.nremovedP = numpy.array([[[]]],dtype=numpy.int32)
-		self.unknownP = numpy.array([[[]]],dtype=numpy.int32)
 		self.triangulation_points = []
 
 	@cython.boundscheck(False)
@@ -59,6 +54,9 @@ cdef class GPA3D:
 		cdef double[:,:,:] gx, gy,gz
 		
 		gx, gy, gz = self.gradient(self.mat)
+		self.gradient_dx = gx
+		self.gradient_dy = gy
+		self.gradient_dz = gz
 		
 		self._setMaxGrad()
 		self._setModulusPhase()
@@ -101,9 +99,9 @@ cdef class GPA3D:
 		gz = self.gradient_dz
 		w, h = self.cols, self.rows 
 		
-		self.phasesTheta = numpy.array([[[atan2(gy[j, i,k],gx[j, i,k]) if atan2(gy[j, i,k],gx[j, i,k])>0 else atan2(gy[j, i,k],gx[j, i,k])+2.0*M_PI for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth) ],dtype=numpy.float)
-		self.phasesPhi = numpy.array([[[atan2(sqrt(gy[j, i,k]**2+gx[j, i,k]**2),gz[j, i,k]) if atan2(sqrt(gy[j, i,k]**2+gx[j, i,k]**2),gz[j, i])>0 else atan2(sqrt(gy[j, i,k]**2+gx[j, i,k]**2),gz[j, i,k])+2.0*M_PI for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth) ],dtype=numpy.float)
-		self.mods = numpy.array([[[self.getMod(gx[j, i, k], gy[j, i, k],gz[j, i, k]) for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth)],dtype=numpy.float)
+		self.phasesTheta = numpy.array([[[atan2(gy[j, i,k],gx[j, i,k]) for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth) ],dtype=float)
+		self.phasesPhi = numpy.array([[[atan2(sqrt(gy[j, i,k]**2+gx[j, i,k]**2),gz[j, i,k]) for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth) ],dtype=float)
+		self.mods = numpy.array([[[self.getMod(gx[j, i, k], gy[j, i, k],gz[j, i, k]) for i in range(self.rows) ] for j in range(self.cols)] for k in range(self.depth)],dtype=float)
 		
 
 
@@ -138,19 +136,16 @@ cdef class GPA3D:
 							z2.append(pz)
 			x, y, z = numpy.array(x2,dtype=numpy.int32), numpy.array(y2,dtype=numpy.int32), numpy.array(z2,dtype=numpy.int32)
 			lx = len(x)
-
 			# compare each point in the same distance
 			for i in range(lx):
 				px, py, pz = x[i], y[i], z[i]
-				
 				if self.mods[py,px, pz]<= tol:
 					self.unknownP[py, px, pz] = 1
 					continue
-				
 				for j in range(lx):
 					px2, py2, pz2 = x[j], y[j], z[j]
 					if self.mods[py2,px2, pz2]<= tol:
-						continue			
+						continue	
 					dx = self.gradient_dx[py, px, pz]+self.gradient_dx[py2, px2, pz2]
 					dy = self.gradient_dy[py, px, pz]+self.gradient_dy[py2, px2, pz2]
 					dz = self.gradient_dy[py, px, pz]+self.gradient_dy[py2, px2, pz2]
@@ -159,7 +154,7 @@ cdef class GPA3D:
 						self.symmetricalP[py,px,pz] = 1
 						# se outro for simetrico ele vai se marcar
 						break
-						
+					
 		# Caso nao seja desconhecido ou simetrico, ele eh asimmetrico
 		for py in range(self.rows):
 			for px in range(self.cols):
@@ -260,9 +255,9 @@ cdef class GPA3D:
 			else: 
 				self.G2 = 0.0
 		else:
-			probabilityMat = self.mods*numpy.array(targetMat,dtype=numpy.float)
+			probabilityMat = self.mods*numpy.array(targetMat,dtype=float)
 			probabilityMat = probabilityMat/numpy.sum(probabilityMat)
-			maxEntropy = numpy.log(numpy.float(numpy.sum(targetMat)))
+			maxEntropy = numpy.log(float(numpy.sum(targetMat)))
 			for i in range(self.rows):
 				for j in range(self.cols):
 					for k in range(self.depth):
@@ -376,15 +371,15 @@ cdef class GPA3D:
 		self._setGradients()
 		
 
-		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
-												  for x in range(self.cols)] for y in range(self.rows)])
+		cdef numpy.ndarray dists = numpy.array([[[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)+pow(float(z)-self.cz, 2.0)) \
+												  for x in range(self.cols)] for y in range(self.rows)] for z in range(self.depth)])
 		
 		minimo, maximo = numpy.min(dists),numpy.max(dists)
-		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float)
+		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=float)
 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
 		
 		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
-		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float), dists.astype(dtype=numpy.float), self.tol, numpy.float(1.41))
+		self._update_asymmetric_mat(uniq.astype(dtype=float), dists.astype(dtype=float), self.tol, float(1.41))
 		
 		#gradient moments:
 		retorno = {}
@@ -426,15 +421,15 @@ cdef class GPA3D:
 		self._setModulusPhase()
 		
 
-		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
-												  for x in range(self.cols)] for y in range(self.rows)])
+		cdef numpy.ndarray dists = numpy.array([[[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)+pow(float(z)-self.cz, 2.0)) \
+												  for x in range(self.cols)] for y in range(self.rows)] for z in range(self.depth)])
 		
 		minimo, maximo = numpy.min(dists),numpy.max(dists)
-		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float)
+		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=float)
 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
 		
 		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
-		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float), dists.astype(dtype=numpy.float), self.tol, numpy.float(1.41))
+		self._update_asymmetric_mat(uniq.astype(dtype=float), dists.astype(dtype=float), self.tol, float(1.41))
 		
 		#gradient moments:
 		retorno = {}
@@ -464,9 +459,9 @@ cdef class GPA3D:
 		cdef double divx, divy,divz
 		cdef int i, j, k, w, h,p, i1,j1,k1,i2,j2,k2
 		w, h, p = len(mat), len(mat[0]),len(mat[0,0])
-		dx = numpy.array([[[0.0 for i in range(w) ] for j in range(h)] for k in range(p)],dtype=numpy.float)
-		dy = numpy.array([[[0.0 for i in range(w) ] for j in range(h)] for k in range(p)],dtype=numpy.float)
-		dz = numpy.array([[[0.0 for i in range(w) ] for j in range(h)] for k in range(p)],dtype=numpy.float)
+		dx = numpy.array([[[0.0 for i in range(w) ] for j in range(h)] for k in range(p)],dtype=float)
+		dy = numpy.array([[[0.0 for i in range(w) ] for j in range(h)] for k in range(p)],dtype=float)
+		dz = numpy.array([[[0.0 for i in range(w) ] for j in range(h)] for k in range(p)],dtype=float)
 		for i in range(w):
 			for j in range(h):
 				for k in range(p):
