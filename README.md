@@ -1,26 +1,24 @@
 # Gradient Pattern Analysis
-Gradient Pattern Analysis (GPA) prototype developed in Cython.
 
 ### Requirements
  - Python 2.7 or greater
  - Numpy
- - Numba 
+ - Numba
  - Scipy
  
 ### Install
     pip install git+https://github.com/rsautter/GPA
     
-To notebook envoirment (i.e. Colab):
+Colab:
 
     !pip install git+https://github.com/rsautter/GPA
     
-## Log
-Jan. 03, 2022 - Changed the code to python (with numba) - version 4.0
-&emsp;&emsp; &emsp; &emsp; &emsp; - removed fragGPA and ScaleGPA (it is necessary a more detailed study) .		
 
+## Log
+Jan. 04, 2022 - Changed language to numpy and numba\
 Apr. 18, 2021 - Added symmetrical and full analysis.\
-&emsp;&emsp; &emsp; &emsp; &emsp; - renamed evaluate to __call__ 
-&emsp;&emsp; &emsp; &emsp; &emsp; - vectors are now classified into symmetrical, asymmetrical and unknown.
+&emsp;&emsp; &emsp; &emsp; &emsp; - now uses \_\_call\_\_ function to measure the gradient moments.\
+&emsp;&emsp; &emsp; &emsp; &emsp; - vectors are now classified into symmetrical, asymmetrical and unknown.\
 Jun. 26, 2020 - Changed deploy system to setuptools
 
 Jul. 01, 2019 - Changed GPA constructor, it receives modular and angular tolerance as input.\
@@ -42,6 +40,4 @@ Aug. 30, 2017 - Added the First Gradient Moment (G1)
 ## References
 https://en.wikipedia.org/wiki/Gradient_pattern_analysis
 
-https://numba.pydata.org/
-
-https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html
+http://cython.org/
