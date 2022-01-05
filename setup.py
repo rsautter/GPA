@@ -6,6 +6,6 @@ setup(name="GPA",
       author_email='rubens.sautter@gmail.com',
       url='https://github.com/rsautter/GPA',
       install_requires=['numpy','numba','scipy'],
-      py_modules=['GPA']
+      py_modules=['gpa']
      )
 
