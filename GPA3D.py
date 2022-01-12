@@ -1,8 +1,10 @@
 import numpy as np
 from scipy.spatial import Delaunay as Delanuay
 import itertools
+from sympy.algebras.quaternion import Quaternion
 from time import time as time
 from numba import jit, prange
+
 
 
 class GPA3D:
@@ -240,6 +242,39 @@ class GPA3D:
 			self.G3 = np.std(newReferencePhase)
 		else: 
 			self.G3 = 0.0
+			
+	def _G4(self,symm):
+		
+		if symm == 'S':# Symmetrical matrix 
+			targetMat = self.symmetricalP
+			opositeMat = self.asymmetricalP
+		elif symm == 'A':# Asymmetrical matrix 
+			targetMat = self.asymmetricalP
+			opositeMat = self.symmetricalP
+		elif symm == 'F': # Full Matrix, including unknown vectors
+			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
+			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
+		elif symm == 'K': # Full Matrix, excluding unknown vectors
+			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=np.int32)
+			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
+		else:
+			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		
+		sumZ = Quaternion(0,0,0,0)
+		zList = []
+		for ty in range(self.rows):
+			for tx in range(self.cols):
+				for tz in range(self.depth):
+					if targetMat[ty,tx,tz]>0:
+						z = Quaternion(self.gradient_dx[ty,tx,tz],self.gradient_dy[ty,tx,tz],self.gradient_dz[ty,tx,tz],0)
+						sumZ = sumZ + z		
+		self.G4 =  0.0
+		for ty in range(self.rows):
+			for tx in range(self.cols):
+				for tz in range(self.depth):
+					if targetMat[ty,tx,tz]>0:
+						z = Quaternion(self.gradient_dx[ty,tx,tz],self.gradient_dy[ty,tx,tz],self.gradient_dz[ty,tx,tz],0)/sumZ
+						self.G4 = self.G4 - z*(z._ln()) 
 	
 	def __call__(self,mat=None,gx=None,gy=None,gz=None,moment=["G2"],symmetrycalGrad='A',showTimer=False):
 		'''
@@ -295,6 +330,9 @@ class GPA3D:
 		if showTimer:
 			timer = time()
 		for gmoment in moment:
+			if("G4" == gmoment):
+				self._G4(symmetrycalGrad)
+				retorno["G4"] = self.G4
 			if("G3" == gmoment):
 				self._G3(symmetrycalGrad)
 				retorno["G3"] = self.G3
@@ -342,6 +380,9 @@ class GPA3D:
 		#gradient moments:
 		retorno = {}
 		for gmoment in moment:
+			if("G4" == gmoment):
+				self._G4(symmetrycalGrad)
+				retorno["G4"] = self.G4
 			if("G3" == gmoment):
 				self._G3(symmetrycalGrad)
 				retorno["G3"] = self.G3

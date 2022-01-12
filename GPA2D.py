@@ -219,6 +219,40 @@ class GPA2D:
 		else: 
 			self.G3 = 0.0
 	
+	def _G4(self,symm):
+		
+		if symm == 'S':# Symmetrical matrix 
+			targetMat = self.symmetricalP
+			opositeMat = self.asymmetricalP
+		elif symm == 'A':# Asymmetrical matrix 
+			targetMat = self.asymmetricalP
+			opositeMat = self.symmetricalP
+		elif symm == 'F': # Full Matrix, including unknown vectors
+			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
+			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
+		elif symm == 'K': # Full Matrix, excluding unknown vectors
+			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=np.int32)
+			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
+		else:
+			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		
+	
+		targetList = np.zeros((np.sum(targetMat),3),dtype=np.int32)
+		zList = []
+		
+		i = 0
+		for ty in range(self.rows):
+			for tx in range(self.cols):
+				if targetMat[ty,tx]>0:
+					zList.append(self.mods[ty,tx]*np.exp(1j*self.phases[ty,tx]))
+					i = i+1
+
+		if np.sum(targetMat)> 1:
+			zList = np.array(zList)/np.sum(zList)
+			self.G4 = - np.sum(zList*np.log(zList))
+		else: 
+			self.G4 = 0.0+0.0j
+	
 	def __call__(self,mat=None,gx=None,gy=None,moment=["G2"],symmetrycalGrad='A',showTimer=False):
 		if (mat is None) and (gx is None) and (gy is None) :
 			raise Exception("Matrix or gradient must be stated!")
@@ -267,6 +301,9 @@ class GPA2D:
 		if showTimer:
 			timer = time()
 		for gmoment in moment:
+			if("G4" == gmoment):
+				self._G4(symmetrycalGrad)
+				retorno["G4"] = self.G4
 			if("G3" == gmoment):
 				self._G3(symmetrycalGrad)
 				retorno["G3"] = self.G3
@@ -312,6 +349,9 @@ class GPA2D:
 		#gradient moments:
 		retorno = {}
 		for gmoment in moment:
+			if("G4" == gmoment):
+				self._G4(symmetrycalGrad)
+				retorno["G4"] = self.G4
 			if("G3" == gmoment):
 				self._G3(symmetrycalGrad)
 				retorno["G3"] = self.G3
