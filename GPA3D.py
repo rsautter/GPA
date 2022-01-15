@@ -251,14 +251,11 @@ class GPA3D:
 		elif symm == 'A':# Asymmetrical matrix 
 			targetMat = self.asymmetricalP
 			opositeMat = self.symmetricalP
-		elif symm == 'F': # Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
 		elif symm == 'K': # Full Matrix, excluding unknown vectors
 			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=np.int32)
 			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
 		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm+".\n (G4 cannot be applied to unknown vectors)")
 		
 		sumZ = Quaternion(0,0,0,0)
 		zList = []
@@ -269,12 +266,16 @@ class GPA3D:
 						z = Quaternion(self.gradient_dx[ty,tx,tz],self.gradient_dy[ty,tx,tz],self.gradient_dz[ty,tx,tz],0)
 						sumZ = sumZ + z		
 		self.G4 =  0.0
+		n = 0
 		for ty in range(self.rows):
 			for tx in range(self.cols):
 				for tz in range(self.depth):
 					if targetMat[ty,tx,tz]>0:
 						z = Quaternion(self.gradient_dx[ty,tx,tz],self.gradient_dy[ty,tx,tz],self.gradient_dz[ty,tx,tz],0)/sumZ
 						self.G4 = self.G4 - z*(z._ln()) 
+						n = n + 1
+		if n > 0:
+			self.G4 = self.G4 / float(n)
 	
 	def __call__(self,mat=None,gx=None,gy=None,gz=None,moment=["G2"],symmetrycalGrad='A',showTimer=False):
 		'''
