@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from scipy.spatial import Delaunay as Delanuay
 import itertools
 from sympy.algebras.quaternion import Quaternion
@@ -190,7 +191,7 @@ class GPA3D:
 			probabilityMat = self.mods*np.array(targetMat,dtype=float)
 			probabilityMat = probabilityMat/np.sum(probabilityMat)
 			maxEntropy = np.log(float(np.sum(targetMat)))
-			alinhamento = - probabilityMat[np.where(targetMat>0)]*np.log(probabilityMat[np.where(targetMat>0)])/maxEntropy
+			alinhamento = - np.sum(probabilityMat[np.where(targetMat>0)]*np.log(probabilityMat[np.where(targetMat>0)]))/maxEntropy
 			self.G2 = 2*alinhamento
 
 	
@@ -264,23 +265,31 @@ class GPA3D:
 			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
 		else:
 			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm+".\n (G4 cannot be applied to unknown vectors)")
-		
-		sumZ = Quaternion(0,0,0,0)
-		zList = []
-		for ty in range(self.rows):
-			for tx in range(self.cols):
-				for tz in range(self.depth):
-					if targetMat[ty,tx,tz]>0:
-						z = Quaternion(self.gradient_dx[ty,tx,tz],self.gradient_dy[ty,tx,tz],self.gradient_dz[ty,tx,tz],0)
-						sumZ = sumZ + z		
+			
 		self.G4 =  0.0
 		n = 0
 		for ty in range(self.rows):
 			for tx in range(self.cols):
 				for tz in range(self.depth):
 					if targetMat[ty,tx,tz]>0:
-						z = Quaternion(self.gradient_dx[ty,tx,tz],self.gradient_dy[ty,tx,tz],self.gradient_dz[ty,tx,tz],0)/sumZ
-						self.G4 = self.G4 - z*(z._ln()) 
+						
+						z = Quaternion(self.gradient_dx[ty,tx,tz]/self.maxGrad,self.gradient_dy[ty,tx,tz]/self.maxGrad,self.gradient_dz[ty,tx,tz]/self.maxGrad,0)
+						z2 = z*(z._ln())
+						'''
+						Considering a quaternion of the form:
+
+							z = a + b*i + c*j + + d*k = a + v
+
+						The log function is:
+							ln(z) = ln |z| + (v/|v|)*arccos(a/|q|)
+
+						When v is null, which is the multicomplex part, the log function becames Nan.
+						This is a numerical method error, which should be accomplished by the library, but it is not.
+						Therefore we treat as null the complex part as null
+						'''
+						if math.isnan(z2.b) and math.isnan(z2.c) and math.isnan(z2.d):
+							z2 = -z*Quaternion(np.log(np.abs(float(z.a))),0.0,0.0,0.0)
+						self.G4 = self.G4 - z2
 						n = n + 1
 		if n > 0:
 			self.G4 = self.G4 / float(n)
