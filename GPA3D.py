@@ -242,6 +242,14 @@ class GPA3D:
 			self.G3 = np.std(newReferencePhase)
 		else: 
 			self.G3 = 0.0
+	
+	def quaternion2Numpy(quat):
+		out = np.zeros(4)
+		out[0] = quat.a
+		out[1] = quat.b
+		out[2] = quat.c
+		out[3] = quat.d
+		return out
 			
 	def _G4(self,symm):
 		
