@@ -182,9 +182,9 @@ class GPA3D:
 			if smod <= 0.0:
 				alinhamento = 0.0
 			else:
-				alinhamento = np.sqrt(np.power(somax,2.0)+np.power(somay,2.0)+np.power(somaz,2.0))/smod
+				alinhamento = np.sqrt(np.power(somax,2.0)+np.power(somay,2.0)+np.power(somaz,2.0))/(2*smod)
 			if np.sum(opositeMat)+np.sum(targetMat)> 0:
-				self.G2 = (float(np.sum(targetMat))/float(np.sum(opositeMat)+np.sum(targetMat)) )*(2.0-alinhamento)
+				self.G2 = (float(np.sum(targetMat))/float(np.sum(opositeMat)+np.sum(targetMat)) )*(1.0-alinhamento)
 			else: 
 				self.G2 = 0.0
 		else:
@@ -192,7 +192,7 @@ class GPA3D:
 			probabilityMat = probabilityMat/np.sum(probabilityMat)
 			maxEntropy = np.log(float(np.sum(targetMat)))
 			alinhamento = - np.sum(probabilityMat[np.where(targetMat>0)]*np.log(probabilityMat[np.where(targetMat>0)]))/maxEntropy
-			self.G2 = 2*alinhamento
+			self.G2 = alinhamento
 
 	
 	def distAngle(self,a1,a11,a2,a21):
@@ -266,8 +266,7 @@ class GPA3D:
 		else:
 			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm+".\n (G4 cannot be applied to unknown vectors)")
 			
-		self.G4 =  0.0
-		n = 0
+		self.G4 =  Quaternion(0,0,0,0)
 		for ty in range(self.rows):
 			for tx in range(self.cols):
 				for tz in range(self.depth):
@@ -288,11 +287,9 @@ class GPA3D:
 						Therefore we treat as null the complex part as null
 						'''
 						if math.isnan(z2.b) and math.isnan(z2.c) and math.isnan(z2.d):
-							z2 = -z*Quaternion(np.log(np.abs(float(z.a))),0.0,0.0,0.0)
+							z2 = z*Quaternion(np.log(np.abs(float(z.a))),0.0,0.0,0.0)
 						self.G4 = self.G4 - z2
-						n = n + 1
-		if n > 0:
-			self.G4 = self.G4 / float(n)
+						
 	
 	def __call__(self,mat=None,gx=None,gy=None,gz=None,moment=["G2"],symmetrycalGrad='A',showTimer=False):
 		'''
