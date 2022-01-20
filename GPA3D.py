@@ -79,21 +79,31 @@ class GPA3D:
 					if np.logical_and( dists==d , sumup<=tol).any():
 						symmetricalP[position] = 1
 		return unknownP,symmetricalP
-	
-	def _G1(self, symm):
-		self.triangulation_points = []
-		
-		if symm == 'S':# Symmetrical matrix 
+
+	def __selectSymmAnalysis(self,symm):
+		'''
+			Returns the boolean matrix of analysis 
+		'''
+		if symm == 'S':# Symmetrical matrix
 			targetMat = self.symmetricalP
-		elif symm == 'A':# Asymmetrical matrix 
+			opositeMat = self.asymmetricalP
+		elif symm == 'A':# Asymmetrical matrix
 			targetMat = self.asymmetricalP
-		elif symm == 'F': # Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
+			opositeMat = self.symmetricalP
+		elif symm == 'F':# Full Matrix, including unknown vectors
+			targetMat = np.ones_like(self.symmetricalP)
+			opositeMat = np.zeros_like(self.symmetricalP)
 		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(np.int32)
+			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP)
+			opositeMat = np.logical_not(targetMat)
 		else:
 			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
-		
+		return targetMat, opositeMat
+
+	def _G1(self, symm):
+		self.triangulation_points = []
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
+
 		iterator = np.where(targetMat>0)
 		
 		for i,j,k in zip(*iterator):
@@ -115,17 +125,8 @@ class GPA3D:
 	def _G1N(self, symm):
 		self.triangulation_points = []
 		
-		if symm == 'S':# Symmetrical matrix 
-			targetMat = self.symmetricalP
-		elif symm == 'A':# Asymmetrical matrix 
-			targetMat = self.asymmetricalP
-		elif symm == 'F': # Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(np.int32)
-		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
-		
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
+
 		iterator = np.where(targetMat>0)
 		
 		for i,j,k in zip(*iterator):
@@ -149,21 +150,7 @@ class GPA3D:
 		somay = 0.0
 		somaz = 0.0
 		smod = 0.0
-		
-		if symm == 'S':# Symmetrical matrix
-			targetMat = self.symmetricalP
-			opositeMat = self.asymmetricalP
-		elif symm == 'A':# Asymmetrical matrix
-			targetMat = self.asymmetricalP
-			opositeMat = self.symmetricalP
-		elif symm == 'F':# Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
 		
 		if np.sum(targetMat)<1:
 			self.G2 = 0.0
@@ -205,20 +192,7 @@ class GPA3D:
 	
 	def _G3(self,symm):
 		
-		if symm == 'S':# Symmetrical matrix 
-			targetMat = self.symmetricalP
-			opositeMat = self.asymmetricalP
-		elif symm == 'A':# Asymmetrical matrix 
-			targetMat = self.asymmetricalP
-			opositeMat = self.symmetricalP
-		elif symm == 'F': # Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
 		
 		targetList = np.zeros((np.sum(targetMat),3),dtype=np.int32)
 		
@@ -254,17 +228,7 @@ class GPA3D:
 			
 	def _G4(self,symm):
 		
-		if symm == 'S':# Symmetrical matrix 
-			targetMat = self.symmetricalP
-			opositeMat = self.asymmetricalP
-		elif symm == 'A':# Asymmetrical matrix 
-			targetMat = self.asymmetricalP
-			opositeMat = self.symmetricalP
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		else:
-			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm+".\n (G4 cannot be applied to unknown vectors)")
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
 			
 		self.G4 =  Quaternion(0,0,0,0)
 		for ty in range(self.rows):
