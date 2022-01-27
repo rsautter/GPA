@@ -111,7 +111,7 @@ class GPA3D:
 					
 		self.triangulation_points = np.array(self.triangulation_points)
 		self.n_points = len(self.triangulation_points)
-		if self.n_points < 3:
+		if self.n_points < 5:
 			self.n_edges = 0
 			self.G1 = 0.0
 		else:
@@ -134,7 +134,7 @@ class GPA3D:
 					
 		self.triangulation_points = np.array(self.triangulation_points)
 		self.n_points = len(self.triangulation_points)
-		if self.n_points < 3:
+		if self.n_points < 5:
 			self.n_edges = 0
 			self.G1N = 0.0
 		else:
