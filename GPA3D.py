@@ -1,8 +1,11 @@
 import numpy as np
+import math
 from scipy.spatial import Delaunay as Delanuay
 import itertools
+from sympy.algebras.quaternion import Quaternion
 from time import time as time
 from numba import jit, prange
+
 
 
 class GPA3D:
@@ -76,21 +79,31 @@ class GPA3D:
 					if np.logical_and( dists==d , sumup<=tol).any():
 						symmetricalP[position] = 1
 		return unknownP,symmetricalP
-	
-	def _G1(self, symm):
-		self.triangulation_points = []
-		
-		if symm == 'S':# Symmetrical matrix 
+
+	def __selectSymmAnalysis(self,symm):
+		'''
+			Returns the boolean matrix of analysis 
+		'''
+		if symm == 'S':# Symmetrical matrix
 			targetMat = self.symmetricalP
-		elif symm == 'A':# Asymmetrical matrix 
+			opositeMat = self.asymmetricalP
+		elif symm == 'A':# Asymmetrical matrix
 			targetMat = self.asymmetricalP
-		elif symm == 'F': # Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
+			opositeMat = self.symmetricalP
+		elif symm == 'F':# Full Matrix, including unknown vectors
+			targetMat = np.ones_like(self.symmetricalP)
+			opositeMat = np.zeros_like(self.symmetricalP)
 		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(np.int32)
+			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP)
+			opositeMat = np.logical_not(targetMat)
 		else:
 			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
-		
+		return targetMat, opositeMat
+
+	def _G1(self, symm):
+		self.triangulation_points = []
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
+
 		iterator = np.where(targetMat>0)
 		
 		for i,j,k in zip(*iterator):
@@ -98,7 +111,7 @@ class GPA3D:
 					
 		self.triangulation_points = np.array(self.triangulation_points)
 		self.n_points = len(self.triangulation_points)
-		if self.n_points < 3:
+		if self.n_points < 4:
 			self.n_edges = 0
 			self.G1 = 0.0
 		else:
@@ -112,17 +125,8 @@ class GPA3D:
 	def _G1N(self, symm):
 		self.triangulation_points = []
 		
-		if symm == 'S':# Symmetrical matrix 
-			targetMat = self.symmetricalP
-		elif symm == 'A':# Asymmetrical matrix 
-			targetMat = self.asymmetricalP
-		elif symm == 'F': # Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(np.int32)
-		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
-		
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
+
 		iterator = np.where(targetMat>0)
 		
 		for i,j,k in zip(*iterator):
@@ -130,7 +134,7 @@ class GPA3D:
 					
 		self.triangulation_points = np.array(self.triangulation_points)
 		self.n_points = len(self.triangulation_points)
-		if self.n_points < 3:
+		if self.n_points < 4:
 			self.n_edges = 0
 			self.G1N = 0.0
 		else:
@@ -146,21 +150,7 @@ class GPA3D:
 		somay = 0.0
 		somaz = 0.0
 		smod = 0.0
-		
-		if symm == 'S':# Symmetrical matrix
-			targetMat = self.symmetricalP
-			opositeMat = self.asymmetricalP
-		elif symm == 'A':# Asymmetrical matrix
-			targetMat = self.asymmetricalP
-			opositeMat = self.symmetricalP
-		elif symm == 'F':# Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
 		
 		if np.sum(targetMat)<1:
 			self.G2 = 0.0
@@ -179,7 +169,7 @@ class GPA3D:
 			if smod <= 0.0:
 				alinhamento = 0.0
 			else:
-				alinhamento = np.sqrt(np.power(somax,2.0)+np.power(somay,2.0)+np.power(somaz,2.0))/smod
+				alinhamento = np.sqrt(np.power(somax,2.0)+np.power(somay,2.0)+np.power(somaz,2.0))/(2*smod)
 			if np.sum(opositeMat)+np.sum(targetMat)> 0:
 				self.G2 = (float(np.sum(targetMat))/float(np.sum(opositeMat)+np.sum(targetMat)) )*(2.0-alinhamento)
 			else: 
@@ -188,8 +178,8 @@ class GPA3D:
 			probabilityMat = self.mods*np.array(targetMat,dtype=float)
 			probabilityMat = probabilityMat/np.sum(probabilityMat)
 			maxEntropy = np.log(float(np.sum(targetMat)))
-			alinhamento = - probabilityMat[np.where(targetMat>0)]*np.log(probabilityMat[np.where(targetMat>0)])/maxEntropy
-			self.G2 = 2*alinhamento
+			alinhamento = - np.sum(probabilityMat[np.where(targetMat>0)]*np.log(probabilityMat[np.where(targetMat>0)]))/maxEntropy
+			self.G2 = alinhamento
 
 	
 	def distAngle(self,a1,a11,a2,a21):
@@ -202,20 +192,7 @@ class GPA3D:
 	
 	def _G3(self,symm):
 		
-		if symm == 'S':# Symmetrical matrix 
-			targetMat = self.symmetricalP
-			opositeMat = self.asymmetricalP
-		elif symm == 'A':# Asymmetrical matrix 
-			targetMat = self.asymmetricalP
-			opositeMat = self.symmetricalP
-		elif symm == 'F': # Full Matrix, including unknown vectors
-			targetMat = np.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		elif symm == 'K': # Full Matrix, excluding unknown vectors
-			targetMat = np.logical_or(self.symmetricalP,self.asymmetricalP).astype(dtype=np.int32)
-			opositeMat = np.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=np.int32)
-		else:
-			raise Exception("Unknown analysis type (should be S,A,F or K), got: "+symm)
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
 		
 		targetList = np.zeros((np.sum(targetMat),3),dtype=np.int32)
 		
@@ -240,6 +217,43 @@ class GPA3D:
 			self.G3 = np.std(newReferencePhase)
 		else: 
 			self.G3 = 0.0
+	
+	def quaternion2Numpy(quat):
+		out = np.zeros(4)
+		out[0] = quat.a
+		out[1] = quat.b
+		out[2] = quat.c
+		out[3] = quat.d
+		return out
+			
+	def _G4(self,symm):
+		
+		targetMat, opositeMat = self.__selectSymmAnalysis(symm)
+			
+		self.G4 =  Quaternion(0,0,0,0)
+		for ty in range(self.rows):
+			for tx in range(self.cols):
+				for tz in range(self.depth):
+					if targetMat[ty,tx,tz]>0:
+						
+						z = Quaternion(self.gradient_dx[ty,tx,tz]/self.maxGrad,self.gradient_dy[ty,tx,tz]/self.maxGrad,self.gradient_dz[ty,tx,tz]/self.maxGrad,0)
+						z2 = z*(z._ln())
+						'''
+						Considering a quaternion of the form:
+
+							z = a + b*i + c*j + + d*k = a + v
+
+						The log function is:
+							ln(z) = ln |z| + (v/|v|)*arccos(a/|q|)
+
+						When v is null, which is the multicomplex part, the log function becames Nan.
+						This is a numerical method error, which should be accomplished by the library, but it is not.
+						Therefore we treat as null the complex part as null
+						'''
+						if math.isnan(z2.b) and math.isnan(z2.c) and math.isnan(z2.d):
+							z2 = z*Quaternion(np.log(np.abs(float(z.a))),0.0,0.0,0.0)
+						self.G4 = self.G4 - z2
+						
 	
 	def __call__(self,mat=None,gx=None,gy=None,gz=None,moment=["G2"],symmetrycalGrad='A',showTimer=False):
 		'''
@@ -295,6 +309,9 @@ class GPA3D:
 		if showTimer:
 			timer = time()
 		for gmoment in moment:
+			if("G4" == gmoment):
+				self._G4(symmetrycalGrad)
+				retorno["G4"] = self.G4
 			if("G3" == gmoment):
 				self._G3(symmetrycalGrad)
 				retorno["G3"] = self.G3
@@ -342,6 +359,9 @@ class GPA3D:
 		#gradient moments:
 		retorno = {}
 		for gmoment in moment:
+			if("G4" == gmoment):
+				self._G4(symmetrycalGrad)
+				retorno["G4"] = self.G4
 			if("G3" == gmoment):
 				self._G3(symmetrycalGrad)
 				retorno["G3"] = self.G3

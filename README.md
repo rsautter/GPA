@@ -5,11 +5,12 @@
  - Numpy
  - Numba
  - Scipy
+ - Sympy
  
 ### Install
     pip install git+https://github.com/rsautter/GPA
     
-Colab:
+Installed via python:
 
     !pip install git+https://github.com/rsautter/GPA
     
