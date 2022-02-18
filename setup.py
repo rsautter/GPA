@@ -8,3 +8,4 @@ setup(name="GPA",
       install_requires=['numpy','numba','scipy'],
       py_modules=['GPA2D','GPA3D']
      )
+
