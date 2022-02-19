@@ -152,7 +152,7 @@ class GPA2D:
 			else:
 				alinhamento = np.sqrt(np.power(somax,2.0)+np.power(somay,2.0))/(2*smod)
 			if np.sum(opositeMat)+np.sum(targetMat)> 0:
-				self.G2 = (float(np.sum(targetMat))/float(np.sum(opositeMat)+np.sum(targetMat)) )*(1.0-alinhamento)
+				self.G2 = (float(np.sum(targetMat))/float(np.sum(opositeMat)+np.sum(targetMat)) )*(2.0-alinhamento)
 			else: 
 				self.G2 = 0.0
 		else:
