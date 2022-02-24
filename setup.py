@@ -1,11 +1,15 @@
-from setuptools import setup
+from distutils.core import setup
+from setuptools import find_packages
+from Cython.Build import cythonize
+
+import numpy
 
 setup(name="GPA",
-      version="4.0",
+      version="3.2",
+      ext_modules=cythonize("*.pyx"),
       author='Rubens Andreas Sautter',
       author_email='rubens.sautter@gmail.com',
       url='https://github.com/rsautter/GPA',
-      install_requires=['numpy','numba','scipy'],
-      py_modules=['GPA2D','GPA3D']
-     )
+      include_dirs=[numpy.get_include()],
+      packages=find_packages())
 
