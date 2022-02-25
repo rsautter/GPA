@@ -324,25 +324,19 @@ cdef class GPA:
 			raise Exception("Unknown analysis type (should be S,A or F ), got: "+symm)
 		
 		self.G4 = 0.0+0.0j
+		sumZ = 0.0+0.0j
 		
 		for i in range(self.rows):
 			for j in range(self.cols):
 				if targetMat[i,j] > 0:
 					if self.mods[i,j] > 1e-6:
-						self.G4 = self.G4 - self.mods[i,j]*numpy.log(self.mods[i,j])
-						
-						'''
-						Atencao:
-						A parte a seguir do codigo nao esta descrita em artigo, eh uma normalizacao das fases.
-						Como o intervalo das fases eh entre 0 e 2pi o valor pode explodir conforme o tamanho da matriz.
-						A solucao foi normalizar ao inytervalo -pi a pi o angulo.
-						'''
-						
-						if self.phases[i,j] > numpy.pi:
-							self.G4 = self.G4 - 1j*self.mods[i,j]*(2.0*numpy.pi-self.phases[i,j])
-						else:
-							self.G4 = self.G4 - 1j*self.mods[i,j]*(self.phases[i,j])
-
+						sumZ = sumZ + self.mods[i,j]*numpy.exp(1j*self.phases[i,j])
+		for i in range(self.rows):
+			for j in range(self.cols):
+				if targetMat[i,j] > 0:
+					if self.mods[i,j] > 1e-6:
+						complexForm = (self.mods[i,j]*numpy.exp(1j*self.phases[i,j]))/sumZ
+						self.G4 = self.G4 - complexForm*numpy.log(complexForm)
 		return self.G4
 
 	@cython.boundscheck(False)
