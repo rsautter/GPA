@@ -88,8 +88,8 @@ cdef class GPA:
 		w, h = self.cols, self.rows 
 		
 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
-									 for i in range(w) ] for j in range(h)],dtype=numpy.float)
-		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float)
+									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
+		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float64)
 		
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -103,7 +103,7 @@ cdef class GPA:
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	cpdef char* version(self):
-		return "GPA - 3.2"
+		return "GPA - 3.3"
 	
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -159,6 +159,30 @@ cdef class GPA:
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	def _G1(self,str symm):
+		'''
+		New version of G1: just the proportion of vectors ('A' -> asymmetrial/total or S -> symmetrical/total)
+		'''
+		cdef int w, h, i, j
+		cdef int[:,:] targetMat,opositeMat
+		if symm == 'S':# Symmetrical matrix
+			targetMat = self.symmetricalP
+			opositeMat = self.asymmetricalP
+		elif symm == 'A':# Asymmetrical matrix
+			targetMat = self.asymmetricalP
+			opositeMat = self.symmetricalP
+		elif symm == 'F':# Full Matrix, including unknown vectors
+			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
+			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
+		else:
+			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
+		self.G1 = float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat))
+
+
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def _G1_Geom(self,str symm):
 		cdef int w, h, i, j
 		cdef int[:,:] targetMat
 		self.triangulation_points = []
@@ -183,14 +207,14 @@ cdef class GPA:
 		self.n_points = len(self.triangulation_points)
 		if self.n_points < 3:
 			self.n_edges = 0
-			self.G1 = 0.0
+			self.G1G = 0.0
 		else:
 			self.triangles = Delanuay(self.triangulation_points)
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
-			self.G1 = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
-		if self.G1 < 0.0:
-			self.G1 = 0.0
+			self.G1G = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
+		if self.G1G < 0.0:
+			self.G1G = 0.0
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -233,20 +257,20 @@ cdef class GPA:
 			if smod <= 0.0:
 				alinhamento = 0.0
 			else:
-				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod
+				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/(2*smod)
 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
-				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(2.0-alinhamento)
+				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)
 			else: 
 				self.G2 = 0.0
 		else:
-			probabilityMat = self.mods*numpy.array(targetMat,dtype=numpy.float)
+			probabilityMat = self.mods*numpy.array(targetMat,dtype=numpy.float64)
 			probabilityMat = probabilityMat/numpy.sum(probabilityMat)
-			maxEntropy = numpy.log(numpy.float(numpy.sum(targetMat)))
+			maxEntropy = numpy.log(numpy.float64(numpy.sum(targetMat)))
 			for i in range(self.rows):
 				for j in range(self.cols):
 					if targetMat[i,j] == 1:
 						alinhamento = alinhamento - probabilityMat[i,j]*numpy.log(probabilityMat[i,j])/maxEntropy
-			self.G2 = 2*alinhamento
+			self.G2 = alinhamento
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -302,7 +326,7 @@ cdef class GPA:
 		else:
 			alinhamento = 0.0
 		if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
-			self.G3 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento
+			self.G3 = ((float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento)/2
 		else: 
 			self.G3 = 0.0
 			
@@ -313,6 +337,7 @@ cdef class GPA:
 	def _G4(self,str symm):
 		cdef int w, h, i, j
 		cdef int[:,:] targetMat
+		cdef object z
 
 		if symm == 'S':# Symmetrical matrix 
 			targetMat = self.symmetricalP
@@ -324,19 +349,13 @@ cdef class GPA:
 			raise Exception("Unknown analysis type (should be S,A or F ), got: "+symm)
 		
 		self.G4 = 0.0+0.0j
-		sumZ = 0.0+0.0j
 		
 		for i in range(self.rows):
 			for j in range(self.cols):
 				if targetMat[i,j] > 0:
 					if self.mods[i,j] > 1e-6:
-						sumZ = sumZ + self.mods[i,j]*numpy.exp(1j*self.phases[i,j])
-		for i in range(self.rows):
-			for j in range(self.cols):
-				if targetMat[i,j] > 0:
-					if self.mods[i,j] > 1e-6:
-						complexForm = (self.mods[i,j]*numpy.exp(1j*self.phases[i,j]))/sumZ
-						self.G4 = self.G4 - complexForm*numpy.log(complexForm)
+						z = self.mods[i,j]*numpy.exp(1j*self.phases[i,j])
+						self.G4 = self.G4 - z*numpy.log(z)
 		return self.G4
 
 	@cython.boundscheck(False)
@@ -377,11 +396,11 @@ cdef class GPA:
 												  for x in range(self.cols)] for y in range(self.rows)])
 		
 		minimo, maximo = numpy.min(dists),numpy.max(dists)
-		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float)
+		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
 		
 		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
-		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float), dists.astype(dtype=numpy.float), self.tol, numpy.float(1.41))
+		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float64), dists.astype(dtype=numpy.float64), self.tol, numpy.float64(1.41))
 		
 		#gradient moments:
 		retorno = {}
@@ -426,11 +445,11 @@ cdef class GPA:
 												  for x in range(self.cols)] for y in range(self.rows)])
 		
 		minimo, maximo = numpy.min(dists),numpy.max(dists)
-		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float)
+		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
 		
 		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
-		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float), dists.astype(dtype=numpy.float), self.tol, numpy.float(1.41))
+		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float64), dists.astype(dtype=numpy.float64), self.tol, numpy.float64(1.41))
 		
 		#gradient moments:
 		retorno = {}
@@ -458,8 +477,8 @@ cdef class GPA:
 		cdef double divx, divy
 		cdef int i, j,w,h,i1,j1,i2,j2
 		w, h = len(mat[0]),len(mat)
-		dx = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float)
-		dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float)
+		dx = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
+		dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
 		for i in range(w):
 			for j in range(h):
 				divy =  2.0 if (j<len(mat)-1 and j>0) else 1.0
