@@ -211,7 +211,7 @@ cdef class GPA:
 			self.triangles = Delanuay(self.triangulation_points)
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
-			self.G1 = (numpy.exp(1.0-float(self.n_points)/float(self.n_edges))-1.0)/(numpy.e-1.0)
+			self.G1 = (numpy.exp(1.0-numpy.sqrt(float(self.n_points))/float(self.n_edges) )-1.0)/(numpy.e-1.0)
 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
 		if self.G1 < 0.0:
 			self.G1 = 0.0
