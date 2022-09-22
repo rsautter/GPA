@@ -214,7 +214,8 @@ cdef class GPA:
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
 			ratio = float(self.n_points)/float(self.n_edges)
-			self.G1 = float(self.n_edges)/float(3*self.rows*self.cols)
+			print(self.n_edges,3*self.n_points)
+			self.G1 = float(self.rows*self.cols) / float(self.n_edges)*float(self.n_points)
 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
 		if self.G1 < 0.0:
 			self.G1 = 0.0
