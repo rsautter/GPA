@@ -186,6 +186,7 @@ cdef class GPA:
 		cdef int[:,:] targetMat
 		cdef float ratio
 		self.triangulation_points = []
+		d1 = self.symmetricalP
 
 
 		if symm == 'S':# Symmetrical matrix 
@@ -213,8 +214,7 @@ cdef class GPA:
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
 			ratio = float(self.n_points)/float(self.n_edges)
-			print(ratio-1./3.,  float(self.n_points), float(self.n_edges))
-			self.G1 = 1.0/(1.0+numpy.exp(1./3.-ratio))
+			self.G1 = float(self.n_edges)/float(3*self.rows*self.cols)
 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
 		if self.G1 < 0.0:
 			self.G1 = 0.0
