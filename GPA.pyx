@@ -215,7 +215,7 @@ cdef class GPA:
 			self.n_edges = len(neigh[1])/2
 			ratio = float(self.n_points)/float(self.n_edges)
 			print(self.n_edges,3*self.n_points)
-			self.G1 = float(self.rows*self.cols) / float(self.n_edges)*float(self.n_points)
+			self.G1 = ratio*float(self.n_points)/float(self.rows*self.cols) 
 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
 		if self.G1 < 0.0:
 			self.G1 = 0.0

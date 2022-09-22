@@ -2421,7 +2421,6 @@ static const char __pyx_k_gy[] = "gy";
 static const char __pyx_k_id[] = "id";
 static const char __pyx_k_GPA[] = "GPA";
 static const char __pyx_k__32[] = "*";
-static const char __pyx_k_abs[] = "abs";
 static const char __pyx_k_end[] = "end";
 static const char __pyx_k_exp[] = "exp";
 static const char __pyx_k_log[] = "log";
@@ -2597,7 +2596,6 @@ static PyObject *__pyx_kp_s_Unknown_analysis_type_should_be_3;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_View_MemoryView;
 static PyObject *__pyx_n_s__32;
-static PyObject *__pyx_n_s_abs;
 static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_append;
 static PyObject *__pyx_n_s_arange;
@@ -5102,7 +5100,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
   int __pyx_v_i;
   int __pyx_v_j;
   __Pyx_memviewslice __pyx_v_targetMat = { 0, 0, { 0 }, { 0 }, { 0 } };
-  CYTHON_UNUSED float __pyx_v_ratio;
+  float __pyx_v_ratio;
   CYTHON_UNUSED PyObject *__pyx_v_d1 = NULL;
   PyObject *__pyx_v_neigh = NULL;
   PyObject *__pyx_r = NULL;
@@ -5125,7 +5123,6 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
   Py_ssize_t __pyx_t_16;
   int __pyx_t_17;
   Py_ssize_t __pyx_t_18;
-  double __pyx_t_19;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -5593,7 +5590,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
  * 			self.n_edges = len(neigh[1])/2
  * 			ratio = float(self.n_points)/float(self.n_edges)             # <<<<<<<<<<<<<<
  * 			print(self.n_edges,3*self.n_points)
- * 			self.G1 = numpy.abs(float(self.n_edges-3*self.n_points))/(3.*float(self.n_points))
+ * 			self.G1 = ratio*float(self.n_points)/float(self.rows*self.cols)
  */
     __pyx_v_ratio = (((double)__pyx_v_self->n_points) / ((double)__pyx_v_self->n_edges));
 
@@ -5601,7 +5598,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
  * 			self.n_edges = len(neigh[1])/2
  * 			ratio = float(self.n_points)/float(self.n_edges)
  * 			print(self.n_edges,3*self.n_points)             # <<<<<<<<<<<<<<
- * 			self.G1 = numpy.abs(float(self.n_edges-3*self.n_points))/(3.*float(self.n_points))
+ * 			self.G1 = ratio*float(self.n_points)/float(self.rows*self.cols)
  * 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
  */
     __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->n_edges); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 217, __pyx_L1_error)
@@ -5622,47 +5619,16 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
     /* "GPA.pyx":218
  * 			ratio = float(self.n_points)/float(self.n_edges)
  * 			print(self.n_edges,3*self.n_points)
- * 			self.G1 = numpy.abs(float(self.n_edges-3*self.n_points))/(3.*float(self.n_points))             # <<<<<<<<<<<<<<
+ * 			self.G1 = ratio*float(self.n_points)/float(self.rows*self.cols)             # <<<<<<<<<<<<<<
  * 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
  * 		if self.G1 < 0.0:
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 218, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_abs); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = PyFloat_FromDouble(((double)(__pyx_v_self->n_edges - (3 * __pyx_v_self->n_points)))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 218, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
-      __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_5);
-      if (likely(__pyx_t_7)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
-        __Pyx_INCREF(__pyx_t_7);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_5, function);
-      }
-    }
-    __pyx_t_6 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_8);
-    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 218, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = PyFloat_FromDouble((3. * ((double)__pyx_v_self->n_points))); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_8 = __Pyx_PyNumber_Divide(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 218, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_19 = __pyx_PyFloat_AsDouble(__pyx_t_8); if (unlikely((__pyx_t_19 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 218, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_v_self->G1 = __pyx_t_19;
+    __pyx_v_self->G1 = ((__pyx_v_ratio * ((double)__pyx_v_self->n_points)) / ((double)(__pyx_v_self->rows * __pyx_v_self->cols)));
   }
   __pyx_L10:;
 
   /* "GPA.pyx":220
- * 			self.G1 = numpy.abs(float(self.n_edges-3*self.n_points))/(3.*float(self.n_points))
+ * 			self.G1 = ratio*float(self.n_points)/float(self.rows*self.cols)
  * 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
  * 		if self.G1 < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1 = 0.0
@@ -5681,7 +5647,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
     __pyx_v_self->G1 = 0.0;
 
     /* "GPA.pyx":220
- * 			self.G1 = numpy.abs(float(self.n_edges-3*self.n_points))/(3.*float(self.n_points))
+ * 			self.G1 = ratio*float(self.n_points)/float(self.rows*self.cols)
  * 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
  * 		if self.G1 < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1 = 0.0
@@ -28197,7 +28163,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_View_MemoryView, __pyx_k_View_MemoryView, sizeof(__pyx_k_View_MemoryView), 0, 0, 1, 1},
   {&__pyx_n_s__32, __pyx_k__32, sizeof(__pyx_k__32), 0, 0, 1, 1},
-  {&__pyx_n_s_abs, __pyx_k_abs, sizeof(__pyx_k_abs), 0, 0, 1, 1},
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
   {&__pyx_n_s_append, __pyx_k_append, sizeof(__pyx_k_append), 0, 0, 1, 1},
   {&__pyx_n_s_arange, __pyx_k_arange, sizeof(__pyx_k_arange), 0, 0, 1, 1},
