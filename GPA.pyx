@@ -28,7 +28,7 @@ cdef class GPA:
 	cdef public object G4
 
 	#@profile
-	def __cinit__(self, double tol):
+	def __cinit__(self, double tol=0.03):
 		# setting matrix,and calculating the gradient field
 		self.tol = tol
 
@@ -103,7 +103,7 @@ cdef class GPA:
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	cpdef char* version(self):
-		return "GPA - 3.3"
+		return "GPA - 3.4"
 	
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -154,14 +154,12 @@ cdef class GPA:
 				if self.symmetricalP[py,px] == 0 and self.unknownP[py,px] ==0:
 					self.asymmetricalP[py,px] = 1
 
+	'''
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	def _G1(self,str symm):
-		'''
-		New version of G1: just the proportion of vectors ('A' -> asymmetrial/total or S -> symmetrical/total)
-		'''
 		cdef int w, h, i, j
 		cdef int[:,:] targetMat,opositeMat
 		if symm == 'S':# Symmetrical matrix
@@ -177,12 +175,13 @@ cdef class GPA:
 			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
 		self.G1 = float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat))
 
+	'''
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	def _G1_Geom(self,str symm):
+	def _G1(self,str symm):
 		cdef int w, h, i, j
 		cdef int[:,:] targetMat
 		self.triangulation_points = []
@@ -207,14 +206,15 @@ cdef class GPA:
 		self.n_points = len(self.triangulation_points)
 		if self.n_points < 3:
 			self.n_edges = 0
-			self.G1G = 0.0
+			self.G1 = 0.0
 		else:
 			self.triangles = Delanuay(self.triangulation_points)
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
-			self.G1G = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
-		if self.G1G < 0.0:
-			self.G1G = 0.0
+			self.G1 = (numpy.exp(1.0-float(self.n_points)/float(self.n_edges))-1.0)/(numpy.e-1.0)
+			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
+		if self.G1 < 0.0:
+			self.G1 = 0.0
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)

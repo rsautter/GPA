@@ -19,7 +19,7 @@ Colab:
 This code uses the Cython library, which transform pseudo-python code into C code. 
 To get a better performance, edit compile.py and run:
 
-    pip install .
+    python setup.py build_ext --inplace
 
 ## Log
 Apr. 18, 2021 - Added symmetrical and full analysis.\
