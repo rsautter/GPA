@@ -5246,7 +5246,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_getDistancesTriang(CYTHON_UNUSED struct __
  * 			p1 = points[p[0]]
  * 			p2 = points[p[1]]             # <<<<<<<<<<<<<<
  * 			p3 = points[p[2]]
- * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p1-p2)**2)))
  */
     __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_p, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 189, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
@@ -5260,8 +5260,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_getDistancesTriang(CYTHON_UNUSED struct __
  * 			p1 = points[p[0]]
  * 			p2 = points[p[1]]
  * 			p3 = points[p[2]]             # <<<<<<<<<<<<<<
- * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
- * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p1-p2)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p2-p3)**2)))
  */
     __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_p, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 190, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
@@ -5274,18 +5274,18 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_getDistancesTriang(CYTHON_UNUSED struct __
     /* "GPA.pyx":191
  * 			p2 = points[p[1]]
  * 			p3 = points[p[2]]
- * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))             # <<<<<<<<<<<<<<
- * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
- * 			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p1-p2)**2)))             # <<<<<<<<<<<<<<
+ * 			ds.append(numpy.sum(numpy.sqrt((p2-p3)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p3-p1)**2)))
  */
     __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 191, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 191, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 191, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 191, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_sum); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 191, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 191, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_7 = PyNumber_Subtract(__pyx_v_p1, __pyx_v_p2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 191, __pyx_L1_error)
@@ -5330,19 +5330,19 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_getDistancesTriang(CYTHON_UNUSED struct __
 
     /* "GPA.pyx":192
  * 			p3 = points[p[2]]
- * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
- * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))             # <<<<<<<<<<<<<<
- * 			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p1-p2)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p2-p3)**2)))             # <<<<<<<<<<<<<<
+ * 			ds.append(numpy.sum(numpy.sqrt((p3-p1)**2)))
  * 		return ds
  */
     __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 192, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sum); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 192, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_t_8 = PyNumber_Subtract(__pyx_v_p2, __pyx_v_p3); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 192, __pyx_L1_error)
@@ -5386,20 +5386,20 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_getDistancesTriang(CYTHON_UNUSED struct __
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
     /* "GPA.pyx":193
- * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
- * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
- * 			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))             # <<<<<<<<<<<<<<
+ * 			ds.append(numpy.sum(numpy.sqrt((p1-p2)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p2-p3)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p3-p1)**2)))             # <<<<<<<<<<<<<<
  * 		return ds
  * 
  */
     __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 193, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 193, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 193, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numpy); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 193, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 193, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 193, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     __pyx_t_9 = PyNumber_Subtract(__pyx_v_p3, __pyx_v_p1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 193, __pyx_L1_error)
@@ -5453,8 +5453,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_getDistancesTriang(CYTHON_UNUSED struct __
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "GPA.pyx":194
- * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
- * 			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p2-p3)**2)))
+ * 			ds.append(numpy.sum(numpy.sqrt((p3-p1)**2)))
  * 		return ds             # <<<<<<<<<<<<<<
  * 
  * 	@cython.boundscheck(False)

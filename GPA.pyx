@@ -188,9 +188,9 @@ cdef class GPA:
 			p1 = points[p[0]]
 			p2 = points[p[1]]
 			p3 = points[p[2]]
-			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
-			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
-			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))
+			ds.append(numpy.sum(numpy.sqrt((p1-p2)**2)))
+			ds.append(numpy.sum(numpy.sqrt((p2-p3)**2)))
+			ds.append(numpy.sum(numpy.sqrt((p3-p1)**2)))
 		return ds	
 	
 	@cython.boundscheck(False)
