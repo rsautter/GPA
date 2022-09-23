@@ -231,7 +231,7 @@ cdef class GPA:
 			self.n_edges = len(neigh[1])/2
 			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
 			ds = numpy.sort(ds)
-			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2])) / numpy.sqrt(self.rows**2+self.cols**2)
+			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2])) / numpy.max(ds)
 			
 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
 		if self.G1 < 0.0:
