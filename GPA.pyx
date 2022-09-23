@@ -234,7 +234,7 @@ cdef class GPA:
 			#print(numpy.min(ds),numpy.max(ds))
 			
 			#self.G1 = (numpy.max(ds)-numpy.min(ds))**2 / numpy.max(ds)**2
-			self.G1 = (numpy.average(ds[len(ds)//4:])-numpy.average(ds[:len(ds)//4])) / (self.maxGrad*(self.rows+self.cols)/2)
+			self.G1 = (numpy.average(ds[len(ds)//4:])-numpy.average(ds[:len(ds)//4])) / numpy.average(ds)
 			
 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
 		if self.G1 < 0.0:
