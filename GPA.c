@@ -5765,7 +5765,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):             # <<<<<<<<<<<<<<
  * 					if targetMat[i,j] > 0:
- * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j]/self.maxGrad, i+0.5*self.gradient_dy[i, j]/self.maxGrad])
+ * 						self.triangulation_points.append([j+self.cols*self.gradient_dx[i, j]/self.maxGrad, i+self.rows*self.gradient_dy[i, j]/self.maxGrad])
  */
     __pyx_t_12 = __pyx_v_self->cols;
     __pyx_t_13 = __pyx_t_12;
@@ -5776,7 +5776,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
- * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j]/self.maxGrad, i+0.5*self.gradient_dy[i, j]/self.maxGrad])
+ * 						self.triangulation_points.append([j+self.cols*self.gradient_dx[i, j]/self.maxGrad, i+self.rows*self.gradient_dy[i, j]/self.maxGrad])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  */
       __pyx_t_15 = __pyx_v_i;
@@ -5787,19 +5787,19 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
         /* "GPA.pyx":220
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:
- * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j]/self.maxGrad, i+0.5*self.gradient_dy[i, j]/self.maxGrad])             # <<<<<<<<<<<<<<
+ * 						self.triangulation_points.append([j+self.cols*self.gradient_dx[i, j]/self.maxGrad, i+self.rows*self.gradient_dy[i, j]/self.maxGrad])             # <<<<<<<<<<<<<<
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):
  */
         if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 220, __pyx_L1_error)}
         __pyx_t_16 = __pyx_v_i;
         __pyx_t_15 = __pyx_v_j;
-        __pyx_t_7 = PyFloat_FromDouble((__pyx_v_j + ((0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_16 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) )))) / __pyx_v_self->maxGrad))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 220, __pyx_L1_error)
+        __pyx_t_7 = PyFloat_FromDouble((__pyx_v_j + ((__pyx_v_self->cols * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_16 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) )))) / __pyx_v_self->maxGrad))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 220, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
         if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 220, __pyx_L1_error)}
         __pyx_t_15 = __pyx_v_i;
         __pyx_t_16 = __pyx_v_j;
-        __pyx_t_8 = PyFloat_FromDouble((__pyx_v_i + ((0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_16 * __pyx_v_self->gradient_dy.strides[1]) )))) / __pyx_v_self->maxGrad))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 220, __pyx_L1_error)
+        __pyx_t_8 = PyFloat_FromDouble((__pyx_v_i + ((__pyx_v_self->rows * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_16 * __pyx_v_self->gradient_dy.strides[1]) )))) / __pyx_v_self->maxGrad))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 220, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_8);
         __pyx_t_6 = PyList_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 220, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
@@ -5816,7 +5816,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
- * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j]/self.maxGrad, i+0.5*self.gradient_dy[i, j]/self.maxGrad])
+ * 						self.triangulation_points.append([j+self.cols*self.gradient_dx[i, j]/self.maxGrad, i+self.rows*self.gradient_dy[i, j]/self.maxGrad])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  */
       }
@@ -5825,7 +5825,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
 
   /* "GPA.pyx":221
  * 					if targetMat[i,j] > 0:
- * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j]/self.maxGrad, i+0.5*self.gradient_dy[i, j]/self.maxGrad])
+ * 						self.triangulation_points.append([j+self.cols*self.gradient_dx[i, j]/self.maxGrad, i+self.rows*self.gradient_dy[i, j]/self.maxGrad])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)             # <<<<<<<<<<<<<<
  * 		if len(self.triangulation_points>1):
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
@@ -5857,7 +5857,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
   __pyx_t_6 = 0;
 
   /* "GPA.pyx":222
- * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j]/self.maxGrad, i+0.5*self.gradient_dy[i, j]/self.maxGrad])
+ * 						self.triangulation_points.append([j+self.cols*self.gradient_dx[i, j]/self.maxGrad, i+self.rows*self.gradient_dy[i, j]/self.maxGrad])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):             # <<<<<<<<<<<<<<
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
@@ -5901,7 +5901,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_self
     __pyx_t_5 = 0;
 
     /* "GPA.pyx":222
- * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j]/self.maxGrad, i+0.5*self.gradient_dy[i, j]/self.maxGrad])
+ * 						self.triangulation_points.append([j+self.cols*self.gradient_dx[i, j]/self.maxGrad, i+self.rows*self.gradient_dy[i, j]/self.maxGrad])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):             # <<<<<<<<<<<<<<
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)

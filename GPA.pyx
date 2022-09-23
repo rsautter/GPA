@@ -217,7 +217,7 @@ cdef class GPA:
 		for i in range(self.rows):
 			for j in range(self.cols):
 					if targetMat[i,j] > 0:
-						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j]/self.maxGrad, i+0.5*self.gradient_dy[i, j]/self.maxGrad])		
+						self.triangulation_points.append([j+self.cols*self.gradient_dx[i, j]/self.maxGrad, i+self.rows*self.gradient_dy[i, j]/self.maxGrad])		
 		self.triangulation_points = numpy.array(self.triangulation_points)
 		if len(self.triangulation_points>1):
 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
