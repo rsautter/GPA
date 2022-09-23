@@ -177,6 +177,22 @@ cdef class GPA:
 
 	'''
 
+
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def _getDistancesTriang(self,points,simplices):
+		ds = []
+		for p in simplices:
+			p1 = points[p[0]]
+			p2 = points[p[1]]
+			p3 = points[p[2]]
+			ds.append(numpy.sum((p1-p2)**2))
+			ds.append(numpy.sum((p2-p3)**2))
+			ds.append(numpy.sum((p3-p1)**2))
+		return ds	
+	
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
@@ -213,9 +229,10 @@ cdef class GPA:
 			self.triangles = Delanuay(self.triangulation_points)
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
-			ratio = float(self.n_points)/float(self.n_edges)
-			print(self.n_edges,3*self.n_points)
-			self.G1 = ratio*float(self.n_points)/float(self.rows*self.cols) 
+			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
+			ds = numpy.sort(ds)
+			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2])) / numpy.sqrt(self.rows**2+self.cols**2)
+			
 			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
 		if self.G1 < 0.0:
 			self.G1 = 0.0
