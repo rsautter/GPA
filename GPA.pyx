@@ -24,7 +24,7 @@ cdef class GPA:
 	cdef public object cvet
 
 	cdef public int n_edges, n_points
-	cdef public double G1, G2, G3
+	cdef public double G1, G2, G3, G1_Geom
 	cdef public object G4
 
 	#@profile
@@ -154,12 +154,12 @@ cdef class GPA:
 				if self.symmetricalP[py,px] == 0 and self.unknownP[py,px] ==0:
 					self.asymmetricalP[py,px] = 1
 
-	'''
+
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	def _G1(self,str symm):
+	def _G1_Classic(self,str symm):
 		cdef int w, h, i, j
 		cdef int[:,:] targetMat,opositeMat
 		if symm == 'S':# Symmetrical matrix
@@ -173,9 +173,7 @@ cdef class GPA:
 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
 		else:
 			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
-		self.G1 = float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat))
-
-	'''
+		self.G1_Classic = float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat))
 
 
 	@cython.boundscheck(False)
@@ -230,13 +228,9 @@ cdef class GPA:
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
 			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
-			ds = numpy.sort(ds)
-			#print(numpy.min(ds),numpy.max(ds))
-			
-			#self.G1 = (numpy.max(ds)-numpy.min(ds))**2 / numpy.max(ds)**2
-			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2])) / numpy.sqrt(self.rows**2+self.cols**2)
-			
-			#self.G1 = float(self.n_edges-self.n_points)/float(self.n_points)
+			ds = numpy.sort(ds)/numpy.max(ds)
+			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
+			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.average(ds[len(ds)//2:])
 		if self.G1 < 0.0:
 			self.G1 = 0.0
 
@@ -441,6 +435,9 @@ cdef class GPA:
 			if("G1" == gmoment):
 				self._G1(symmetrycalGrad)
 				retorno["G1"] = self.G1
+			if("G1_Classic" == gmoment):
+				self._G1_Classic(symmetrycalGrad)
+				retorno["G1_Classic"] = self.G1_Classic
 		return retorno
 	
 	@cython.boundscheck(False)
@@ -490,6 +487,9 @@ cdef class GPA:
 			if("G1" == gmoment):
 				self._G1(symmetrycalGrad)
 				retorno["G1"] = self.G1
+			if("G1_Classic" == gmoment):
+				self._G1_Classic(symmetrycalGrad)
+				retorno["G1_Classic"] = self.G1_Classic
 		return retorno
    
 	@cython.boundscheck(False)
