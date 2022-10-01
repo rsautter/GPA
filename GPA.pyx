@@ -24,7 +24,7 @@ cdef class GPA:
 	cdef public object cvet
 
 	cdef public int n_edges, n_points
-	cdef public double G1, G2, G3, G1_Geom
+	cdef public double G1, G2, G3, G1_Classic
 	cdef public object G4
 
 	#@profile
