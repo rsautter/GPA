@@ -1344,7 +1344,7 @@ struct __pyx_obj_3GPA_GPA {
   double G1;
   double G2;
   double G3;
-  double G1_Geom;
+  double G1_Classic;
   PyObject *G4;
 };
 
@@ -1835,15 +1835,6 @@ static double __Pyx__PyObject_AsDouble(PyObject* obj);
 
 /* PyObjectCall2Args.proto */
 static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
-
-/* PyObjectSetAttrStr.proto */
-#if CYTHON_USE_TYPE_SLOTS
-#define __Pyx_PyObject_DelAttrStr(o,n) __Pyx_PyObject_SetAttrStr(o, n, NULL)
-static CYTHON_INLINE int __Pyx_PyObject_SetAttrStr(PyObject* obj, PyObject* attr_name, PyObject* value);
-#else
-#define __Pyx_PyObject_DelAttrStr(o,n)   PyObject_DelAttr(o,n)
-#define __Pyx_PyObject_SetAttrStr(o,n,v) PyObject_SetAttr(o,n,v)
-#endif
 
 /* GetItemInt.proto */
 #define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
@@ -2854,8 +2845,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_2G2___get__(struct __pyx_obj_3GPA_GPA *__pyx
 static int __pyx_pf_3GPA_3GPA_2G2_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_pf_3GPA_3GPA_2G3___get__(struct __pyx_obj_3GPA_GPA *__pyx_v_self); /* proto */
 static int __pyx_pf_3GPA_3GPA_2G3_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
-static PyObject *__pyx_pf_3GPA_3GPA_7G1_Geom___get__(struct __pyx_obj_3GPA_GPA *__pyx_v_self); /* proto */
-static int __pyx_pf_3GPA_3GPA_7G1_Geom_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_3GPA_3GPA_10G1_Classic___get__(struct __pyx_obj_3GPA_GPA *__pyx_v_self); /* proto */
+static int __pyx_pf_3GPA_3GPA_10G1_Classic_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_pf_3GPA_3GPA_2G4___get__(struct __pyx_obj_3GPA_GPA *__pyx_v_self); /* proto */
 static int __pyx_pf_3GPA_3GPA_2G4_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_3GPA_3GPA_2G4_4__del__(struct __pyx_obj_3GPA_GPA *__pyx_v_self); /* proto */
@@ -5538,10 +5529,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_10 = __Pyx_PyObject_AsDouble(__pyx_t_7); if (unlikely(__pyx_t_10 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 176, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = PyFloat_FromDouble((__pyx_t_9 / __pyx_t_10)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 176, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_Classic, __pyx_t_7) < 0) __PYX_ERR(0, 176, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_v_self->G1_Classic = (__pyx_t_9 / __pyx_t_10);
 
   /* "GPA.pyx":162
  * 	@cython.nonecheck(False)
@@ -10562,7 +10550,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  * 		return retorno
  * 
  */
-      __pyx_t_16 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_Classic); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 440, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 440, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1_Classic, __pyx_t_16) < 0)) __PYX_ERR(0, 440, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
@@ -11508,7 +11496,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  * 		return retorno
  * 
  */
-      __pyx_t_16 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_Classic); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 492, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 492, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1_Classic, __pyx_t_16) < 0)) __PYX_ERR(0, 492, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
@@ -13416,7 +13404,7 @@ static int __pyx_pf_3GPA_3GPA_4cvet_4__del__(struct __pyx_obj_3GPA_GPA *__pyx_v_
  * 	cdef public object cvet
  * 
  * 	cdef public int n_edges, n_points             # <<<<<<<<<<<<<<
- * 	cdef public double G1, G2, G3, G1_Geom
+ * 	cdef public double G1, G2, G3, G1_Classic
  * 	cdef public object G4
  */
 
@@ -13571,7 +13559,7 @@ static int __pyx_pf_3GPA_3GPA_8n_points_2__set__(struct __pyx_obj_3GPA_GPA *__py
 /* "GPA.pyx":27
  * 
  * 	cdef public int n_edges, n_points
- * 	cdef public double G1, G2, G3, G1_Geom             # <<<<<<<<<<<<<<
+ * 	cdef public double G1, G2, G3, G1_Classic             # <<<<<<<<<<<<<<
  * 	cdef public object G4
  * 
  */
@@ -13799,19 +13787,19 @@ static int __pyx_pf_3GPA_3GPA_2G3_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_se
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_3GPA_3GPA_7G1_Geom_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_3GPA_3GPA_7G1_Geom_1__get__(PyObject *__pyx_v_self) {
+static PyObject *__pyx_pw_3GPA_3GPA_10G1_Classic_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_3GPA_3GPA_10G1_Classic_1__get__(PyObject *__pyx_v_self) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_3GPA_3GPA_7G1_Geom___get__(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self));
+  __pyx_r = __pyx_pf_3GPA_3GPA_10G1_Classic___get__(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_3GPA_3GPA_7G1_Geom___get__(struct __pyx_obj_3GPA_GPA *__pyx_v_self) {
+static PyObject *__pyx_pf_3GPA_3GPA_10G1_Classic___get__(struct __pyx_obj_3GPA_GPA *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -13820,7 +13808,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_7G1_Geom___get__(struct __pyx_obj_3GPA_GPA *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G1_Geom); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13829,7 +13817,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_7G1_Geom___get__(struct __pyx_obj_3GPA_GPA *
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("GPA.GPA.G1_Geom.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("GPA.GPA.G1_Classic.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -13838,19 +13826,19 @@ static PyObject *__pyx_pf_3GPA_3GPA_7G1_Geom___get__(struct __pyx_obj_3GPA_GPA *
 }
 
 /* Python wrapper */
-static int __pyx_pw_3GPA_3GPA_7G1_Geom_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
-static int __pyx_pw_3GPA_3GPA_7G1_Geom_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+static int __pyx_pw_3GPA_3GPA_10G1_Classic_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_3GPA_3GPA_10G1_Classic_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_3GPA_3GPA_7G1_Geom_2__set__(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+  __pyx_r = __pyx_pf_3GPA_3GPA_10G1_Classic_2__set__(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self), ((PyObject *)__pyx_v_value));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_3GPA_3GPA_7G1_Geom_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObject *__pyx_v_value) {
+static int __pyx_pf_3GPA_3GPA_10G1_Classic_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObject *__pyx_v_value) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   double __pyx_t_1;
@@ -13859,13 +13847,13 @@ static int __pyx_pf_3GPA_3GPA_7G1_Geom_2__set__(struct __pyx_obj_3GPA_GPA *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
   __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
-  __pyx_v_self->G1_Geom = __pyx_t_1;
+  __pyx_v_self->G1_Classic = __pyx_t_1;
 
   /* function exit code */
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("GPA.GPA.G1_Geom.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("GPA.GPA.G1_Classic.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -13874,7 +13862,7 @@ static int __pyx_pf_3GPA_3GPA_7G1_Geom_2__set__(struct __pyx_obj_3GPA_GPA *__pyx
 
 /* "GPA.pyx":28
  * 	cdef public int n_edges, n_points
- * 	cdef public double G1, G2, G3, G1_Geom
+ * 	cdef public double G1, G2, G3, G1_Classic
  * 	cdef public object G4             # <<<<<<<<<<<<<<
  * 
  * 	#@profile
@@ -28518,13 +28506,13 @@ static int __pyx_setprop_3GPA_3GPA_G3(PyObject *o, PyObject *v, CYTHON_UNUSED vo
   }
 }
 
-static PyObject *__pyx_getprop_3GPA_3GPA_G1_Geom(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_3GPA_3GPA_7G1_Geom_1__get__(o);
+static PyObject *__pyx_getprop_3GPA_3GPA_G1_Classic(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_3GPA_3GPA_10G1_Classic_1__get__(o);
 }
 
-static int __pyx_setprop_3GPA_3GPA_G1_Geom(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+static int __pyx_setprop_3GPA_3GPA_G1_Classic(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
   if (v) {
-    return __pyx_pw_3GPA_3GPA_7G1_Geom_3__set__(o, v);
+    return __pyx_pw_3GPA_3GPA_10G1_Classic_3__set__(o, v);
   }
   else {
     PyErr_SetString(PyExc_NotImplementedError, "__del__");
@@ -28582,7 +28570,7 @@ static struct PyGetSetDef __pyx_getsets_3GPA_GPA[] = {
   {(char *)"G1", __pyx_getprop_3GPA_3GPA_G1, __pyx_setprop_3GPA_3GPA_G1, (char *)0, 0},
   {(char *)"G2", __pyx_getprop_3GPA_3GPA_G2, __pyx_setprop_3GPA_3GPA_G2, (char *)0, 0},
   {(char *)"G3", __pyx_getprop_3GPA_3GPA_G3, __pyx_setprop_3GPA_3GPA_G3, (char *)0, 0},
-  {(char *)"G1_Geom", __pyx_getprop_3GPA_3GPA_G1_Geom, __pyx_setprop_3GPA_3GPA_G1_Geom, (char *)0, 0},
+  {(char *)"G1_Classic", __pyx_getprop_3GPA_3GPA_G1_Classic, __pyx_setprop_3GPA_3GPA_G1_Classic, (char *)0, 0},
   {(char *)"G4", __pyx_getprop_3GPA_3GPA_G4, __pyx_setprop_3GPA_3GPA_G4, (char *)0, 0},
   {0, 0, 0, 0, 0}
 };
@@ -31813,20 +31801,6 @@ static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyOb
 done:
     return result;
 }
-
-/* PyObjectSetAttrStr */
-#if CYTHON_USE_TYPE_SLOTS
-static CYTHON_INLINE int __Pyx_PyObject_SetAttrStr(PyObject* obj, PyObject* attr_name, PyObject* value) {
-    PyTypeObject* tp = Py_TYPE(obj);
-    if (likely(tp->tp_setattro))
-        return tp->tp_setattro(obj, attr_name, value);
-#if PY_MAJOR_VERSION < 3
-    if (likely(tp->tp_setattr))
-        return tp->tp_setattr(obj, PyString_AS_STRING(attr_name), value);
-#endif
-    return PyObject_SetAttr(obj, attr_name, value);
-}
-#endif
 
 /* GetItemInt */
 static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
