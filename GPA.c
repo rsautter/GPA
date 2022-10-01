@@ -6580,7 +6580,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  * 			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
  * 			ds = numpy.sort(ds)/numpy.max(ds)             # <<<<<<<<<<<<<<
  * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.average(ds[len(ds)//2:])
+ * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
  */
     __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 231, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
@@ -6632,7 +6632,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     /* "GPA.pyx":233
  * 			ds = numpy.sort(ds)/numpy.max(ds)
  * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.average(ds[len(ds)//2:])             # <<<<<<<<<<<<<<
+ * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)             # <<<<<<<<<<<<<<
  * 		if self.G1 < 0.0:
  * 			self.G1 = 0.0
  */
@@ -6690,25 +6690,21 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 233, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_average); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_max); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_18 = PyObject_Length(__pyx_v_ds); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 233, __pyx_L1_error)
-    __pyx_t_6 = __Pyx_PyObject_GetSlice(__pyx_v_ds, (__pyx_t_18 / 2), 0, NULL, NULL, NULL, 1, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 233, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = NULL;
+    __pyx_t_6 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
-      __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_1);
-      if (likely(__pyx_t_7)) {
+      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_1);
+      if (likely(__pyx_t_6)) {
         PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
-        __Pyx_INCREF(__pyx_t_7);
+        __Pyx_INCREF(__pyx_t_6);
         __Pyx_INCREF(function);
         __Pyx_DECREF_SET(__pyx_t_1, function);
       }
     }
-    __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_7, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_6);
-    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_6, __pyx_v_ds) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_ds);
+    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 233, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -6724,7 +6720,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
 
   /* "GPA.pyx":234
  * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.average(ds[len(ds)//2:])
+ * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
  * 		if self.G1 < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1 = 0.0
  * 
@@ -6733,7 +6729,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   if (__pyx_t_3) {
 
     /* "GPA.pyx":235
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.average(ds[len(ds)//2:])
+ * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
  * 		if self.G1 < 0.0:
  * 			self.G1 = 0.0             # <<<<<<<<<<<<<<
  * 
@@ -6743,7 +6739,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
 
     /* "GPA.pyx":234
  * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.average(ds[len(ds)//2:])
+ * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
  * 		if self.G1 < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1 = 0.0
  * 
