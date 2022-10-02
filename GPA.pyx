@@ -161,20 +161,39 @@ cdef class GPA:
 	@cython.cdivision(True)
 	def _G1_Classic(self,str symm):
 		cdef int w, h, i, j
-		cdef int[:,:] targetMat,opositeMat
-		if symm == 'S':# Symmetrical matrix
-			targetMat = self.symmetricalP
-			opositeMat = self.asymmetricalP
-		elif symm == 'A':# Asymmetrical matrix
-			targetMat = self.asymmetricalP
-			opositeMat = self.symmetricalP
-		elif symm == 'F':# Full Matrix, including unknown vectors
-			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
-			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
-		else:
-			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
-		self.G1_Classic = float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat))
+		cdef int[:,:] targetMat
+		cdef float ratio
+		self.triangulation_points = []
+		d1 = self.symmetricalP
 
+
+		if symm == 'S':# Symmetrical matrix 
+			targetMat = self.symmetricalP
+		elif symm == 'A':# Asymmetrical matrix 
+			targetMat = self.asymmetricalP
+		elif symm == 'F': # Full Matrix, including unknown vectors
+			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
+		else:
+			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm)
+		
+		for i in range(self.rows):
+			for j in range(self.cols):
+					if targetMat[i,j] > 0:
+						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])		
+		self.triangulation_points = numpy.array(self.triangulation_points)
+		if len(self.triangulation_points>1):
+			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
+		self.n_points = len(self.triangulation_points)
+		if self.n_points < 3:
+			self.n_edges = 0
+			self.G1_Classic = 0.0
+		else:
+			self.triangles = Delanuay(self.triangulation_points)
+			neigh = self.triangles.vertex_neighbor_vertices
+			self.n_edges = len(neigh[1])/2
+			self.G1_Classic = (self.n_edges-self.n_points)/self.n_points
+		if self.G1_Classic < 0.0:
+			self.G1_Classic = 0.0
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
