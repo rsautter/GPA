@@ -5653,7 +5653,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
  * 			self.triangles = Delanuay(self.triangulation_points)
  * 			neigh = self.triangles.vertex_neighbor_vertices             # <<<<<<<<<<<<<<
  * 			self.n_edges = len(neigh[1])/2
- * 			self.G1_Classic = (self.n_edges-self.n_points)/self.n_points
+ * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
  */
     __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->triangles, __pyx_n_s_vertex_neighbor_vertices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
@@ -5664,7 +5664,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
  * 			self.triangles = Delanuay(self.triangulation_points)
  * 			neigh = self.triangles.vertex_neighbor_vertices
  * 			self.n_edges = len(neigh[1])/2             # <<<<<<<<<<<<<<
- * 			self.G1_Classic = (self.n_edges-self.n_points)/self.n_points
+ * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
  * 		if self.G1_Classic < 0.0:
  */
     __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_neigh, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 193, __pyx_L1_error)
@@ -5676,17 +5676,17 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     /* "GPA.pyx":194
  * 			neigh = self.triangles.vertex_neighbor_vertices
  * 			self.n_edges = len(neigh[1])/2
- * 			self.G1_Classic = (self.n_edges-self.n_points)/self.n_points             # <<<<<<<<<<<<<<
+ * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)             # <<<<<<<<<<<<<<
  * 		if self.G1_Classic < 0.0:
  * 			self.G1_Classic = 0.0
  */
-    __pyx_v_self->G1_Classic = ((__pyx_v_self->n_edges - __pyx_v_self->n_points) / __pyx_v_self->n_points);
+    __pyx_v_self->G1_Classic = ((((double)__pyx_v_self->n_edges) - ((double)__pyx_v_self->n_points)) / ((double)__pyx_v_self->n_points));
   }
   __pyx_L10:;
 
   /* "GPA.pyx":195
  * 			self.n_edges = len(neigh[1])/2
- * 			self.G1_Classic = (self.n_edges-self.n_points)/self.n_points
+ * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
  * 		if self.G1_Classic < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1_Classic = 0.0
  * 
@@ -5695,7 +5695,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   if (__pyx_t_3) {
 
     /* "GPA.pyx":196
- * 			self.G1_Classic = (self.n_edges-self.n_points)/self.n_points
+ * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
  * 		if self.G1_Classic < 0.0:
  * 			self.G1_Classic = 0.0             # <<<<<<<<<<<<<<
  * 
@@ -5705,7 +5705,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
 
     /* "GPA.pyx":195
  * 			self.n_edges = len(neigh[1])/2
- * 			self.G1_Classic = (self.n_edges-self.n_points)/self.n_points
+ * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
  * 		if self.G1_Classic < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1_Classic = 0.0
  * 
