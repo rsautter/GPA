@@ -20,8 +20,16 @@ This code uses the Cython library, which transform pseudo-python code into C cod
 To get a better performance, edit compile.py and run:
 
     python setup.py build_ext --inplace
+## The technique
+
+### Symmetry detection
+
+### Gradient Moments
+![alt text](https://github.com/rsautter/GPA/blob/master/Figures/moments.png)
+
 
 ## Log
+Oct. 7, 2022 - Updated Gradient Moments - new $G_1$ equation.\
 Apr. 18, 2021 - Added symmetrical and full analysis.\
 &emsp;&emsp; &emsp; &emsp; &emsp; - now uses \_\_call\_\_ function to measure the gradient moments.\
 &emsp;&emsp; &emsp; &emsp; &emsp; - vectors are now classified into symmetrical, asymmetrical and unknown.\
@@ -36,9 +44,9 @@ Nov. 26, 2018 - Changed the user interface (it automatically identifies whether 
 &emsp;&emsp; &emsp; &emsp; &emsp; - Results are saved at reult.csv\
 &emsp;&emsp; &emsp; &emsp; &emsp; - Tests updated
               
-Mar. 27, 2018 - Added the Third and Fourth Gradient Moments (G3 and G4)
+Mar. 27, 2018 - Added the Third and Fourth Gradient Moments ( $G_3$ and $G_4$ )
 
-Aug. 30, 2017 - Added the First Gradient Moment (G1)
+Aug. 30, 2017 - Added the First Gradient Moment ( $G_1$ )
 
 
 
