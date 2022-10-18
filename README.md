@@ -1,5 +1,5 @@
 # Gradient Pattern Analysis
-Gradient Pattern Analysis (GPA) prototype developed in Cython.
+Gradient Pattern Analysis (GPA) developed in Cython.
 
 ### Requirements
  - Python 2.7 or greater
@@ -23,7 +23,7 @@ To get a better performance, edit compile.py and run:
 ## The technique
 
 ### Symmetry detection
-
+![alt text](https://github.com/rsautter/GPA/blob/master/Figures/Remotion.png)
 ### Gradient Moments
 ![alt text](https://github.com/rsautter/GPA/blob/master/Figures/moments.png)
 
