@@ -374,7 +374,8 @@ cdef class GPA:
 	def _G4(self,str symm):
 		cdef int w, h, i, j
 		cdef int[:,:] targetMat
-		cdef object z,sumZ
+		cdef object z
+		cdef float sumZ
 
 		if symm == 'S':# Symmetrical matrix 
 			targetMat = self.symmetricalP
@@ -386,22 +387,22 @@ cdef class GPA:
 			raise Exception("Unknown analysis type (should be S,A or F ), got: "+symm)
 		
 		self.G4 = 0.0+0.0j
-		sumZ = 0.0+0.0j
+		sumZ = 0.0
 		
 		for i in range(self.rows):
 			for j in range(self.cols):
 				if targetMat[i,j] > 0:
 					if self.mods[i,j] > 1e-6:
-						sumZ += self.mods[i,j]*numpy.exp(1j*self.phases[i,j])
-		if numpy.abs(sumZ)<1e-5:
+						sumZ += numpy.abs(self.mods[i,j]*numpy.exp(1j*self.phases[i,j]))
+		if sumZ<1e-5:
 			return self.G4 
 			
 		for i in range(self.rows):
 			for j in range(self.cols):
 				if targetMat[i,j] > 0:
 					if self.mods[i,j] > 1e-6:
-						z = self.mods[i,j]*numpy.exp(1j*self.phases[i,j])
-						self.G4 = self.G4 - z*numpy.log(z/sumZ)/sumZ
+						z = self.mods[i,j]*numpy.exp(1j*self.phases[i,j])/sumZ
+						self.G4 = self.G4 - z*numpy.log(z)
 		return self.G4
 
 	@cython.boundscheck(False)
