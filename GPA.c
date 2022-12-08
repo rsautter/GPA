@@ -1312,7 +1312,7 @@ typedef npy_clongdouble __pyx_t_5numpy_clongdouble_t;
  */
 typedef npy_cdouble __pyx_t_5numpy_complex_t;
 
-/* "GPA.pyx":15
+/* "GPA.pyx":16
  * @cython.nonecheck(False)
  * @cython.cdivision(True)
  * cdef class GPA:             # <<<<<<<<<<<<<<
@@ -1427,7 +1427,7 @@ struct __pyx_memoryviewslice_obj {
 
 
 
-/* "GPA.pyx":15
+/* "GPA.pyx":16
  * @cython.nonecheck(False)
  * @cython.cdivision(True)
  * cdef class GPA:             # <<<<<<<<<<<<<<
@@ -1854,6 +1854,43 @@ static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
 static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
                                                      int is_list, int wraparound, int boundscheck);
 
+/* GetTopmostException.proto */
+#if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
+#endif
+
+/* SaveResetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
+#else
+#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
+#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
+#endif
+
+/* FastTypeChecks.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+#define __Pyx_TypeCheck(obj, type) __Pyx_IsSubtype(Py_TYPE(obj), (PyTypeObject *)type)
+static CYTHON_INLINE int __Pyx_IsSubtype(PyTypeObject *a, PyTypeObject *b);
+static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches(PyObject *err, PyObject *type);
+static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObject *type1, PyObject *type2);
+#else
+#define __Pyx_TypeCheck(obj, type) PyObject_TypeCheck(obj, (PyTypeObject *)type)
+#define __Pyx_PyErr_GivenExceptionMatches(err, type) PyErr_GivenExceptionMatches(err, type)
+#define __Pyx_PyErr_GivenExceptionMatches2(err, type1, type2) (PyErr_GivenExceptionMatches(err, type1) || PyErr_GivenExceptionMatches(err, type2))
+#endif
+#define __Pyx_PyException_Check(obj) __Pyx_TypeCheck(obj, PyExc_Exception)
+
+/* GetException.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
+#endif
+
 /* ObjectGetItem.proto */
 #if CYTHON_USE_TYPE_SLOTS
 static CYTHON_INLINE PyObject *__Pyx_PyObject_GetItem(PyObject *obj, PyObject* key);
@@ -1890,36 +1927,12 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_FromDouble(double value);
 /* ExtTypeTest.proto */
 static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type);
 
-/* GetTopmostException.proto */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
-#endif
-
-/* SaveResetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
-#else
-#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
-#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
-#endif
-
 /* PyErrExceptionMatches.proto */
 #if CYTHON_FAST_THREAD_STATE
 #define __Pyx_PyErr_ExceptionMatches(err) __Pyx_PyErr_ExceptionMatchesInState(__pyx_tstate, err)
 static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err);
 #else
 #define __Pyx_PyErr_ExceptionMatches(err)  PyErr_ExceptionMatches(err)
-#endif
-
-/* GetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
-static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#else
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
 #endif
 
 /* DivInt[Py_ssize_t].proto */
@@ -1967,19 +1980,6 @@ static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value,
 
 /* Import.proto */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
-
-/* FastTypeChecks.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-#define __Pyx_TypeCheck(obj, type) __Pyx_IsSubtype(Py_TYPE(obj), (PyTypeObject *)type)
-static CYTHON_INLINE int __Pyx_IsSubtype(PyTypeObject *a, PyTypeObject *b);
-static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches(PyObject *err, PyObject *type);
-static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObject *type1, PyObject *type2);
-#else
-#define __Pyx_TypeCheck(obj, type) PyObject_TypeCheck(obj, (PyTypeObject *)type)
-#define __Pyx_PyErr_GivenExceptionMatches(err, type) PyErr_GivenExceptionMatches(err, type)
-#define __Pyx_PyErr_GivenExceptionMatches2(err, type1, type2) (PyErr_GivenExceptionMatches(err, type1) || PyErr_GivenExceptionMatches(err, type2))
-#endif
-#define __Pyx_PyException_Check(obj) __Pyx_TypeCheck(obj, PyExc_Exception)
 
 static CYTHON_UNUSED int __pyx_memoryview_getbuffer(PyObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /*proto*/
 /* PyIntBinop.proto */
@@ -2560,7 +2560,6 @@ static const char __pyx_k_fortran[] = "fortran";
 static const char __pyx_k_memview[] = "memview";
 static const char __pyx_k_radians[] = "radians";
 static const char __pyx_k_version[] = "version";
-static const char __pyx_k_Delanuay[] = "Delanuay";
 static const char __pyx_k_Delaunay[] = "Delaunay";
 static const char __pyx_k_Ellipsis[] = "Ellipsis";
 static const char __pyx_k_getstate[] = "__getstate__";
@@ -2575,6 +2574,7 @@ static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
 static const char __pyx_k_simplices[] = "simplices";
 static const char __pyx_k_G1_Classic[] = "G1_Classic";
 static const char __pyx_k_IndexError[] = "IndexError";
+static const char __pyx_k_QhullError[] = "QhullError";
 static const char __pyx_k_ValueError[] = "ValueError";
 static const char __pyx_k_pyx_result[] = "__pyx_result";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
@@ -2641,7 +2641,6 @@ static PyObject *__pyx_kp_s_Can_only_create_a_buffer_that_is;
 static PyObject *__pyx_kp_s_Cannot_assign_to_read_only_memor;
 static PyObject *__pyx_kp_s_Cannot_create_writable_memory_vi;
 static PyObject *__pyx_kp_s_Cannot_index_with_type_s;
-static PyObject *__pyx_n_s_Delanuay;
 static PyObject *__pyx_n_s_Delaunay;
 static PyObject *__pyx_n_s_Ellipsis;
 static PyObject *__pyx_kp_s_Empty_shape_tuple_for_cython_arr;
@@ -2670,6 +2669,7 @@ static PyObject *__pyx_kp_s_MemoryView_of_r_object;
 static PyObject *__pyx_n_b_O;
 static PyObject *__pyx_kp_s_Out_of_bounds_on_buffer_access_a;
 static PyObject *__pyx_n_s_PickleError;
+static PyObject *__pyx_n_s_QhullError;
 static PyObject *__pyx_n_s_S;
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
@@ -2949,7 +2949,7 @@ static PyObject *__pyx_tuple__38;
 static PyObject *__pyx_codeobj__39;
 /* Late includes */
 
-/* "GPA.pyx":31
+/* "GPA.pyx":32
  * 
  * 	#@profile
  * 	def __cinit__(self, double tol=0.03):             # <<<<<<<<<<<<<<
@@ -2988,7 +2988,7 @@ static int __pyx_pw_3GPA_3GPA_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 31, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 32, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2999,14 +2999,14 @@ static int __pyx_pw_3GPA_3GPA_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx
       }
     }
     if (values[0]) {
-      __pyx_v_tol = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_tol == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 31, __pyx_L3_error)
+      __pyx_v_tol = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_tol == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 32, __pyx_L3_error)
     } else {
       __pyx_v_tol = ((double)0.03);
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 31, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 32, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("GPA.GPA.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3033,7 +3033,7 @@ static int __pyx_pf_3GPA_3GPA___cinit__(struct __pyx_obj_3GPA_GPA *__pyx_v_self,
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "GPA.pyx":33
+  /* "GPA.pyx":34
  * 	def __cinit__(self, double tol=0.03):
  * 		# setting matrix,and calculating the gradient field
  * 		self.tol = tol             # <<<<<<<<<<<<<<
@@ -3042,149 +3042,149 @@ static int __pyx_pf_3GPA_3GPA___cinit__(struct __pyx_obj_3GPA_GPA *__pyx_v_self,
  */
   __pyx_v_self->tol = __pyx_v_tol;
 
-  /* "GPA.pyx":36
+  /* "GPA.pyx":37
  * 
  * 		# percentual Ga proprieties
  * 		self.symmetricalP = numpy.array([[]],dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		self.asymmetricalP = numpy.array([[]],dtype=numpy.int32)
  * 		self.unknownP = numpy.array([[]],dtype=numpy.int32)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyList_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_3 = PyList_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyList_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 36, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_5, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_5, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->symmetricalP, 0);
   __pyx_v_self->symmetricalP = __pyx_t_6;
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "GPA.pyx":37
+  /* "GPA.pyx":38
  * 		# percentual Ga proprieties
  * 		self.symmetricalP = numpy.array([[]],dtype=numpy.int32)
  * 		self.asymmetricalP = numpy.array([[]],dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		self.unknownP = numpy.array([[]],dtype=numpy.int32)
  * 		self.triangulation_points = []
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_array); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = PyList_New(0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_5 = PyList_New(0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_5);
   PyList_SET_ITEM(__pyx_t_1, 0, __pyx_t_5);
   __pyx_t_5 = 0;
-  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_numpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_numpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_int32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_int32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 37, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 38, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->asymmetricalP, 0);
   __pyx_v_self->asymmetricalP = __pyx_t_6;
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "GPA.pyx":38
+  /* "GPA.pyx":39
  * 		self.symmetricalP = numpy.array([[]],dtype=numpy.int32)
  * 		self.asymmetricalP = numpy.array([[]],dtype=numpy.int32)
  * 		self.unknownP = numpy.array([[]],dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		self.triangulation_points = []
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = PyList_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_5 = PyList_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_4);
   PyList_SET_ITEM(__pyx_t_5, 0, __pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5);
   __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_int32); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_int32); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_2) < 0) __PYX_ERR(0, 38, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_2) < 0) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_2, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_2, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->unknownP, 0);
   __pyx_v_self->unknownP = __pyx_t_6;
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "GPA.pyx":39
+  /* "GPA.pyx":40
  * 		self.asymmetricalP = numpy.array([[]],dtype=numpy.int32)
  * 		self.unknownP = numpy.array([[]],dtype=numpy.int32)
  * 		self.triangulation_points = []             # <<<<<<<<<<<<<<
  * 
  * 	@cython.boundscheck(False)
  */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 40, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_2);
   __Pyx_GOTREF(__pyx_v_self->triangulation_points);
@@ -3192,7 +3192,7 @@ static int __pyx_pf_3GPA_3GPA___cinit__(struct __pyx_obj_3GPA_GPA *__pyx_v_self,
   __pyx_v_self->triangulation_points = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "GPA.pyx":31
+  /* "GPA.pyx":32
  * 
  * 	#@profile
  * 	def __cinit__(self, double tol=0.03):             # <<<<<<<<<<<<<<
@@ -3217,7 +3217,7 @@ static int __pyx_pf_3GPA_3GPA___cinit__(struct __pyx_obj_3GPA_GPA *__pyx_v_self,
   return __pyx_r;
 }
 
-/* "GPA.pyx":45
+/* "GPA.pyx":46
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cpdef void setPosition(self, double cx, double cy):             # <<<<<<<<<<<<<<
@@ -3249,12 +3249,12 @@ static void __pyx_f_3GPA_3GPA_setPosition(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_setPosition); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_setPosition); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_3GPA_3GPA_3setPosition)) {
-        __pyx_t_3 = PyFloat_FromDouble(__pyx_v_cx); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 45, __pyx_L1_error)
+        __pyx_t_3 = PyFloat_FromDouble(__pyx_v_cx); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 46, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_4 = PyFloat_FromDouble(__pyx_v_cy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 45, __pyx_L1_error)
+        __pyx_t_4 = PyFloat_FromDouble(__pyx_v_cy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_5 = __pyx_t_1; __pyx_t_6 = NULL;
@@ -3272,7 +3272,7 @@ static void __pyx_f_3GPA_3GPA_setPosition(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_5)) {
           PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_3, __pyx_t_4};
-          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3282,7 +3282,7 @@ static void __pyx_f_3GPA_3GPA_setPosition(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
           PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_3, __pyx_t_4};
-          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -3290,7 +3290,7 @@ static void __pyx_f_3GPA_3GPA_setPosition(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
         } else
         #endif
         {
-          __pyx_t_8 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 45, __pyx_L1_error)
+          __pyx_t_8 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 46, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
           if (__pyx_t_6) {
             __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -3301,7 +3301,7 @@ static void __pyx_f_3GPA_3GPA_setPosition(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
           PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_7, __pyx_t_4);
           __pyx_t_3 = 0;
           __pyx_t_4 = 0;
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
         }
@@ -3323,7 +3323,7 @@ static void __pyx_f_3GPA_3GPA_setPosition(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     #endif
   }
 
-  /* "GPA.pyx":46
+  /* "GPA.pyx":47
  * 	@cython.cdivision(True)
  * 	cpdef void setPosition(self, double cx, double cy):
  * 		self.cx = cx             # <<<<<<<<<<<<<<
@@ -3332,7 +3332,7 @@ static void __pyx_f_3GPA_3GPA_setPosition(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
   __pyx_v_self->cx = __pyx_v_cx;
 
-  /* "GPA.pyx":47
+  /* "GPA.pyx":48
  * 	cpdef void setPosition(self, double cx, double cy):
  * 		self.cx = cx
  * 		self.cy = cy             # <<<<<<<<<<<<<<
@@ -3341,7 +3341,7 @@ static void __pyx_f_3GPA_3GPA_setPosition(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
   __pyx_v_self->cy = __pyx_v_cy;
 
-  /* "GPA.pyx":45
+  /* "GPA.pyx":46
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cpdef void setPosition(self, double cx, double cy):             # <<<<<<<<<<<<<<
@@ -3398,11 +3398,11 @@ static PyObject *__pyx_pw_3GPA_3GPA_3setPosition(PyObject *__pyx_v_self, PyObjec
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_cy)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("setPosition", 1, 2, 2, 1); __PYX_ERR(0, 45, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("setPosition", 1, 2, 2, 1); __PYX_ERR(0, 46, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "setPosition") < 0)) __PYX_ERR(0, 45, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "setPosition") < 0)) __PYX_ERR(0, 46, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -3410,12 +3410,12 @@ static PyObject *__pyx_pw_3GPA_3GPA_3setPosition(PyObject *__pyx_v_self, PyObjec
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
-    __pyx_v_cx = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_cx == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 45, __pyx_L3_error)
-    __pyx_v_cy = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_cy == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 45, __pyx_L3_error)
+    __pyx_v_cx = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_cx == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 46, __pyx_L3_error)
+    __pyx_v_cy = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_cy == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 46, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("setPosition", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 45, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("setPosition", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 46, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("GPA.GPA.setPosition", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3437,7 +3437,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_2setPosition(struct __pyx_obj_3GPA_GPA *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("setPosition", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_3GPA_3GPA_setPosition(__pyx_v_self, __pyx_v_cx, __pyx_v_cy, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_3GPA_3GPA_setPosition(__pyx_v_self, __pyx_v_cx, __pyx_v_cy, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3454,7 +3454,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_2setPosition(struct __pyx_obj_3GPA_GPA *__py
   return __pyx_r;
 }
 
-/* "GPA.pyx":53
+/* "GPA.pyx":54
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _setGradients(self):             # <<<<<<<<<<<<<<
@@ -3476,15 +3476,15 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_setGradients", 0);
 
-  /* "GPA.pyx":55
+  /* "GPA.pyx":56
  * 	cdef void _setGradients(self):
  * 		cdef double[:,:] gx, gy
  * 		gy, gx = self.gradient(self.mat)             # <<<<<<<<<<<<<<
  * 		#initialization
  * 		self.gradient_dx = gx
  */
-  if (unlikely(!__pyx_v_self->mat.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 55, __pyx_L1_error)}
-  __pyx_t_1 = ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->gradient(__pyx_v_self, __pyx_v_self->mat); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->mat.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 56, __pyx_L1_error)}
+  __pyx_t_1 = ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->gradient(__pyx_v_self, __pyx_v_self->mat); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (likely(__pyx_t_1 != Py_None)) {
     PyObject* sequence = __pyx_t_1;
@@ -3492,7 +3492,7 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
     if (unlikely(size != 2)) {
       if (size > 2) __Pyx_RaiseTooManyValuesError(2);
       else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-      __PYX_ERR(0, 55, __pyx_L1_error)
+      __PYX_ERR(0, 56, __pyx_L1_error)
     }
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
     __pyx_t_2 = PyTuple_GET_ITEM(sequence, 0); 
@@ -3500,18 +3500,18 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
     __Pyx_INCREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_t_3);
     #else
-    __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 56, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     #endif
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   } else {
-    __Pyx_RaiseNoneNotIterableError(); __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_RaiseNoneNotIterableError(); __PYX_ERR(0, 56, __pyx_L1_error)
   }
-  __pyx_t_4 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_2, PyBUF_WRITABLE); if (unlikely(!__pyx_t_4.memview)) __PYX_ERR(0, 55, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_2, PyBUF_WRITABLE); if (unlikely(!__pyx_t_4.memview)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_5 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_5.memview)) __PYX_ERR(0, 55, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_5.memview)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_gy = __pyx_t_4;
   __pyx_t_4.memview = NULL;
@@ -3520,7 +3520,7 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   __pyx_t_5.memview = NULL;
   __pyx_t_5.data = NULL;
 
-  /* "GPA.pyx":57
+  /* "GPA.pyx":58
  * 		gy, gx = self.gradient(self.mat)
  * 		#initialization
  * 		self.gradient_dx = gx             # <<<<<<<<<<<<<<
@@ -3531,7 +3531,7 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   __PYX_INC_MEMVIEW(&__pyx_v_gx, 0);
   __pyx_v_self->gradient_dx = __pyx_v_gx;
 
-  /* "GPA.pyx":58
+  /* "GPA.pyx":59
  * 		#initialization
  * 		self.gradient_dx = gx
  * 		self.gradient_dy = gy             # <<<<<<<<<<<<<<
@@ -3542,7 +3542,7 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   __PYX_INC_MEMVIEW(&__pyx_v_gy, 0);
   __pyx_v_self->gradient_dy = __pyx_v_gy;
 
-  /* "GPA.pyx":60
+  /* "GPA.pyx":61
  * 		self.gradient_dy = gy
  * 
  * 		self._setMaxGrad()             # <<<<<<<<<<<<<<
@@ -3551,7 +3551,7 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
  */
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_setMaxGrad(__pyx_v_self);
 
-  /* "GPA.pyx":61
+  /* "GPA.pyx":62
  * 
  * 		self._setMaxGrad()
  * 		self._setModulusPhase()             # <<<<<<<<<<<<<<
@@ -3560,7 +3560,7 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
  */
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_setModulusPhase(__pyx_v_self);
 
-  /* "GPA.pyx":53
+  /* "GPA.pyx":54
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _setGradients(self):             # <<<<<<<<<<<<<<
@@ -3583,7 +3583,7 @@ static void __pyx_f_3GPA_3GPA__setGradients(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   __Pyx_RefNannyFinishContext();
 }
 
-/* "GPA.pyx":67
+/* "GPA.pyx":68
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _setMaxGrad(self):             # <<<<<<<<<<<<<<
@@ -3614,7 +3614,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_setMaxGrad", 0);
 
-  /* "GPA.pyx":69
+  /* "GPA.pyx":70
  * 	cdef void _setMaxGrad(self):
  * 		cdef int i,j,w,h
  * 		self.maxGrad = -1.0             # <<<<<<<<<<<<<<
@@ -3623,7 +3623,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
   __pyx_v_self->maxGrad = -1.0;
 
-  /* "GPA.pyx":70
+  /* "GPA.pyx":71
  * 		cdef int i,j,w,h
  * 		self.maxGrad = -1.0
  * 		w, h = self.cols, self.rows             # <<<<<<<<<<<<<<
@@ -3635,7 +3635,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_v_w = __pyx_t_1;
   __pyx_v_h = __pyx_t_2;
 
-  /* "GPA.pyx":71
+  /* "GPA.pyx":72
  * 		self.maxGrad = -1.0
  * 		w, h = self.cols, self.rows
  * 		for i in range(w):             # <<<<<<<<<<<<<<
@@ -3647,7 +3647,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_1; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "GPA.pyx":72
+    /* "GPA.pyx":73
  * 		w, h = self.cols, self.rows
  * 		for i in range(w):
  * 			for j in range(h):             # <<<<<<<<<<<<<<
@@ -3659,7 +3659,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
       __pyx_v_j = __pyx_t_6;
 
-      /* "GPA.pyx":73
+      /* "GPA.pyx":74
  * 		for i in range(w):
  * 			for j in range(h):
  * 				if(self.maxGrad<0.0) or (sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))>self.maxGrad):             # <<<<<<<<<<<<<<
@@ -3672,10 +3672,10 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
         __pyx_t_7 = __pyx_t_8;
         goto __pyx_L8_bool_binop_done;
       }
-      if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 73, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 74, __pyx_L1_error)}
       __pyx_t_9 = __pyx_v_j;
       __pyx_t_10 = __pyx_v_i;
-      if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 73, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 74, __pyx_L1_error)}
       __pyx_t_11 = __pyx_v_j;
       __pyx_t_12 = __pyx_v_i;
       __pyx_t_8 = ((sqrt((pow((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_9 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_10 * __pyx_v_self->gradient_dy.strides[1]) ))), 2.0) + pow((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_11 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_12 * __pyx_v_self->gradient_dx.strides[1]) ))), 2.0))) > __pyx_v_self->maxGrad) != 0);
@@ -3683,22 +3683,22 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
       __pyx_L8_bool_binop_done:;
       if (__pyx_t_7) {
 
-        /* "GPA.pyx":74
+        /* "GPA.pyx":75
  * 			for j in range(h):
  * 				if(self.maxGrad<0.0) or (sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))>self.maxGrad):
  * 					self.maxGrad = sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))             # <<<<<<<<<<<<<<
  * 		if self.maxGrad < 1e-5:
  * 			self.maxGrad = 1.0
  */
-        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 74, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 75, __pyx_L1_error)}
         __pyx_t_12 = __pyx_v_j;
         __pyx_t_11 = __pyx_v_i;
-        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 74, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 75, __pyx_L1_error)}
         __pyx_t_10 = __pyx_v_j;
         __pyx_t_9 = __pyx_v_i;
         __pyx_v_self->maxGrad = sqrt((pow((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_12 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_11 * __pyx_v_self->gradient_dy.strides[1]) ))), 2.0) + pow((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_10 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_9 * __pyx_v_self->gradient_dx.strides[1]) ))), 2.0)));
 
-        /* "GPA.pyx":73
+        /* "GPA.pyx":74
  * 		for i in range(w):
  * 			for j in range(h):
  * 				if(self.maxGrad<0.0) or (sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))>self.maxGrad):             # <<<<<<<<<<<<<<
@@ -3709,7 +3709,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     }
   }
 
-  /* "GPA.pyx":75
+  /* "GPA.pyx":76
  * 				if(self.maxGrad<0.0) or (sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))>self.maxGrad):
  * 					self.maxGrad = sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))
  * 		if self.maxGrad < 1e-5:             # <<<<<<<<<<<<<<
@@ -3719,7 +3719,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_t_7 = ((__pyx_v_self->maxGrad < 1e-5) != 0);
   if (__pyx_t_7) {
 
-    /* "GPA.pyx":76
+    /* "GPA.pyx":77
  * 					self.maxGrad = sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))
  * 		if self.maxGrad < 1e-5:
  * 			self.maxGrad = 1.0             # <<<<<<<<<<<<<<
@@ -3728,7 +3728,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
     __pyx_v_self->maxGrad = 1.0;
 
-    /* "GPA.pyx":75
+    /* "GPA.pyx":76
  * 				if(self.maxGrad<0.0) or (sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))>self.maxGrad):
  * 					self.maxGrad = sqrt(pow(self.gradient_dy[j, i],2.0)+pow(self.gradient_dx[j, i],2.0))
  * 		if self.maxGrad < 1e-5:             # <<<<<<<<<<<<<<
@@ -3737,7 +3737,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
   }
 
-  /* "GPA.pyx":67
+  /* "GPA.pyx":68
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _setMaxGrad(self):             # <<<<<<<<<<<<<<
@@ -3753,7 +3753,7 @@ static void __pyx_f_3GPA_3GPA__setMaxGrad(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __Pyx_RefNannyFinishContext();
 }
 
-/* "GPA.pyx":82
+/* "GPA.pyx":83
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _setModulusPhase(self):             # <<<<<<<<<<<<<<
@@ -3797,35 +3797,35 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_setModulusPhase", 0);
 
-  /* "GPA.pyx":86
+  /* "GPA.pyx":87
  * 		cdef double[:,:] gx, gy
  * 
  * 		gx = self.gradient_dx             # <<<<<<<<<<<<<<
  * 		gy = self.gradient_dy
  * 		w, h = self.cols, self.rows
  */
-  if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 86, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 87, __pyx_L1_error)}
   __pyx_t_1 = __pyx_v_self->gradient_dx;
   __PYX_INC_MEMVIEW(&__pyx_t_1, 1);
   __pyx_v_gx = __pyx_t_1;
   __pyx_t_1.memview = NULL;
   __pyx_t_1.data = NULL;
 
-  /* "GPA.pyx":87
+  /* "GPA.pyx":88
  * 
  * 		gx = self.gradient_dx
  * 		gy = self.gradient_dy             # <<<<<<<<<<<<<<
  * 		w, h = self.cols, self.rows
  * 
  */
-  if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 87, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 88, __pyx_L1_error)}
   __pyx_t_1 = __pyx_v_self->gradient_dy;
   __PYX_INC_MEMVIEW(&__pyx_t_1, 1);
   __pyx_v_gy = __pyx_t_1;
   __pyx_t_1.memview = NULL;
   __pyx_t_1.data = NULL;
 
-  /* "GPA.pyx":88
+  /* "GPA.pyx":89
  * 		gx = self.gradient_dx
  * 		gy = self.gradient_dy
  * 		w, h = self.cols, self.rows             # <<<<<<<<<<<<<<
@@ -3837,22 +3837,22 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
   __pyx_v_w = __pyx_t_2;
   __pyx_v_h = __pyx_t_3;
 
-  /* "GPA.pyx":90
+  /* "GPA.pyx":91
  * 		w, h = self.cols, self.rows
  * 
  * 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI             # <<<<<<<<<<<<<<
  * 									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "GPA.pyx":91
+  /* "GPA.pyx":92
  * 
  * 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
  * 									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)             # <<<<<<<<<<<<<<
@@ -3864,17 +3864,17 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_2; __pyx_t_6+=1) {
     __pyx_v_j = __pyx_t_6;
 
-    /* "GPA.pyx":90
+    /* "GPA.pyx":91
  * 		w, h = self.cols, self.rows
  * 
  * 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI             # <<<<<<<<<<<<<<
  * 									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  */
-    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 90, __pyx_L1_error)
+    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 91, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
 
-    /* "GPA.pyx":91
+    /* "GPA.pyx":92
  * 
  * 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
  * 									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)             # <<<<<<<<<<<<<<
@@ -3886,22 +3886,22 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
     for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
       __pyx_v_i = __pyx_t_10;
 
-      /* "GPA.pyx":90
+      /* "GPA.pyx":91
  * 		w, h = self.cols, self.rows
  * 
  * 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI             # <<<<<<<<<<<<<<
  * 									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_atan2); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 90, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_atan2); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 91, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_13);
       __pyx_t_14 = __pyx_v_j;
       __pyx_t_15 = __pyx_v_i;
-      __pyx_t_16 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gy.data + __pyx_t_14 * __pyx_v_gy.strides[0]) ) + __pyx_t_15 * __pyx_v_gy.strides[1]) )))); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 90, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gy.data + __pyx_t_14 * __pyx_v_gy.strides[0]) ) + __pyx_t_15 * __pyx_v_gy.strides[1]) )))); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 91, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       __pyx_t_15 = __pyx_v_j;
       __pyx_t_14 = __pyx_v_i;
-      __pyx_t_17 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gx.data + __pyx_t_15 * __pyx_v_gx.strides[0]) ) + __pyx_t_14 * __pyx_v_gx.strides[1]) )))); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 90, __pyx_L1_error)
+      __pyx_t_17 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gx.data + __pyx_t_15 * __pyx_v_gx.strides[0]) ) + __pyx_t_14 * __pyx_v_gx.strides[1]) )))); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 91, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_17);
       __pyx_t_18 = NULL;
       __pyx_t_19 = 0;
@@ -3918,7 +3918,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_13)) {
         PyObject *__pyx_temp[3] = {__pyx_t_18, __pyx_t_16, __pyx_t_17};
-        __pyx_t_12 = __Pyx_PyFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_12 = __Pyx_PyFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_18); __pyx_t_18 = 0;
         __Pyx_GOTREF(__pyx_t_12);
         __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
@@ -3928,7 +3928,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_13)) {
         PyObject *__pyx_temp[3] = {__pyx_t_18, __pyx_t_16, __pyx_t_17};
-        __pyx_t_12 = __Pyx_PyCFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_12 = __Pyx_PyCFunction_FastCall(__pyx_t_13, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_18); __pyx_t_18 = 0;
         __Pyx_GOTREF(__pyx_t_12);
         __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
@@ -3936,7 +3936,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
       } else
       #endif
       {
-        __pyx_t_20 = PyTuple_New(2+__pyx_t_19); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_20 = PyTuple_New(2+__pyx_t_19); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_20);
         if (__pyx_t_18) {
           __Pyx_GIVEREF(__pyx_t_18); PyTuple_SET_ITEM(__pyx_t_20, 0, __pyx_t_18); __pyx_t_18 = NULL;
@@ -3947,27 +3947,27 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
         PyTuple_SET_ITEM(__pyx_t_20, 1+__pyx_t_19, __pyx_t_17);
         __pyx_t_16 = 0;
         __pyx_t_17 = 0;
-        __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_13, __pyx_t_20, NULL); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_13, __pyx_t_20, NULL); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_12);
         __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
       }
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-      __pyx_t_13 = PyObject_RichCompare(__pyx_t_12, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_13); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 90, __pyx_L1_error)
+      __pyx_t_13 = PyObject_RichCompare(__pyx_t_12, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_13); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 91, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-      __pyx_t_21 = __Pyx_PyObject_IsTrue(__pyx_t_13); if (unlikely(__pyx_t_21 < 0)) __PYX_ERR(0, 90, __pyx_L1_error)
+      __pyx_t_21 = __Pyx_PyObject_IsTrue(__pyx_t_13); if (unlikely(__pyx_t_21 < 0)) __PYX_ERR(0, 91, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       if (__pyx_t_21) {
-        __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_atan2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_atan2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_12);
-        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 90, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 91, __pyx_L1_error)}
         __pyx_t_14 = __pyx_v_j;
         __pyx_t_15 = __pyx_v_i;
-        __pyx_t_20 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_14 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[1]) )))); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_20 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_14 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[1]) )))); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_20);
-        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 90, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 91, __pyx_L1_error)}
         __pyx_t_15 = __pyx_v_j;
         __pyx_t_14 = __pyx_v_i;
-        __pyx_t_17 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_14 * __pyx_v_self->gradient_dx.strides[1]) )))); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_17 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_14 * __pyx_v_self->gradient_dx.strides[1]) )))); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_17);
         __pyx_t_16 = NULL;
         __pyx_t_19 = 0;
@@ -3984,7 +3984,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_12)) {
           PyObject *__pyx_temp[3] = {__pyx_t_16, __pyx_t_20, __pyx_t_17};
-          __pyx_t_13 = __Pyx_PyFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 90, __pyx_L1_error)
+          __pyx_t_13 = __Pyx_PyFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 91, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
           __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
@@ -3994,7 +3994,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_12)) {
           PyObject *__pyx_temp[3] = {__pyx_t_16, __pyx_t_20, __pyx_t_17};
-          __pyx_t_13 = __Pyx_PyCFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 90, __pyx_L1_error)
+          __pyx_t_13 = __Pyx_PyCFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 91, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
           __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
@@ -4002,7 +4002,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
         } else
         #endif
         {
-          __pyx_t_18 = PyTuple_New(2+__pyx_t_19); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 90, __pyx_L1_error)
+          __pyx_t_18 = PyTuple_New(2+__pyx_t_19); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 91, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_18);
           if (__pyx_t_16) {
             __Pyx_GIVEREF(__pyx_t_16); PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_16); __pyx_t_16 = NULL;
@@ -4013,7 +4013,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
           PyTuple_SET_ITEM(__pyx_t_18, 1+__pyx_t_19, __pyx_t_17);
           __pyx_t_20 = 0;
           __pyx_t_17 = 0;
-          __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_18, NULL); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 90, __pyx_L1_error)
+          __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_18, NULL); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 91, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
         }
@@ -4021,15 +4021,15 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
         __pyx_t_11 = __pyx_t_13;
         __pyx_t_13 = 0;
       } else {
-        __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_atan2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_n_s_atan2); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_12);
         __pyx_t_14 = __pyx_v_j;
         __pyx_t_15 = __pyx_v_i;
-        __pyx_t_18 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gy.data + __pyx_t_14 * __pyx_v_gy.strides[0]) ) + __pyx_t_15 * __pyx_v_gy.strides[1]) )))); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_18 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gy.data + __pyx_t_14 * __pyx_v_gy.strides[0]) ) + __pyx_t_15 * __pyx_v_gy.strides[1]) )))); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_18);
         __pyx_t_15 = __pyx_v_j;
         __pyx_t_14 = __pyx_v_i;
-        __pyx_t_17 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gx.data + __pyx_t_15 * __pyx_v_gx.strides[0]) ) + __pyx_t_14 * __pyx_v_gx.strides[1]) )))); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_17 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gx.data + __pyx_t_15 * __pyx_v_gx.strides[0]) ) + __pyx_t_14 * __pyx_v_gx.strides[1]) )))); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_17);
         __pyx_t_20 = NULL;
         __pyx_t_19 = 0;
@@ -4046,7 +4046,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_12)) {
           PyObject *__pyx_temp[3] = {__pyx_t_20, __pyx_t_18, __pyx_t_17};
-          __pyx_t_13 = __Pyx_PyFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 90, __pyx_L1_error)
+          __pyx_t_13 = __Pyx_PyFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 91, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
           __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
@@ -4056,7 +4056,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_12)) {
           PyObject *__pyx_temp[3] = {__pyx_t_20, __pyx_t_18, __pyx_t_17};
-          __pyx_t_13 = __Pyx_PyCFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 90, __pyx_L1_error)
+          __pyx_t_13 = __Pyx_PyCFunction_FastCall(__pyx_t_12, __pyx_temp+1-__pyx_t_19, 2+__pyx_t_19); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 91, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
           __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
@@ -4064,7 +4064,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
         } else
         #endif
         {
-          __pyx_t_16 = PyTuple_New(2+__pyx_t_19); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 90, __pyx_L1_error)
+          __pyx_t_16 = PyTuple_New(2+__pyx_t_19); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 91, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_16);
           if (__pyx_t_20) {
             __Pyx_GIVEREF(__pyx_t_20); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_20); __pyx_t_20 = NULL;
@@ -4075,133 +4075,133 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
           PyTuple_SET_ITEM(__pyx_t_16, 1+__pyx_t_19, __pyx_t_17);
           __pyx_t_18 = 0;
           __pyx_t_17 = 0;
-          __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_16, NULL); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 90, __pyx_L1_error)
+          __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_16, NULL); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 91, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
         }
         __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-        __pyx_t_12 = PyFloat_FromDouble((2.0 * M_PI)); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_12 = PyFloat_FromDouble((2.0 * M_PI)); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_12);
-        __pyx_t_16 = PyNumber_Add(__pyx_t_13, __pyx_t_12); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 90, __pyx_L1_error)
+        __pyx_t_16 = PyNumber_Add(__pyx_t_13, __pyx_t_12); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 91, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_16);
         __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
         __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
         __pyx_t_11 = __pyx_t_16;
         __pyx_t_16 = 0;
       }
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_t_11))) __PYX_ERR(0, 90, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_t_11))) __PYX_ERR(0, 91, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
     }
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 90, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 91, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   }
-  __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "GPA.pyx":91
+  /* "GPA.pyx":92
  * 
  * 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
  * 									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)             # <<<<<<<<<<<<<<
  * 		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 
  */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 91, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GetModuleGlobalName(__pyx_t_11, __pyx_n_s_numpy); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 91, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_11, __pyx_n_s_numpy); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
-  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_11, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 91, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_11, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_16) < 0) __PYX_ERR(0, 91, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_16) < 0) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-  /* "GPA.pyx":90
+  /* "GPA.pyx":91
  * 		w, h = self.cols, self.rows
  * 
  * 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI             # <<<<<<<<<<<<<<
  * 									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  */
-  __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_7, __pyx_t_4); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_7, __pyx_t_4); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_16, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_16, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->phases, 0);
   __pyx_v_self->phases = __pyx_t_1;
   __pyx_t_1.memview = NULL;
   __pyx_t_1.data = NULL;
 
-  /* "GPA.pyx":92
+  /* "GPA.pyx":93
  * 		self.phases = numpy.array([[atan2(self.gradient_dy[j, i],self.gradient_dx[j, i]) if atan2(gy[j, i],gx[j, i])>0 else atan2(gy[j, i],gx[j, i])+2.0*M_PI
  * 									 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		self.mods = numpy.array([[self.getMod(self.gradient_dx[j, i], self.gradient_dy[j, i]) for i in range(w) ] for j in range(h)],dtype=numpy.float64)             # <<<<<<<<<<<<<<
  * 
  * 	@cython.boundscheck(False)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_16, __pyx_n_s_numpy); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_16, __pyx_n_s_numpy); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_16, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_16, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  __pyx_t_16 = PyList_New(0); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_16 = PyList_New(0); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __pyx_t_3 = __pyx_v_h;
   __pyx_t_2 = __pyx_t_3;
   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_2; __pyx_t_6+=1) {
     __pyx_v_j = __pyx_t_6;
-    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 92, __pyx_L1_error)
+    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 93, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_8 = __pyx_v_w;
     __pyx_t_9 = __pyx_t_8;
     for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
       __pyx_v_i = __pyx_t_10;
-      if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 92, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 93, __pyx_L1_error)}
       __pyx_t_14 = __pyx_v_j;
       __pyx_t_15 = __pyx_v_i;
-      if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 92, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 93, __pyx_L1_error)}
       __pyx_t_22 = __pyx_v_j;
       __pyx_t_23 = __pyx_v_i;
-      __pyx_t_5 = PyFloat_FromDouble(((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->getMod(__pyx_v_self, (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_14 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_22 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_23 * __pyx_v_self->gradient_dy.strides[1]) ))))); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 92, __pyx_L1_error)
+      __pyx_t_5 = PyFloat_FromDouble(((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->getMod(__pyx_v_self, (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_14 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_22 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_23 * __pyx_v_self->gradient_dy.strides[1]) ))))); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 93, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 92, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_7, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 93, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     }
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_16, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 92, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_16, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 93, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   }
-  __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_GIVEREF(__pyx_t_16);
   PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_16);
   __pyx_t_16 = 0;
-  __pyx_t_16 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float64); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float64); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (PyDict_SetItem(__pyx_t_16, __pyx_n_s_dtype, __pyx_t_11) < 0) __PYX_ERR(0, 92, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_16, __pyx_n_s_dtype, __pyx_t_11) < 0) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-  __pyx_t_11 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_7, __pyx_t_16); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_7, __pyx_t_16); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_11, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_11, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->mods, 0);
   __pyx_v_self->mods = __pyx_t_1;
   __pyx_t_1.memview = NULL;
   __pyx_t_1.data = NULL;
 
-  /* "GPA.pyx":82
+  /* "GPA.pyx":83
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _setModulusPhase(self):             # <<<<<<<<<<<<<<
@@ -4230,7 +4230,7 @@ static void __pyx_f_3GPA_3GPA__setModulusPhase(struct __pyx_obj_3GPA_GPA *__pyx_
   __Pyx_RefNannyFinishContext();
 }
 
-/* "GPA.pyx":98
+/* "GPA.pyx":99
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef double getMod(self,double x, double y):             # <<<<<<<<<<<<<<
@@ -4243,7 +4243,7 @@ static double __pyx_f_3GPA_3GPA_getMod(struct __pyx_obj_3GPA_GPA *__pyx_v_self, 
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("getMod", 0);
 
-  /* "GPA.pyx":99
+  /* "GPA.pyx":100
  * 	@cython.cdivision(True)
  * 	cdef double getMod(self,double x, double y):
  * 		return sqrt(pow(x,2.0)+pow(y,2.0))/self.maxGrad             # <<<<<<<<<<<<<<
@@ -4253,7 +4253,7 @@ static double __pyx_f_3GPA_3GPA_getMod(struct __pyx_obj_3GPA_GPA *__pyx_v_self, 
   __pyx_r = (sqrt((pow(__pyx_v_x, 2.0) + pow(__pyx_v_y, 2.0))) / __pyx_v_self->maxGrad);
   goto __pyx_L0;
 
-  /* "GPA.pyx":98
+  /* "GPA.pyx":99
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef double getMod(self,double x, double y):             # <<<<<<<<<<<<<<
@@ -4267,7 +4267,7 @@ static double __pyx_f_3GPA_3GPA_getMod(struct __pyx_obj_3GPA_GPA *__pyx_v_self, 
   return __pyx_r;
 }
 
-/* "GPA.pyx":105
+/* "GPA.pyx":106
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cpdef char* version(self):             # <<<<<<<<<<<<<<
@@ -4297,7 +4297,7 @@ static char *__pyx_f_3GPA_3GPA_version(CYTHON_UNUSED struct __pyx_obj_3GPA_GPA *
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_version); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_version); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 106, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_3GPA_3GPA_5version)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -4313,10 +4313,10 @@ static char *__pyx_f_3GPA_3GPA_version(CYTHON_UNUSED struct __pyx_obj_3GPA_GPA *
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 105, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 106, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyObject_AsWritableString(__pyx_t_2); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) __PYX_ERR(0, 105, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_AsWritableString(__pyx_t_2); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) __PYX_ERR(0, 106, __pyx_L1_error)
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -4335,7 +4335,7 @@ static char *__pyx_f_3GPA_3GPA_version(CYTHON_UNUSED struct __pyx_obj_3GPA_GPA *
     #endif
   }
 
-  /* "GPA.pyx":106
+  /* "GPA.pyx":107
  * 	@cython.cdivision(True)
  * 	cpdef char* version(self):
  * 		return "GPA - 3.4"             # <<<<<<<<<<<<<<
@@ -4345,7 +4345,7 @@ static char *__pyx_f_3GPA_3GPA_version(CYTHON_UNUSED struct __pyx_obj_3GPA_GPA *
   __pyx_r = ((char *)"GPA - 3.4");
   goto __pyx_L0;
 
-  /* "GPA.pyx":105
+  /* "GPA.pyx":106
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cpdef char* version(self):             # <<<<<<<<<<<<<<
@@ -4388,7 +4388,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_4version(struct __pyx_obj_3GPA_GPA *__pyx_v_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("version", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBytes_FromString(__pyx_f_3GPA_3GPA_version(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBytes_FromString(__pyx_f_3GPA_3GPA_version(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4405,7 +4405,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_4version(struct __pyx_obj_3GPA_GPA *__pyx_v_
   return __pyx_r;
 }
 
-/* "GPA.pyx":112
+/* "GPA.pyx":113
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _update_asymmetric_mat(self,double[:] index_dist,double[:,:] dists,double tol, double ptol):             # <<<<<<<<<<<<<<
@@ -4464,89 +4464,21 @@ static void __pyx_f_3GPA_3GPA__update_asymmetric_mat(struct __pyx_obj_3GPA_GPA *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_update_asymmetric_mat", 0);
 
-  /* "GPA.pyx":116
+  /* "GPA.pyx":117
  * 		cdef int[:] x, y
  * 
  * 		self.symmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		self.asymmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
  * 		self.unknownP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 116, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_v_dists); 
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 116, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4.data = __pyx_v_dists.data;
-  __pyx_t_4.memview = __pyx_v_dists.memview;
-  __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
-  {
-    Py_ssize_t __pyx_tmp_idx = 0;
-    Py_ssize_t __pyx_tmp_stride = __pyx_v_dists.strides[0];
-        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
-}
-
-__pyx_t_4.shape[0] = __pyx_v_dists.shape[1];
-__pyx_t_4.strides[0] = __pyx_v_dists.strides[1];
-    __pyx_t_4.suboffsets[0] = -1;
-
-__pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4); 
-  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
-  __pyx_t_4.memview = NULL;
-  __pyx_t_4.data = NULL;
-  __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_1);
-  __Pyx_GIVEREF(__pyx_t_5);
-  PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
-  __pyx_t_1 = 0;
-  __pyx_t_5 = 0;
-  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GIVEREF(__pyx_t_6);
-  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6);
-  __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int32); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_7, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __PYX_XDEC_MEMVIEW(&__pyx_v_self->symmetricalP, 0);
-  __pyx_v_self->symmetricalP = __pyx_t_8;
-  __pyx_t_8.memview = NULL;
-  __pyx_t_8.data = NULL;
-
-  /* "GPA.pyx":117
- * 
- * 		self.symmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
- * 		self.asymmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)             # <<<<<<<<<<<<<<
- * 		self.unknownP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
- * 
- */
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_zeros); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_v_dists); 
-  __pyx_t_7 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
   __pyx_t_4.data = __pyx_v_dists.data;
   __pyx_t_4.memview = __pyx_v_dists.memview;
   __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
@@ -4566,55 +4498,55 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
   __pyx_t_4.data = NULL;
   __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_7);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_7);
+  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 117, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_5);
-  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_5);
-  __pyx_t_7 = 0;
+  PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
+  __pyx_t_1 = 0;
   __pyx_t_5 = 0;
   __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GIVEREF(__pyx_t_2);
-  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_2);
-  __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 117, __pyx_L1_error)
+  __Pyx_GIVEREF(__pyx_t_6);
+  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6);
+  __pyx_t_6 = 0;
+  __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 117, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 117, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int32); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_int32); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_5, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 117, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 117, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __PYX_XDEC_MEMVIEW(&__pyx_v_self->asymmetricalP, 0);
-  __pyx_v_self->asymmetricalP = __pyx_t_8;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_7, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 117, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_self->symmetricalP, 0);
+  __pyx_v_self->symmetricalP = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
   /* "GPA.pyx":118
- * 		self.symmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
- * 		self.asymmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
- * 		self.unknownP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 
- * 		# distances loop
+ * 		self.symmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
+ * 		self.asymmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)             # <<<<<<<<<<<<<<
+ * 		self.unknownP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
+ * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_zeros); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_v_dists); 
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_7 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
   __pyx_t_4.data = __pyx_v_dists.data;
   __pyx_t_4.memview = __pyx_v_dists.memview;
   __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
@@ -4634,7 +4566,75 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
   __pyx_t_4.data = NULL;
   __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_7);
+  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_7);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_5);
+  __pyx_t_7 = 0;
+  __pyx_t_5 = 0;
+  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_2);
+  __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_int32); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_5, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __PYX_XDEC_MEMVIEW(&__pyx_v_self->asymmetricalP, 0);
+  __pyx_v_self->asymmetricalP = __pyx_t_8;
+  __pyx_t_8.memview = NULL;
+  __pyx_t_8.data = NULL;
+
+  /* "GPA.pyx":119
+ * 		self.symmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
+ * 		self.asymmetricalP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)
+ * 		self.unknownP = numpy.zeros((len(dists),len(dists[0])),dtype=numpy.int32)             # <<<<<<<<<<<<<<
+ * 
+ * 		# distances loop
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 119, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 119, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_v_dists); 
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 119, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4.data = __pyx_v_dists.data;
+  __pyx_t_4.memview = __pyx_v_dists.memview;
+  __PYX_INC_MEMVIEW(&__pyx_t_4, 0);
+  {
+    Py_ssize_t __pyx_tmp_idx = 0;
+    Py_ssize_t __pyx_tmp_stride = __pyx_v_dists.strides[0];
+        __pyx_t_4.data += __pyx_tmp_idx * __pyx_tmp_stride;
+}
+
+__pyx_t_4.shape[0] = __pyx_v_dists.shape[1];
+__pyx_t_4.strides[0] = __pyx_v_dists.strides[1];
+    __pyx_t_4.suboffsets[0] = -1;
+
+__pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4); 
+  __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
+  __pyx_t_4.memview = NULL;
+  __pyx_t_4.data = NULL;
+  __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 119, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_1);
@@ -4642,33 +4642,33 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
   __pyx_t_1 = 0;
   __pyx_t_5 = 0;
-  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_6);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6);
   __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int32); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int32); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 118, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, __pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_7, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_7, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->unknownP, 0);
   __pyx_v_self->unknownP = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "GPA.pyx":121
+  /* "GPA.pyx":122
  * 
  * 		# distances loop
  * 		for ind in range(0, len(index_dist)):             # <<<<<<<<<<<<<<
@@ -4680,23 +4680,23 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
   for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_ind = __pyx_t_10;
 
-    /* "GPA.pyx":122
+    /* "GPA.pyx":123
  * 		# distances loop
  * 		for ind in range(0, len(index_dist)):
  * 			x2, y2 =[], []             # <<<<<<<<<<<<<<
  * 			for py in range(self.rows):
  * 				for px in range(self.cols):
  */
-    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 122, __pyx_L1_error)
+    __pyx_t_7 = PyList_New(0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 123, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 122, __pyx_L1_error)
+    __pyx_t_6 = PyList_New(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 123, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_XDECREF_SET(__pyx_v_x2, ((PyObject*)__pyx_t_7));
     __pyx_t_7 = 0;
     __Pyx_XDECREF_SET(__pyx_v_y2, ((PyObject*)__pyx_t_6));
     __pyx_t_6 = 0;
 
-    /* "GPA.pyx":123
+    /* "GPA.pyx":124
  * 		for ind in range(0, len(index_dist)):
  * 			x2, y2 =[], []
  * 			for py in range(self.rows):             # <<<<<<<<<<<<<<
@@ -4708,7 +4708,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
     for (__pyx_t_13 = 0; __pyx_t_13 < __pyx_t_12; __pyx_t_13+=1) {
       __pyx_v_py = __pyx_t_13;
 
-      /* "GPA.pyx":124
+      /* "GPA.pyx":125
  * 			x2, y2 =[], []
  * 			for py in range(self.rows):
  * 				for px in range(self.cols):             # <<<<<<<<<<<<<<
@@ -4720,7 +4720,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
       for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
         __pyx_v_px = __pyx_t_16;
 
-        /* "GPA.pyx":125
+        /* "GPA.pyx":126
  * 			for py in range(self.rows):
  * 				for px in range(self.cols):
  * 					if (fabs(dists[py, px]-index_dist[ind]) <= fabs(ptol)):             # <<<<<<<<<<<<<<
@@ -4733,31 +4733,31 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
         __pyx_t_20 = ((fabs(((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_dists.data + __pyx_t_17 * __pyx_v_dists.strides[0]) ) + __pyx_t_18 * __pyx_v_dists.strides[1]) ))) - (*((double *) ( /* dim=0 */ (__pyx_v_index_dist.data + __pyx_t_19 * __pyx_v_index_dist.strides[0]) ))))) <= fabs(__pyx_v_ptol)) != 0);
         if (__pyx_t_20) {
 
-          /* "GPA.pyx":126
+          /* "GPA.pyx":127
  * 				for px in range(self.cols):
  * 					if (fabs(dists[py, px]-index_dist[ind]) <= fabs(ptol)):
  * 						x2.append(px)             # <<<<<<<<<<<<<<
  * 						y2.append(py)
  * 			x, y = numpy.array(x2,dtype=numpy.int32), numpy.array(y2,dtype=numpy.int32)
  */
-          __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_px); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 126, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_px); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 127, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_21 = __Pyx_PyList_Append(__pyx_v_x2, __pyx_t_6); if (unlikely(__pyx_t_21 == ((int)-1))) __PYX_ERR(0, 126, __pyx_L1_error)
+          __pyx_t_21 = __Pyx_PyList_Append(__pyx_v_x2, __pyx_t_6); if (unlikely(__pyx_t_21 == ((int)-1))) __PYX_ERR(0, 127, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-          /* "GPA.pyx":127
+          /* "GPA.pyx":128
  * 					if (fabs(dists[py, px]-index_dist[ind]) <= fabs(ptol)):
  * 						x2.append(px)
  * 						y2.append(py)             # <<<<<<<<<<<<<<
  * 			x, y = numpy.array(x2,dtype=numpy.int32), numpy.array(y2,dtype=numpy.int32)
  * 			lx = len(x)
  */
-          __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_py); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 127, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_py); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 128, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_21 = __Pyx_PyList_Append(__pyx_v_y2, __pyx_t_6); if (unlikely(__pyx_t_21 == ((int)-1))) __PYX_ERR(0, 127, __pyx_L1_error)
+          __pyx_t_21 = __Pyx_PyList_Append(__pyx_v_y2, __pyx_t_6); if (unlikely(__pyx_t_21 == ((int)-1))) __PYX_ERR(0, 128, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-          /* "GPA.pyx":125
+          /* "GPA.pyx":126
  * 			for py in range(self.rows):
  * 				for px in range(self.cols):
  * 					if (fabs(dists[py, px]-index_dist[ind]) <= fabs(ptol)):             # <<<<<<<<<<<<<<
@@ -4768,64 +4768,64 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
       }
     }
 
-    /* "GPA.pyx":128
+    /* "GPA.pyx":129
  * 						x2.append(px)
  * 						y2.append(py)
  * 			x, y = numpy.array(x2,dtype=numpy.int32), numpy.array(y2,dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 			lx = len(x)
  * 
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_INCREF(__pyx_v_x2);
     __Pyx_GIVEREF(__pyx_v_x2);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_v_x2);
-    __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_numpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_numpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_int32); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_int32); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 128, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_1) < 0) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_22 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_22.memview)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_22 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(__pyx_t_1, PyBUF_WRITABLE); if (unlikely(!__pyx_t_22.memview)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_INCREF(__pyx_v_y2);
     __Pyx_GIVEREF(__pyx_v_y2);
     PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_y2);
-    __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_int32); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_int32); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_2) < 0) __PYX_ERR(0, 128, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_6, __pyx_n_s_dtype, __pyx_t_2) < 0) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_1, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_1, __pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_23 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(__pyx_t_2, PyBUF_WRITABLE); if (unlikely(!__pyx_t_23.memview)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_23 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(__pyx_t_2, PyBUF_WRITABLE); if (unlikely(!__pyx_t_23.memview)) __PYX_ERR(0, 129, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __PYX_XDEC_MEMVIEW(&__pyx_v_x, 1);
     __pyx_v_x = __pyx_t_22;
@@ -4836,7 +4836,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
     __pyx_t_23.memview = NULL;
     __pyx_t_23.data = NULL;
 
-    /* "GPA.pyx":129
+    /* "GPA.pyx":130
  * 						y2.append(py)
  * 			x, y = numpy.array(x2,dtype=numpy.int32), numpy.array(y2,dtype=numpy.int32)
  * 			lx = len(x)             # <<<<<<<<<<<<<<
@@ -4846,7 +4846,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
     __pyx_t_24 = __Pyx_MemoryView_Len(__pyx_v_x); 
     __pyx_v_lx = __pyx_t_24;
 
-    /* "GPA.pyx":132
+    /* "GPA.pyx":133
  * 
  * 			# compare each point in the same distance
  * 			for i in range(lx):             # <<<<<<<<<<<<<<
@@ -4858,7 +4858,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
     for (__pyx_t_13 = 0; __pyx_t_13 < __pyx_t_12; __pyx_t_13+=1) {
       __pyx_v_i = __pyx_t_13;
 
-      /* "GPA.pyx":133
+      /* "GPA.pyx":134
  * 			# compare each point in the same distance
  * 			for i in range(lx):
  * 				px, py = x[i], y[i]             # <<<<<<<<<<<<<<
@@ -4872,32 +4872,32 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
       __pyx_v_px = __pyx_t_14;
       __pyx_v_py = __pyx_t_15;
 
-      /* "GPA.pyx":135
+      /* "GPA.pyx":136
  * 				px, py = x[i], y[i]
  * 
  * 				if self.mods[py,px]<= tol:             # <<<<<<<<<<<<<<
  * 					self.unknownP[py,px] = 1
  * 					continue
  */
-      if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 135, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 136, __pyx_L1_error)}
       __pyx_t_19 = __pyx_v_py;
       __pyx_t_18 = __pyx_v_px;
       __pyx_t_20 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_19 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_18 * __pyx_v_self->mods.strides[1]) ))) <= __pyx_v_tol) != 0);
       if (__pyx_t_20) {
 
-        /* "GPA.pyx":136
+        /* "GPA.pyx":137
  * 
  * 				if self.mods[py,px]<= tol:
  * 					self.unknownP[py,px] = 1             # <<<<<<<<<<<<<<
  * 					continue
  * 
  */
-        if (unlikely(!__pyx_v_self->unknownP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 136, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->unknownP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 137, __pyx_L1_error)}
         __pyx_t_18 = __pyx_v_py;
         __pyx_t_19 = __pyx_v_px;
         *((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->unknownP.data + __pyx_t_18 * __pyx_v_self->unknownP.strides[0]) ) + __pyx_t_19 * __pyx_v_self->unknownP.strides[1]) )) = 1;
 
-        /* "GPA.pyx":137
+        /* "GPA.pyx":138
  * 				if self.mods[py,px]<= tol:
  * 					self.unknownP[py,px] = 1
  * 					continue             # <<<<<<<<<<<<<<
@@ -4906,7 +4906,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
  */
         goto __pyx_L10_continue;
 
-        /* "GPA.pyx":135
+        /* "GPA.pyx":136
  * 				px, py = x[i], y[i]
  * 
  * 				if self.mods[py,px]<= tol:             # <<<<<<<<<<<<<<
@@ -4915,7 +4915,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
  */
       }
 
-      /* "GPA.pyx":139
+      /* "GPA.pyx":140
  * 					continue
  * 
  * 				for j in range(lx):             # <<<<<<<<<<<<<<
@@ -4927,7 +4927,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
       for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_14; __pyx_t_16+=1) {
         __pyx_v_j = __pyx_t_16;
 
-        /* "GPA.pyx":140
+        /* "GPA.pyx":141
  * 
  * 				for j in range(lx):
  * 					px2, py2 = x[j], y[j]             # <<<<<<<<<<<<<<
@@ -4941,20 +4941,20 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
         __pyx_v_px2 = __pyx_t_25;
         __pyx_v_py2 = __pyx_t_26;
 
-        /* "GPA.pyx":141
+        /* "GPA.pyx":142
  * 				for j in range(lx):
  * 					px2, py2 = x[j], y[j]
  * 					if self.mods[py2,px2]<= tol:             # <<<<<<<<<<<<<<
  * 						continue
  * 					dx = self.gradient_dx[py, px]+self.gradient_dx[py2, px2]
  */
-        if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 141, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 142, __pyx_L1_error)}
         __pyx_t_19 = __pyx_v_py2;
         __pyx_t_18 = __pyx_v_px2;
         __pyx_t_20 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_19 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_18 * __pyx_v_self->mods.strides[1]) ))) <= __pyx_v_tol) != 0);
         if (__pyx_t_20) {
 
-          /* "GPA.pyx":142
+          /* "GPA.pyx":143
  * 					px2, py2 = x[j], y[j]
  * 					if self.mods[py2,px2]<= tol:
  * 						continue             # <<<<<<<<<<<<<<
@@ -4963,7 +4963,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
  */
           goto __pyx_L13_continue;
 
-          /* "GPA.pyx":141
+          /* "GPA.pyx":142
  * 				for j in range(lx):
  * 					px2, py2 = x[j], y[j]
  * 					if self.mods[py2,px2]<= tol:             # <<<<<<<<<<<<<<
@@ -4972,67 +4972,67 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
  */
         }
 
-        /* "GPA.pyx":143
+        /* "GPA.pyx":144
  * 					if self.mods[py2,px2]<= tol:
  * 						continue
  * 					dx = self.gradient_dx[py, px]+self.gradient_dx[py2, px2]             # <<<<<<<<<<<<<<
  * 					dy = self.gradient_dy[py, px]+self.gradient_dy[py2, px2]
  * 					# Vetores sao simetricos
  */
-        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 143, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 144, __pyx_L1_error)}
         __pyx_t_18 = __pyx_v_py;
         __pyx_t_19 = __pyx_v_px;
-        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 143, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 144, __pyx_L1_error)}
         __pyx_t_17 = __pyx_v_py2;
         __pyx_t_27 = __pyx_v_px2;
-        __pyx_t_2 = PyFloat_FromDouble(((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_18 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_19 * __pyx_v_self->gradient_dx.strides[1]) ))) + (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_17 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_27 * __pyx_v_self->gradient_dx.strides[1]) ))))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 143, __pyx_L1_error)
+        __pyx_t_2 = PyFloat_FromDouble(((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_18 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_19 * __pyx_v_self->gradient_dx.strides[1]) ))) + (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_17 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_27 * __pyx_v_self->gradient_dx.strides[1]) ))))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_XDECREF_SET(__pyx_v_dx, __pyx_t_2);
         __pyx_t_2 = 0;
 
-        /* "GPA.pyx":144
+        /* "GPA.pyx":145
  * 						continue
  * 					dx = self.gradient_dx[py, px]+self.gradient_dx[py2, px2]
  * 					dy = self.gradient_dy[py, px]+self.gradient_dy[py2, px2]             # <<<<<<<<<<<<<<
  * 					# Vetores sao simetricos
  * 					if self.getMod(dx,dy)<= tol:
  */
-        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 144, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 145, __pyx_L1_error)}
         __pyx_t_27 = __pyx_v_py;
         __pyx_t_17 = __pyx_v_px;
-        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 144, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 145, __pyx_L1_error)}
         __pyx_t_19 = __pyx_v_py2;
         __pyx_t_18 = __pyx_v_px2;
-        __pyx_t_2 = PyFloat_FromDouble(((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_27 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_17 * __pyx_v_self->gradient_dy.strides[1]) ))) + (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_19 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_18 * __pyx_v_self->gradient_dy.strides[1]) ))))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
+        __pyx_t_2 = PyFloat_FromDouble(((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_27 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_17 * __pyx_v_self->gradient_dy.strides[1]) ))) + (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_19 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_18 * __pyx_v_self->gradient_dy.strides[1]) ))))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 145, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_XDECREF_SET(__pyx_v_dy, __pyx_t_2);
         __pyx_t_2 = 0;
 
-        /* "GPA.pyx":146
+        /* "GPA.pyx":147
  * 					dy = self.gradient_dy[py, px]+self.gradient_dy[py2, px2]
  * 					# Vetores sao simetricos
  * 					if self.getMod(dx,dy)<= tol:             # <<<<<<<<<<<<<<
  * 						self.symmetricalP[py,px] = 1
  * 						# se outro for simetrico ele vai se marcar
  */
-        __pyx_t_28 = __pyx_PyFloat_AsDouble(__pyx_v_dx); if (unlikely((__pyx_t_28 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 146, __pyx_L1_error)
-        __pyx_t_29 = __pyx_PyFloat_AsDouble(__pyx_v_dy); if (unlikely((__pyx_t_29 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 146, __pyx_L1_error)
+        __pyx_t_28 = __pyx_PyFloat_AsDouble(__pyx_v_dx); if (unlikely((__pyx_t_28 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 147, __pyx_L1_error)
+        __pyx_t_29 = __pyx_PyFloat_AsDouble(__pyx_v_dy); if (unlikely((__pyx_t_29 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 147, __pyx_L1_error)
         __pyx_t_20 = ((((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->getMod(__pyx_v_self, __pyx_t_28, __pyx_t_29) <= __pyx_v_tol) != 0);
         if (__pyx_t_20) {
 
-          /* "GPA.pyx":147
+          /* "GPA.pyx":148
  * 					# Vetores sao simetricos
  * 					if self.getMod(dx,dy)<= tol:
  * 						self.symmetricalP[py,px] = 1             # <<<<<<<<<<<<<<
  * 						# se outro for simetrico ele vai se marcar
  * 						break
  */
-          if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 147, __pyx_L1_error)}
+          if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 148, __pyx_L1_error)}
           __pyx_t_18 = __pyx_v_py;
           __pyx_t_19 = __pyx_v_px;
           *((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->symmetricalP.data + __pyx_t_18 * __pyx_v_self->symmetricalP.strides[0]) ) + __pyx_t_19 * __pyx_v_self->symmetricalP.strides[1]) )) = 1;
 
-          /* "GPA.pyx":149
+          /* "GPA.pyx":150
  * 						self.symmetricalP[py,px] = 1
  * 						# se outro for simetrico ele vai se marcar
  * 						break             # <<<<<<<<<<<<<<
@@ -5041,7 +5041,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
  */
           goto __pyx_L14_break;
 
-          /* "GPA.pyx":146
+          /* "GPA.pyx":147
  * 					dy = self.gradient_dy[py, px]+self.gradient_dy[py2, px2]
  * 					# Vetores sao simetricos
  * 					if self.getMod(dx,dy)<= tol:             # <<<<<<<<<<<<<<
@@ -5056,7 +5056,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
     }
   }
 
-  /* "GPA.pyx":152
+  /* "GPA.pyx":153
  * 
  * 		# Caso nao seja desconhecido ou simetrico, ele eh asimmetrico
  * 		for py in range(self.rows):             # <<<<<<<<<<<<<<
@@ -5068,7 +5068,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
   for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
     __pyx_v_py = __pyx_t_12;
 
-    /* "GPA.pyx":153
+    /* "GPA.pyx":154
  * 		# Caso nao seja desconhecido ou simetrico, ele eh asimmetrico
  * 		for py in range(self.rows):
  * 			for px in range(self.cols):             # <<<<<<<<<<<<<<
@@ -5080,14 +5080,14 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
     for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_15; __pyx_t_14+=1) {
       __pyx_v_px = __pyx_t_14;
 
-      /* "GPA.pyx":154
+      /* "GPA.pyx":155
  * 		for py in range(self.rows):
  * 			for px in range(self.cols):
  * 				if self.symmetricalP[py,px] == 0 and self.unknownP[py,px] ==0:             # <<<<<<<<<<<<<<
  * 					self.asymmetricalP[py,px] = 1
  * 
  */
-      if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 154, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 155, __pyx_L1_error)}
       __pyx_t_19 = __pyx_v_py;
       __pyx_t_18 = __pyx_v_px;
       __pyx_t_30 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->symmetricalP.data + __pyx_t_19 * __pyx_v_self->symmetricalP.strides[0]) ) + __pyx_t_18 * __pyx_v_self->symmetricalP.strides[1]) ))) == 0) != 0);
@@ -5096,7 +5096,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
         __pyx_t_20 = __pyx_t_30;
         goto __pyx_L22_bool_binop_done;
       }
-      if (unlikely(!__pyx_v_self->unknownP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 154, __pyx_L1_error)}
+      if (unlikely(!__pyx_v_self->unknownP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 155, __pyx_L1_error)}
       __pyx_t_18 = __pyx_v_py;
       __pyx_t_19 = __pyx_v_px;
       __pyx_t_30 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->unknownP.data + __pyx_t_18 * __pyx_v_self->unknownP.strides[0]) ) + __pyx_t_19 * __pyx_v_self->unknownP.strides[1]) ))) == 0) != 0);
@@ -5104,19 +5104,19 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
       __pyx_L22_bool_binop_done:;
       if (__pyx_t_20) {
 
-        /* "GPA.pyx":155
+        /* "GPA.pyx":156
  * 			for px in range(self.cols):
  * 				if self.symmetricalP[py,px] == 0 and self.unknownP[py,px] ==0:
  * 					self.asymmetricalP[py,px] = 1             # <<<<<<<<<<<<<<
  * 
  * 
  */
-        if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 155, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 156, __pyx_L1_error)}
         __pyx_t_19 = __pyx_v_py;
         __pyx_t_18 = __pyx_v_px;
         *((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->asymmetricalP.data + __pyx_t_19 * __pyx_v_self->asymmetricalP.strides[0]) ) + __pyx_t_18 * __pyx_v_self->asymmetricalP.strides[1]) )) = 1;
 
-        /* "GPA.pyx":154
+        /* "GPA.pyx":155
  * 		for py in range(self.rows):
  * 			for px in range(self.cols):
  * 				if self.symmetricalP[py,px] == 0 and self.unknownP[py,px] ==0:             # <<<<<<<<<<<<<<
@@ -5127,7 +5127,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
     }
   }
 
-  /* "GPA.pyx":112
+  /* "GPA.pyx":113
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _update_asymmetric_mat(self,double[:] index_dist,double[:,:] dists,double tol, double ptol):             # <<<<<<<<<<<<<<
@@ -5158,7 +5158,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_4);
   __Pyx_RefNannyFinishContext();
 }
 
-/* "GPA.pyx":162
+/* "GPA.pyx":163
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _G1_Classic(self,str symm):             # <<<<<<<<<<<<<<
@@ -5175,7 +5175,7 @@ static PyObject *__pyx_pw_3GPA_3GPA_7_G1_Classic(PyObject *__pyx_v_self, PyObjec
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_G1_Classic (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symm), (&PyString_Type), 1, "symm", 1))) __PYX_ERR(0, 162, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symm), (&PyString_Type), 1, "symm", 1))) __PYX_ERR(0, 163, __pyx_L1_error)
   __pyx_r = __pyx_pf_3GPA_3GPA_6_G1_Classic(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self), ((PyObject*)__pyx_v_symm));
 
   /* function exit code */
@@ -5213,19 +5213,22 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   Py_ssize_t __pyx_t_16;
   int __pyx_t_17;
   Py_ssize_t __pyx_t_18;
+  PyObject *__pyx_t_19 = NULL;
+  PyObject *__pyx_t_20 = NULL;
+  PyObject *__pyx_t_21 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_G1_Classic", 0);
 
-  /* "GPA.pyx":166
+  /* "GPA.pyx":167
  * 		cdef int[:,:] targetMat
  * 		cdef float ratio
  * 		self.triangulation_points = []             # <<<<<<<<<<<<<<
  * 		d1 = self.symmetricalP
  * 
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 166, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->triangulation_points);
@@ -5233,45 +5236,45 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   __pyx_v_self->triangulation_points = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "GPA.pyx":167
+  /* "GPA.pyx":168
  * 		cdef float ratio
  * 		self.triangulation_points = []
  * 		d1 = self.symmetricalP             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 167, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->symmetricalP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 167, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 168, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->symmetricalP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 168, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_d1 = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "GPA.pyx":170
+  /* "GPA.pyx":171
  * 
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  */
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 170, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 171, __pyx_L1_error)
   __pyx_t_3 = (__pyx_t_2 != 0);
   if (__pyx_t_3) {
 
-    /* "GPA.pyx":171
+    /* "GPA.pyx":172
  * 
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  */
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 171, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 172, __pyx_L1_error)}
     __pyx_t_4 = __pyx_v_self->symmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_v_targetMat = __pyx_t_4;
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
 
-    /* "GPA.pyx":170
+    /* "GPA.pyx":171
  * 
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
@@ -5281,32 +5284,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":172
+  /* "GPA.pyx":173
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  */
-  __pyx_t_3 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 172, __pyx_L1_error)
+  __pyx_t_3 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 173, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_3 != 0);
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":173
+    /* "GPA.pyx":174
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  */
-    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 173, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 174, __pyx_L1_error)}
     __pyx_t_4 = __pyx_v_self->asymmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_v_targetMat = __pyx_t_4;
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
 
-    /* "GPA.pyx":172
+    /* "GPA.pyx":173
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
@@ -5316,36 +5319,36 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":174
+  /* "GPA.pyx":175
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  */
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 175, __pyx_L1_error)
   __pyx_t_3 = (__pyx_t_2 != 0);
   if (likely(__pyx_t_3)) {
 
-    /* "GPA.pyx":175
+    /* "GPA.pyx":176
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 175, __pyx_L1_error)}
-    __pyx_t_1 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 175, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 176, __pyx_L1_error)}
+    __pyx_t_1 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 175, __pyx_L1_error)}
-    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 175, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 176, __pyx_L1_error)}
+    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_GIVEREF(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_1);
@@ -5353,32 +5356,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6);
     __pyx_t_1 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_7);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
     __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 175, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_4 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_4.memview)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_4.memview)) __PYX_ERR(0, 176, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_targetMat = __pyx_t_4;
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
 
-    /* "GPA.pyx":174
+    /* "GPA.pyx":175
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
@@ -5388,7 +5391,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":177
+  /* "GPA.pyx":178
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm)             # <<<<<<<<<<<<<<
@@ -5396,18 +5399,18 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
  * 		for i in range(self.rows):
  */
   /*else*/ {
-    __pyx_t_8 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be, __pyx_v_symm); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 177, __pyx_L1_error)
+    __pyx_t_8 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be, __pyx_v_symm); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 178, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 177, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 178, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_Raise(__pyx_t_7, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __PYX_ERR(0, 177, __pyx_L1_error)
+    __PYX_ERR(0, 178, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "GPA.pyx":179
+  /* "GPA.pyx":180
  * 			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm)
  * 
  * 		for i in range(self.rows):             # <<<<<<<<<<<<<<
@@ -5419,7 +5422,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_i = __pyx_t_11;
 
-    /* "GPA.pyx":180
+    /* "GPA.pyx":181
  * 
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):             # <<<<<<<<<<<<<<
@@ -5431,7 +5434,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
       __pyx_v_j = __pyx_t_14;
 
-      /* "GPA.pyx":181
+      /* "GPA.pyx":182
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
@@ -5443,24 +5446,24 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
       __pyx_t_3 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetMat.data + __pyx_t_15 * __pyx_v_targetMat.strides[0]) ) + __pyx_t_16 * __pyx_v_targetMat.strides[1]) ))) > 0) != 0);
       if (__pyx_t_3) {
 
-        /* "GPA.pyx":182
+        /* "GPA.pyx":183
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:
  * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])             # <<<<<<<<<<<<<<
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):
  */
-        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 182, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 183, __pyx_L1_error)}
         __pyx_t_16 = __pyx_v_i;
         __pyx_t_15 = __pyx_v_j;
-        __pyx_t_7 = PyFloat_FromDouble((__pyx_v_j + (0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_16 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) )))))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 182, __pyx_L1_error)
+        __pyx_t_7 = PyFloat_FromDouble((__pyx_v_j + (0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_16 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) )))))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 183, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
-        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 182, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 183, __pyx_L1_error)}
         __pyx_t_15 = __pyx_v_i;
         __pyx_t_16 = __pyx_v_j;
-        __pyx_t_8 = PyFloat_FromDouble((__pyx_v_i + (0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_16 * __pyx_v_self->gradient_dy.strides[1]) )))))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 182, __pyx_L1_error)
+        __pyx_t_8 = PyFloat_FromDouble((__pyx_v_i + (0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_16 * __pyx_v_self->gradient_dy.strides[1]) )))))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 183, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_8);
-        __pyx_t_6 = PyList_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 182, __pyx_L1_error)
+        __pyx_t_6 = PyList_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 183, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_GIVEREF(__pyx_t_7);
         PyList_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
@@ -5468,10 +5471,10 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
         PyList_SET_ITEM(__pyx_t_6, 1, __pyx_t_8);
         __pyx_t_7 = 0;
         __pyx_t_8 = 0;
-        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_v_self->triangulation_points, __pyx_t_6); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 182, __pyx_L1_error)
+        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_v_self->triangulation_points, __pyx_t_6); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 183, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-        /* "GPA.pyx":181
+        /* "GPA.pyx":182
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
@@ -5482,16 +5485,16 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     }
   }
 
-  /* "GPA.pyx":183
+  /* "GPA.pyx":184
  * 					if targetMat[i,j] > 0:
  * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)             # <<<<<<<<<<<<<<
  * 		if len(self.triangulation_points>1):
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 183, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 183, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_t_8 = NULL;
@@ -5506,7 +5509,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   }
   __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_v_self->triangulation_points) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_self->triangulation_points);
   __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-  if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 183, __pyx_L1_error)
+  if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_GIVEREF(__pyx_t_6);
@@ -5515,40 +5518,40 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   __pyx_v_self->triangulation_points = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "GPA.pyx":184
+  /* "GPA.pyx":185
  * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):             # <<<<<<<<<<<<<<
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  * 		self.n_points = len(self.triangulation_points)
  */
-  __pyx_t_6 = PyObject_RichCompare(__pyx_v_self->triangulation_points, __pyx_int_1, Py_GT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 184, __pyx_L1_error)
-  __pyx_t_18 = PyObject_Length(__pyx_t_6); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 184, __pyx_L1_error)
+  __pyx_t_6 = PyObject_RichCompare(__pyx_v_self->triangulation_points, __pyx_int_1, Py_GT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_t_18 = PyObject_Length(__pyx_t_6); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_t_3 = (__pyx_t_18 != 0);
   if (__pyx_t_3) {
 
-    /* "GPA.pyx":185
+    /* "GPA.pyx":186
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)             # <<<<<<<<<<<<<<
  * 		self.n_points = len(self.triangulation_points)
  * 		if self.n_points < 3:
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 185, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 186, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_unique); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 185, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_unique); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 186, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 185, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 186, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_INCREF(__pyx_v_self->triangulation_points);
     __Pyx_GIVEREF(__pyx_v_self->triangulation_points);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_v_self->triangulation_points);
-    __pyx_t_8 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 185, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 186, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_axis, __pyx_int_0) < 0) __PYX_ERR(0, 185, __pyx_L1_error)
-    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 185, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_axis, __pyx_int_0) < 0) __PYX_ERR(0, 186, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 186, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -5559,7 +5562,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     __pyx_v_self->triangulation_points = __pyx_t_5;
     __pyx_t_5 = 0;
 
-    /* "GPA.pyx":184
+    /* "GPA.pyx":185
  * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):             # <<<<<<<<<<<<<<
@@ -5568,7 +5571,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
  */
   }
 
-  /* "GPA.pyx":186
+  /* "GPA.pyx":187
  * 		if len(self.triangulation_points>1):
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  * 		self.n_points = len(self.triangulation_points)             # <<<<<<<<<<<<<<
@@ -5577,11 +5580,11 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
  */
   __pyx_t_5 = __pyx_v_self->triangulation_points;
   __Pyx_INCREF(__pyx_t_5);
-  __pyx_t_18 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 186, __pyx_L1_error)
+  __pyx_t_18 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_v_self->n_points = __pyx_t_18;
 
-  /* "GPA.pyx":187
+  /* "GPA.pyx":188
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  * 		self.n_points = len(self.triangulation_points)
  * 		if self.n_points < 3:             # <<<<<<<<<<<<<<
@@ -5591,7 +5594,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   __pyx_t_3 = ((__pyx_v_self->n_points < 3) != 0);
   if (__pyx_t_3) {
 
-    /* "GPA.pyx":188
+    /* "GPA.pyx":189
  * 		self.n_points = len(self.triangulation_points)
  * 		if self.n_points < 3:
  * 			self.n_edges = 0             # <<<<<<<<<<<<<<
@@ -5600,16 +5603,16 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
  */
     __pyx_v_self->n_edges = 0;
 
-    /* "GPA.pyx":189
+    /* "GPA.pyx":190
  * 		if self.n_points < 3:
  * 			self.n_edges = 0
  * 			self.G1_Classic = 0.0             # <<<<<<<<<<<<<<
  * 		else:
- * 			self.triangles = Delanuay(self.triangulation_points)
+ * 			try:
  */
     __pyx_v_self->G1_Classic = 0.0;
 
-    /* "GPA.pyx":187
+    /* "GPA.pyx":188
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  * 		self.n_points = len(self.triangulation_points)
  * 		if self.n_points < 3:             # <<<<<<<<<<<<<<
@@ -5619,76 +5622,187 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
     goto __pyx_L10;
   }
 
-  /* "GPA.pyx":191
+  /* "GPA.pyx":192
  * 			self.G1_Classic = 0.0
  * 		else:
- * 			self.triangles = Delanuay(self.triangulation_points)             # <<<<<<<<<<<<<<
- * 			neigh = self.triangles.vertex_neighbor_vertices
- * 			self.n_edges = len(neigh[1])/2
+ * 			try:             # <<<<<<<<<<<<<<
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices
  */
   /*else*/ {
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_Delanuay); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 191, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_6 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
-      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_8);
-      if (likely(__pyx_t_6)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
-        __Pyx_INCREF(__pyx_t_6);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_8, function);
-      }
-    }
-    __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_6, __pyx_v_self->triangulation_points) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_v_self->triangulation_points);
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 191, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_GIVEREF(__pyx_t_5);
-    __Pyx_GOTREF(__pyx_v_self->triangles);
-    __Pyx_DECREF(__pyx_v_self->triangles);
-    __pyx_v_self->triangles = __pyx_t_5;
-    __pyx_t_5 = 0;
+    {
+      __Pyx_PyThreadState_declare
+      __Pyx_PyThreadState_assign
+      __Pyx_ExceptionSave(&__pyx_t_19, &__pyx_t_20, &__pyx_t_21);
+      __Pyx_XGOTREF(__pyx_t_19);
+      __Pyx_XGOTREF(__pyx_t_20);
+      __Pyx_XGOTREF(__pyx_t_21);
+      /*try:*/ {
 
-    /* "GPA.pyx":192
+        /* "GPA.pyx":193
  * 		else:
- * 			self.triangles = Delanuay(self.triangulation_points)
- * 			neigh = self.triangles.vertex_neighbor_vertices             # <<<<<<<<<<<<<<
- * 			self.n_edges = len(neigh[1])/2
- * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+ * 			try:
+ * 				self.triangles = Delaunay(self.triangulation_points)             # <<<<<<<<<<<<<<
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ * 				self.n_edges = len(neigh[1])/2
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->triangles, __pyx_n_s_vertex_neighbor_vertices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 192, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_v_neigh = __pyx_t_5;
-    __pyx_t_5 = 0;
+        __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_Delaunay); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 193, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __pyx_t_6 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
+          __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_8);
+          if (likely(__pyx_t_6)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+            __Pyx_INCREF(__pyx_t_6);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_8, function);
+          }
+        }
+        __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_6, __pyx_v_self->triangulation_points) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_v_self->triangulation_points);
+        __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 193, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __Pyx_GIVEREF(__pyx_t_5);
+        __Pyx_GOTREF(__pyx_v_self->triangles);
+        __Pyx_DECREF(__pyx_v_self->triangles);
+        __pyx_v_self->triangles = __pyx_t_5;
+        __pyx_t_5 = 0;
 
-    /* "GPA.pyx":193
- * 			self.triangles = Delanuay(self.triangulation_points)
- * 			neigh = self.triangles.vertex_neighbor_vertices
- * 			self.n_edges = len(neigh[1])/2             # <<<<<<<<<<<<<<
- * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+        /* "GPA.pyx":194
+ * 			try:
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices             # <<<<<<<<<<<<<<
+ * 				self.n_edges = len(neigh[1])/2
+ * 				self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+ */
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->triangles, __pyx_n_s_vertex_neighbor_vertices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 194, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_v_neigh = __pyx_t_5;
+        __pyx_t_5 = 0;
+
+        /* "GPA.pyx":195
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ * 				self.n_edges = len(neigh[1])/2             # <<<<<<<<<<<<<<
+ * 				self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+ * 			except QhullError:
+ */
+        __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_neigh, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 195, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_t_18 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 195, __pyx_L11_error)
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __pyx_v_self->n_edges = (__pyx_t_18 / 2);
+
+        /* "GPA.pyx":196
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ * 				self.n_edges = len(neigh[1])/2
+ * 				self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)             # <<<<<<<<<<<<<<
+ * 			except QhullError:
+ * 				self.n_edges = 0
+ */
+        __pyx_v_self->G1_Classic = ((((double)__pyx_v_self->n_edges) - ((double)__pyx_v_self->n_points)) / ((double)__pyx_v_self->n_points));
+
+        /* "GPA.pyx":192
+ * 			self.G1_Classic = 0.0
+ * 		else:
+ * 			try:             # <<<<<<<<<<<<<<
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ */
+      }
+      __Pyx_XDECREF(__pyx_t_19); __pyx_t_19 = 0;
+      __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
+      __Pyx_XDECREF(__pyx_t_21); __pyx_t_21 = 0;
+      goto __pyx_L16_try_end;
+      __pyx_L11_error:;
+      __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+
+      /* "GPA.pyx":197
+ * 				self.n_edges = len(neigh[1])/2
+ * 				self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+ * 			except QhullError:             # <<<<<<<<<<<<<<
+ * 				self.n_edges = 0
+ * 				self.G1_Classic = 0.0
+ */
+      __Pyx_ErrFetch(&__pyx_t_5, &__pyx_t_8, &__pyx_t_6);
+      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_QhullError); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 197, __pyx_L13_except_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      __pyx_t_9 = __Pyx_PyErr_GivenExceptionMatches(__pyx_t_5, __pyx_t_7);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_ErrRestore(__pyx_t_5, __pyx_t_8, __pyx_t_6);
+      __pyx_t_5 = 0; __pyx_t_8 = 0; __pyx_t_6 = 0;
+      if (__pyx_t_9) {
+        __Pyx_AddTraceback("GPA.GPA._G1_Classic", __pyx_clineno, __pyx_lineno, __pyx_filename);
+        if (__Pyx_GetException(&__pyx_t_6, &__pyx_t_8, &__pyx_t_5) < 0) __PYX_ERR(0, 197, __pyx_L13_except_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __Pyx_GOTREF(__pyx_t_8);
+        __Pyx_GOTREF(__pyx_t_5);
+
+        /* "GPA.pyx":198
+ * 				self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+ * 			except QhullError:
+ * 				self.n_edges = 0             # <<<<<<<<<<<<<<
+ * 				self.G1_Classic = 0.0
+ * 				self.n_points = 0
+ */
+        __pyx_v_self->n_edges = 0;
+
+        /* "GPA.pyx":199
+ * 			except QhullError:
+ * 				self.n_edges = 0
+ * 				self.G1_Classic = 0.0             # <<<<<<<<<<<<<<
+ * 				self.n_points = 0
  * 		if self.G1_Classic < 0.0:
  */
-    __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_neigh, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 193, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_18 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 193, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_v_self->n_edges = (__pyx_t_18 / 2);
+        __pyx_v_self->G1_Classic = 0.0;
 
-    /* "GPA.pyx":194
- * 			neigh = self.triangles.vertex_neighbor_vertices
- * 			self.n_edges = len(neigh[1])/2
- * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)             # <<<<<<<<<<<<<<
+        /* "GPA.pyx":200
+ * 				self.n_edges = 0
+ * 				self.G1_Classic = 0.0
+ * 				self.n_points = 0             # <<<<<<<<<<<<<<
  * 		if self.G1_Classic < 0.0:
  * 			self.G1_Classic = 0.0
  */
-    __pyx_v_self->G1_Classic = ((((double)__pyx_v_self->n_edges) - ((double)__pyx_v_self->n_points)) / ((double)__pyx_v_self->n_points));
+        __pyx_v_self->n_points = 0;
+        __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+        goto __pyx_L12_exception_handled;
+      }
+      goto __pyx_L13_except_error;
+      __pyx_L13_except_error:;
+
+      /* "GPA.pyx":192
+ * 			self.G1_Classic = 0.0
+ * 		else:
+ * 			try:             # <<<<<<<<<<<<<<
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ */
+      __Pyx_XGIVEREF(__pyx_t_19);
+      __Pyx_XGIVEREF(__pyx_t_20);
+      __Pyx_XGIVEREF(__pyx_t_21);
+      __Pyx_ExceptionReset(__pyx_t_19, __pyx_t_20, __pyx_t_21);
+      goto __pyx_L1_error;
+      __pyx_L12_exception_handled:;
+      __Pyx_XGIVEREF(__pyx_t_19);
+      __Pyx_XGIVEREF(__pyx_t_20);
+      __Pyx_XGIVEREF(__pyx_t_21);
+      __Pyx_ExceptionReset(__pyx_t_19, __pyx_t_20, __pyx_t_21);
+      __pyx_L16_try_end:;
+    }
   }
   __pyx_L10:;
 
-  /* "GPA.pyx":195
- * 			self.n_edges = len(neigh[1])/2
- * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+  /* "GPA.pyx":201
+ * 				self.G1_Classic = 0.0
+ * 				self.n_points = 0
  * 		if self.G1_Classic < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1_Classic = 0.0
  * 
@@ -5696,8 +5810,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   __pyx_t_3 = ((__pyx_v_self->G1_Classic < 0.0) != 0);
   if (__pyx_t_3) {
 
-    /* "GPA.pyx":196
- * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+    /* "GPA.pyx":202
+ * 				self.n_points = 0
  * 		if self.G1_Classic < 0.0:
  * 			self.G1_Classic = 0.0             # <<<<<<<<<<<<<<
  * 
@@ -5705,16 +5819,16 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
  */
     __pyx_v_self->G1_Classic = 0.0;
 
-    /* "GPA.pyx":195
- * 			self.n_edges = len(neigh[1])/2
- * 			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+    /* "GPA.pyx":201
+ * 				self.G1_Classic = 0.0
+ * 				self.n_points = 0
  * 		if self.G1_Classic < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1_Classic = 0.0
  * 
  */
   }
 
-  /* "GPA.pyx":162
+  /* "GPA.pyx":163
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _G1_Classic(self,str symm):             # <<<<<<<<<<<<<<
@@ -5743,7 +5857,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_6_G1_Classic(struct __pyx_obj_3GPA_GPA *__py
   return __pyx_r;
 }
 
-/* "GPA.pyx":202
+/* "GPA.pyx":208
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _getDistancesTriang(self,points,simplices):             # <<<<<<<<<<<<<<
@@ -5785,11 +5899,11 @@ static PyObject *__pyx_pw_3GPA_3GPA_9_getDistancesTriang(PyObject *__pyx_v_self,
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_simplices)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("_getDistancesTriang", 1, 2, 2, 1); __PYX_ERR(0, 202, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("_getDistancesTriang", 1, 2, 2, 1); __PYX_ERR(0, 208, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_getDistancesTriang") < 0)) __PYX_ERR(0, 202, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_getDistancesTriang") < 0)) __PYX_ERR(0, 208, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -5802,7 +5916,7 @@ static PyObject *__pyx_pw_3GPA_3GPA_9_getDistancesTriang(PyObject *__pyx_v_self,
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_getDistancesTriang", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 202, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_getDistancesTriang", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 208, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("GPA.GPA._getDistancesTriang", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -5838,19 +5952,19 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_getDistancesTriang", 0);
 
-  /* "GPA.pyx":203
+  /* "GPA.pyx":209
  * 	@cython.cdivision(True)
  * 	def _getDistancesTriang(self,points,simplices):
  * 		ds = []             # <<<<<<<<<<<<<<
  * 		for p in simplices:
  * 			p1 = points[p[0]]
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_ds = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "GPA.pyx":204
+  /* "GPA.pyx":210
  * 	def _getDistancesTriang(self,points,simplices):
  * 		ds = []
  * 		for p in simplices:             # <<<<<<<<<<<<<<
@@ -5861,26 +5975,26 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
     __pyx_t_1 = __pyx_v_simplices; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
     __pyx_t_3 = NULL;
   } else {
-    __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_simplices); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_simplices); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 210, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 210, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_3)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 204, __pyx_L1_error)
+        __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 210, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 210, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       } else {
         if (__pyx_t_2 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 204, __pyx_L1_error)
+        __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 210, __pyx_L1_error)
         #else
-        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
+        __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 210, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         #endif
       }
@@ -5890,7 +6004,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 204, __pyx_L1_error)
+          else __PYX_ERR(0, 210, __pyx_L1_error)
         }
         break;
       }
@@ -5899,71 +6013,71 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
     __Pyx_XDECREF_SET(__pyx_v_p, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "GPA.pyx":205
+    /* "GPA.pyx":211
  * 		ds = []
  * 		for p in simplices:
  * 			p1 = points[p[0]]             # <<<<<<<<<<<<<<
  * 			p2 = points[p[1]]
  * 			p3 = points[p[2]]
  */
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_p, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 205, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_p, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 211, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_points, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 205, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_points, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 211, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_XDECREF_SET(__pyx_v_p1, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "GPA.pyx":206
+    /* "GPA.pyx":212
  * 		for p in simplices:
  * 			p1 = points[p[0]]
  * 			p2 = points[p[1]]             # <<<<<<<<<<<<<<
  * 			p3 = points[p[2]]
  * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
  */
-    __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_p, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 206, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_p, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 212, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_v_points, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 206, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetItem(__pyx_v_points, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 212, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_XDECREF_SET(__pyx_v_p2, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "GPA.pyx":207
+    /* "GPA.pyx":213
  * 			p1 = points[p[0]]
  * 			p2 = points[p[1]]
  * 			p3 = points[p[2]]             # <<<<<<<<<<<<<<
  * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
  * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
  */
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_p, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 207, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_p, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_points, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 207, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetItem(__pyx_v_points, __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 213, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_XDECREF_SET(__pyx_v_p3, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "GPA.pyx":208
+    /* "GPA.pyx":214
  * 			p2 = points[p[1]]
  * 			p3 = points[p[2]]
  * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))             # <<<<<<<<<<<<<<
  * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
  * 			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_sum); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_sum); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = PyNumber_Subtract(__pyx_v_p1, __pyx_v_p2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __pyx_t_7 = PyNumber_Subtract(__pyx_v_p1, __pyx_v_p2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_9 = PyNumber_Power(__pyx_t_7, __pyx_int_2, Py_None); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __pyx_t_9 = PyNumber_Power(__pyx_t_7, __pyx_int_2, Py_None); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_7 = NULL;
@@ -5979,7 +6093,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
     __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_7, __pyx_t_9) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_9);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_t_8 = NULL;
@@ -5995,32 +6109,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
     __pyx_t_5 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_8, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_4);
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 208, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_ds, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 208, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_ds, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 214, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "GPA.pyx":209
+    /* "GPA.pyx":215
  * 			p3 = points[p[2]]
  * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
  * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))             # <<<<<<<<<<<<<<
  * 			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))
  * 		return ds
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = PyNumber_Subtract(__pyx_v_p2, __pyx_v_p3); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __pyx_t_8 = PyNumber_Subtract(__pyx_v_p2, __pyx_v_p3); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = PyNumber_Power(__pyx_t_8, __pyx_int_2, Py_None); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __pyx_t_7 = PyNumber_Power(__pyx_t_8, __pyx_int_2, Py_None); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_t_8 = NULL;
@@ -6036,7 +6150,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
     __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_9, __pyx_t_8, __pyx_t_7) : __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_t_7);
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 209, __pyx_L1_error)
+    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     __pyx_t_9 = NULL;
@@ -6052,32 +6166,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
     __pyx_t_5 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_9, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_6);
     __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 209, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_ds, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 209, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_ds, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 215, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "GPA.pyx":210
+    /* "GPA.pyx":216
  * 			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
  * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
  * 			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))             # <<<<<<<<<<<<<<
  * 		return ds
  * 
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 210, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 210, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sqrt); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numpy); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 210, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numpy); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 210, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = PyNumber_Subtract(__pyx_v_p3, __pyx_v_p1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 210, __pyx_L1_error)
+    __pyx_t_9 = PyNumber_Subtract(__pyx_v_p3, __pyx_v_p1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_8 = PyNumber_Power(__pyx_t_9, __pyx_int_2, Py_None); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 210, __pyx_L1_error)
+    __pyx_t_8 = PyNumber_Power(__pyx_t_9, __pyx_int_2, Py_None); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     __pyx_t_9 = NULL;
@@ -6093,7 +6207,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
     __pyx_t_4 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_9, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_8);
     __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 210, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_7 = NULL;
@@ -6109,13 +6223,13 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
     __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_7, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_4);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 210, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_ds, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 210, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_ds, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "GPA.pyx":204
+    /* "GPA.pyx":210
  * 	def _getDistancesTriang(self,points,simplices):
  * 		ds = []
  * 		for p in simplices:             # <<<<<<<<<<<<<<
@@ -6125,7 +6239,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "GPA.pyx":211
+  /* "GPA.pyx":217
  * 			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
  * 			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))
  * 		return ds             # <<<<<<<<<<<<<<
@@ -6137,7 +6251,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
   __pyx_r = __pyx_v_ds;
   goto __pyx_L0;
 
-  /* "GPA.pyx":202
+  /* "GPA.pyx":208
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _getDistancesTriang(self,points,simplices):             # <<<<<<<<<<<<<<
@@ -6167,7 +6281,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8_getDistancesTriang(CYTHON_UNUSED struct __
   return __pyx_r;
 }
 
-/* "GPA.pyx":217
+/* "GPA.pyx":223
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _G1(self,str symm):             # <<<<<<<<<<<<<<
@@ -6184,7 +6298,7 @@ static PyObject *__pyx_pw_3GPA_3GPA_11_G1(PyObject *__pyx_v_self, PyObject *__py
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_G1 (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symm), (&PyString_Type), 1, "symm", 1))) __PYX_ERR(0, 217, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symm), (&PyString_Type), 1, "symm", 1))) __PYX_ERR(0, 223, __pyx_L1_error)
   __pyx_r = __pyx_pf_3GPA_3GPA_10_G1(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self), ((PyObject*)__pyx_v_symm));
 
   /* function exit code */
@@ -6223,20 +6337,23 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   Py_ssize_t __pyx_t_16;
   int __pyx_t_17;
   Py_ssize_t __pyx_t_18;
-  double __pyx_t_19;
+  PyObject *__pyx_t_19 = NULL;
+  PyObject *__pyx_t_20 = NULL;
+  PyObject *__pyx_t_21 = NULL;
+  double __pyx_t_22;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_G1", 0);
 
-  /* "GPA.pyx":221
+  /* "GPA.pyx":227
  * 		cdef int[:,:] targetMat
  * 		cdef float ratio
  * 		self.triangulation_points = []             # <<<<<<<<<<<<<<
  * 		d1 = self.symmetricalP
  * 
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 227, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->triangulation_points);
@@ -6244,45 +6361,45 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_v_self->triangulation_points = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "GPA.pyx":222
+  /* "GPA.pyx":228
  * 		cdef float ratio
  * 		self.triangulation_points = []
  * 		d1 = self.symmetricalP             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 222, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->symmetricalP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 222, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 228, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->symmetricalP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 228, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_d1 = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "GPA.pyx":225
+  /* "GPA.pyx":231
  * 
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  */
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 225, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 231, __pyx_L1_error)
   __pyx_t_3 = (__pyx_t_2 != 0);
   if (__pyx_t_3) {
 
-    /* "GPA.pyx":226
+    /* "GPA.pyx":232
  * 
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  */
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 226, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 232, __pyx_L1_error)}
     __pyx_t_4 = __pyx_v_self->symmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_v_targetMat = __pyx_t_4;
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
 
-    /* "GPA.pyx":225
+    /* "GPA.pyx":231
  * 
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
@@ -6292,32 +6409,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":227
+  /* "GPA.pyx":233
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  */
-  __pyx_t_3 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __pyx_t_3 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_3 < 0)) __PYX_ERR(0, 233, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_3 != 0);
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":228
+    /* "GPA.pyx":234
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  */
-    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 228, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 234, __pyx_L1_error)}
     __pyx_t_4 = __pyx_v_self->asymmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_4, 1);
     __pyx_v_targetMat = __pyx_t_4;
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
 
-    /* "GPA.pyx":227
+    /* "GPA.pyx":233
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
@@ -6327,36 +6444,36 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":229
+  /* "GPA.pyx":235
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  */
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 229, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 235, __pyx_L1_error)
   __pyx_t_3 = (__pyx_t_2 != 0);
   if (likely(__pyx_t_3)) {
 
-    /* "GPA.pyx":230
+    /* "GPA.pyx":236
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 230, __pyx_L1_error)}
-    __pyx_t_1 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 236, __pyx_L1_error)}
+    __pyx_t_1 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 230, __pyx_L1_error)}
-    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 230, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 236, __pyx_L1_error)}
+    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_GIVEREF(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_1);
@@ -6364,32 +6481,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6);
     __pyx_t_1 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_7);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
     __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 230, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_4 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_4.memview)) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_4.memview)) __PYX_ERR(0, 236, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_targetMat = __pyx_t_4;
     __pyx_t_4.memview = NULL;
     __pyx_t_4.data = NULL;
 
-    /* "GPA.pyx":229
+    /* "GPA.pyx":235
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
@@ -6399,7 +6516,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":232
+  /* "GPA.pyx":238
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm)             # <<<<<<<<<<<<<<
@@ -6407,18 +6524,18 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  * 		for i in range(self.rows):
  */
   /*else*/ {
-    __pyx_t_8 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be, __pyx_v_symm); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 232, __pyx_L1_error)
+    __pyx_t_8 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be, __pyx_v_symm); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 238, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 232, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 238, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_Raise(__pyx_t_7, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __PYX_ERR(0, 232, __pyx_L1_error)
+    __PYX_ERR(0, 238, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "GPA.pyx":234
+  /* "GPA.pyx":240
  * 			raise Exception("Unknown analysis type (should be S,A or K), got: "+symm)
  * 
  * 		for i in range(self.rows):             # <<<<<<<<<<<<<<
@@ -6430,7 +6547,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_i = __pyx_t_11;
 
-    /* "GPA.pyx":235
+    /* "GPA.pyx":241
  * 
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):             # <<<<<<<<<<<<<<
@@ -6442,7 +6559,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
       __pyx_v_j = __pyx_t_14;
 
-      /* "GPA.pyx":236
+      /* "GPA.pyx":242
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
@@ -6454,24 +6571,24 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
       __pyx_t_3 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetMat.data + __pyx_t_15 * __pyx_v_targetMat.strides[0]) ) + __pyx_t_16 * __pyx_v_targetMat.strides[1]) ))) > 0) != 0);
       if (__pyx_t_3) {
 
-        /* "GPA.pyx":237
+        /* "GPA.pyx":243
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:
  * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])             # <<<<<<<<<<<<<<
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):
  */
-        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 237, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 243, __pyx_L1_error)}
         __pyx_t_16 = __pyx_v_i;
         __pyx_t_15 = __pyx_v_j;
-        __pyx_t_7 = PyFloat_FromDouble((__pyx_v_j + (0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_16 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) )))))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 237, __pyx_L1_error)
+        __pyx_t_7 = PyFloat_FromDouble((__pyx_v_j + (0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_16 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) )))))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 243, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
-        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 237, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 243, __pyx_L1_error)}
         __pyx_t_15 = __pyx_v_i;
         __pyx_t_16 = __pyx_v_j;
-        __pyx_t_8 = PyFloat_FromDouble((__pyx_v_i + (0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_16 * __pyx_v_self->gradient_dy.strides[1]) )))))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 237, __pyx_L1_error)
+        __pyx_t_8 = PyFloat_FromDouble((__pyx_v_i + (0.5 * (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_16 * __pyx_v_self->gradient_dy.strides[1]) )))))); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 243, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_8);
-        __pyx_t_6 = PyList_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 237, __pyx_L1_error)
+        __pyx_t_6 = PyList_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 243, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_GIVEREF(__pyx_t_7);
         PyList_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
@@ -6479,10 +6596,10 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
         PyList_SET_ITEM(__pyx_t_6, 1, __pyx_t_8);
         __pyx_t_7 = 0;
         __pyx_t_8 = 0;
-        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_v_self->triangulation_points, __pyx_t_6); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 237, __pyx_L1_error)
+        __pyx_t_17 = __Pyx_PyObject_Append(__pyx_v_self->triangulation_points, __pyx_t_6); if (unlikely(__pyx_t_17 == ((int)-1))) __PYX_ERR(0, 243, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-        /* "GPA.pyx":236
+        /* "GPA.pyx":242
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 					if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
@@ -6493,16 +6610,16 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     }
   }
 
-  /* "GPA.pyx":238
+  /* "GPA.pyx":244
  * 					if targetMat[i,j] > 0:
  * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)             # <<<<<<<<<<<<<<
  * 		if len(self.triangulation_points>1):
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 238, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 238, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_array); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_t_8 = NULL;
@@ -6517,7 +6634,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   }
   __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_v_self->triangulation_points) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_self->triangulation_points);
   __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-  if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 238, __pyx_L1_error)
+  if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_GIVEREF(__pyx_t_6);
@@ -6526,40 +6643,40 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_v_self->triangulation_points = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "GPA.pyx":239
+  /* "GPA.pyx":245
  * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):             # <<<<<<<<<<<<<<
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  * 		self.n_points = len(self.triangulation_points)
  */
-  __pyx_t_6 = PyObject_RichCompare(__pyx_v_self->triangulation_points, __pyx_int_1, Py_GT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 239, __pyx_L1_error)
-  __pyx_t_18 = PyObject_Length(__pyx_t_6); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 239, __pyx_L1_error)
+  __pyx_t_6 = PyObject_RichCompare(__pyx_v_self->triangulation_points, __pyx_int_1, Py_GT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 245, __pyx_L1_error)
+  __pyx_t_18 = PyObject_Length(__pyx_t_6); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 245, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_t_3 = (__pyx_t_18 != 0);
   if (__pyx_t_3) {
 
-    /* "GPA.pyx":240
+    /* "GPA.pyx":246
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)             # <<<<<<<<<<<<<<
  * 		self.n_points = len(self.triangulation_points)
  * 		if self.n_points < 3:
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 240, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_unique); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 240, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_unique); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 240, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_INCREF(__pyx_v_self->triangulation_points);
     __Pyx_GIVEREF(__pyx_v_self->triangulation_points);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_v_self->triangulation_points);
-    __pyx_t_8 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 240, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_axis, __pyx_int_0) < 0) __PYX_ERR(0, 240, __pyx_L1_error)
-    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 240, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_8, __pyx_n_s_axis, __pyx_int_0) < 0) __PYX_ERR(0, 246, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -6570,7 +6687,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     __pyx_v_self->triangulation_points = __pyx_t_5;
     __pyx_t_5 = 0;
 
-    /* "GPA.pyx":239
+    /* "GPA.pyx":245
  * 						self.triangulation_points.append([j+0.5*self.gradient_dx[i, j], i+0.5*self.gradient_dy[i, j]])
  * 		self.triangulation_points = numpy.array(self.triangulation_points)
  * 		if len(self.triangulation_points>1):             # <<<<<<<<<<<<<<
@@ -6579,7 +6696,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
   }
 
-  /* "GPA.pyx":241
+  /* "GPA.pyx":247
  * 		if len(self.triangulation_points>1):
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  * 		self.n_points = len(self.triangulation_points)             # <<<<<<<<<<<<<<
@@ -6588,11 +6705,11 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
   __pyx_t_5 = __pyx_v_self->triangulation_points;
   __Pyx_INCREF(__pyx_t_5);
-  __pyx_t_18 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 241, __pyx_L1_error)
+  __pyx_t_18 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 247, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_v_self->n_points = __pyx_t_18;
 
-  /* "GPA.pyx":242
+  /* "GPA.pyx":248
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  * 		self.n_points = len(self.triangulation_points)
  * 		if self.n_points < 3:             # <<<<<<<<<<<<<<
@@ -6602,7 +6719,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_t_3 = ((__pyx_v_self->n_points < 3) != 0);
   if (__pyx_t_3) {
 
-    /* "GPA.pyx":243
+    /* "GPA.pyx":249
  * 		self.n_points = len(self.triangulation_points)
  * 		if self.n_points < 3:
  * 			self.n_edges = 0             # <<<<<<<<<<<<<<
@@ -6611,16 +6728,16 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
     __pyx_v_self->n_edges = 0;
 
-    /* "GPA.pyx":244
+    /* "GPA.pyx":250
  * 		if self.n_points < 3:
  * 			self.n_edges = 0
  * 			self.G1 = 0.0             # <<<<<<<<<<<<<<
  * 		else:
- * 			self.triangles = Delanuay(self.triangulation_points)
+ * 			try:
  */
     __pyx_v_self->G1 = 0.0;
 
-    /* "GPA.pyx":242
+    /* "GPA.pyx":248
  * 			self.triangulation_points = numpy.unique(self.triangulation_points,axis=0)
  * 		self.n_points = len(self.triangulation_points)
  * 		if self.n_points < 3:             # <<<<<<<<<<<<<<
@@ -6630,269 +6747,380 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     goto __pyx_L10;
   }
 
-  /* "GPA.pyx":246
+  /* "GPA.pyx":252
  * 			self.G1 = 0.0
  * 		else:
- * 			self.triangles = Delanuay(self.triangulation_points)             # <<<<<<<<<<<<<<
- * 			neigh = self.triangles.vertex_neighbor_vertices
- * 			self.n_edges = len(neigh[1])/2
+ * 			try:             # <<<<<<<<<<<<<<
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices
  */
   /*else*/ {
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_Delanuay); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 246, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_6 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
-      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_8);
-      if (likely(__pyx_t_6)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
-        __Pyx_INCREF(__pyx_t_6);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_8, function);
-      }
-    }
-    __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_6, __pyx_v_self->triangulation_points) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_v_self->triangulation_points);
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_GIVEREF(__pyx_t_5);
-    __Pyx_GOTREF(__pyx_v_self->triangles);
-    __Pyx_DECREF(__pyx_v_self->triangles);
-    __pyx_v_self->triangles = __pyx_t_5;
-    __pyx_t_5 = 0;
-
-    /* "GPA.pyx":247
- * 		else:
- * 			self.triangles = Delanuay(self.triangulation_points)
- * 			neigh = self.triangles.vertex_neighbor_vertices             # <<<<<<<<<<<<<<
- * 			self.n_edges = len(neigh[1])/2
- * 			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
- */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->triangles, __pyx_n_s_vertex_neighbor_vertices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 247, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_v_neigh = __pyx_t_5;
-    __pyx_t_5 = 0;
-
-    /* "GPA.pyx":248
- * 			self.triangles = Delanuay(self.triangulation_points)
- * 			neigh = self.triangles.vertex_neighbor_vertices
- * 			self.n_edges = len(neigh[1])/2             # <<<<<<<<<<<<<<
- * 			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
- * 			ds = numpy.sort(ds)/numpy.max(ds)
- */
-    __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_neigh, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 248, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_18 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 248, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_v_self->n_edges = (__pyx_t_18 / 2);
-
-    /* "GPA.pyx":249
- * 			neigh = self.triangles.vertex_neighbor_vertices
- * 			self.n_edges = len(neigh[1])/2
- * 			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)             # <<<<<<<<<<<<<<
- * 			ds = numpy.sort(ds)/numpy.max(ds)
- * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- */
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_getDistancesTriang); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 249, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->triangles, __pyx_n_s_simplices); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 249, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = NULL;
-    __pyx_t_9 = 0;
-    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
-      __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_8);
-      if (likely(__pyx_t_7)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
-        __Pyx_INCREF(__pyx_t_7);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_8, function);
-        __pyx_t_9 = 1;
-      }
-    }
-    #if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(__pyx_t_8)) {
-      PyObject *__pyx_temp[3] = {__pyx_t_7, __pyx_v_self->triangulation_points, __pyx_t_6};
-      __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_9, 2+__pyx_t_9); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 249, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    } else
-    #endif
-    #if CYTHON_FAST_PYCCALL
-    if (__Pyx_PyFastCFunction_Check(__pyx_t_8)) {
-      PyObject *__pyx_temp[3] = {__pyx_t_7, __pyx_v_self->triangulation_points, __pyx_t_6};
-      __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_9, 2+__pyx_t_9); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 249, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    } else
-    #endif
     {
-      __pyx_t_1 = PyTuple_New(2+__pyx_t_9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 249, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      if (__pyx_t_7) {
-        __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_7); __pyx_t_7 = NULL;
-      }
-      __Pyx_INCREF(__pyx_v_self->triangulation_points);
-      __Pyx_GIVEREF(__pyx_v_self->triangulation_points);
-      PyTuple_SET_ITEM(__pyx_t_1, 0+__pyx_t_9, __pyx_v_self->triangulation_points);
-      __Pyx_GIVEREF(__pyx_t_6);
-      PyTuple_SET_ITEM(__pyx_t_1, 1+__pyx_t_9, __pyx_t_6);
-      __pyx_t_6 = 0;
-      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_1, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 249, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_v_ds = __pyx_t_5;
-    __pyx_t_5 = 0;
+      __Pyx_PyThreadState_declare
+      __Pyx_PyThreadState_assign
+      __Pyx_ExceptionSave(&__pyx_t_19, &__pyx_t_20, &__pyx_t_21);
+      __Pyx_XGOTREF(__pyx_t_19);
+      __Pyx_XGOTREF(__pyx_t_20);
+      __Pyx_XGOTREF(__pyx_t_21);
+      /*try:*/ {
 
-    /* "GPA.pyx":250
- * 			self.n_edges = len(neigh[1])/2
- * 			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
- * 			ds = numpy.sort(ds)/numpy.max(ds)             # <<<<<<<<<<<<<<
- * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+        /* "GPA.pyx":253
+ * 		else:
+ * 			try:
+ * 				self.triangles = Delaunay(self.triangulation_points)             # <<<<<<<<<<<<<<
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ * 				self.n_edges = len(neigh[1])/2
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sort); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
-      __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_1);
-      if (likely(__pyx_t_8)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
-        __Pyx_INCREF(__pyx_t_8);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_1, function);
-      }
-    }
-    __pyx_t_5 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_8, __pyx_v_ds) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_ds);
-    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_max); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
-      __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_6);
-      if (likely(__pyx_t_8)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
-        __Pyx_INCREF(__pyx_t_8);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_6, function);
-      }
-    }
-    __pyx_t_1 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_8, __pyx_v_ds) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_ds);
-    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = __Pyx_PyNumber_Divide(__pyx_t_5, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_DECREF_SET(__pyx_v_ds, __pyx_t_6);
-    __pyx_t_6 = 0;
+        __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_Delaunay); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 253, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __pyx_t_6 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
+          __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_8);
+          if (likely(__pyx_t_6)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+            __Pyx_INCREF(__pyx_t_6);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_8, function);
+          }
+        }
+        __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_6, __pyx_v_self->triangulation_points) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_v_self->triangulation_points);
+        __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 253, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __Pyx_GIVEREF(__pyx_t_5);
+        __Pyx_GOTREF(__pyx_v_self->triangles);
+        __Pyx_DECREF(__pyx_v_self->triangles);
+        __pyx_v_self->triangles = __pyx_t_5;
+        __pyx_t_5 = 0;
 
-    /* "GPA.pyx":252
- * 			ds = numpy.sort(ds)/numpy.max(ds)
- * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)             # <<<<<<<<<<<<<<
+        /* "GPA.pyx":254
+ * 			try:
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices             # <<<<<<<<<<<<<<
+ * 				self.n_edges = len(neigh[1])/2
+ * 				ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
+ */
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->triangles, __pyx_n_s_vertex_neighbor_vertices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 254, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_v_neigh = __pyx_t_5;
+        __pyx_t_5 = 0;
+
+        /* "GPA.pyx":255
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ * 				self.n_edges = len(neigh[1])/2             # <<<<<<<<<<<<<<
+ * 				ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
+ * 				ds = numpy.sort(ds)/numpy.max(ds)
+ */
+        __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_neigh, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 255, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __pyx_t_18 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 255, __pyx_L11_error)
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __pyx_v_self->n_edges = (__pyx_t_18 / 2);
+
+        /* "GPA.pyx":256
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ * 				self.n_edges = len(neigh[1])/2
+ * 				ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)             # <<<<<<<<<<<<<<
+ * 				ds = numpy.sort(ds)/numpy.max(ds)
+ * 				#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
+ */
+        __pyx_t_8 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_getDistancesTriang); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 256, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->triangles, __pyx_n_s_simplices); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 256, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __pyx_t_7 = NULL;
+        __pyx_t_9 = 0;
+        if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
+          __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_8);
+          if (likely(__pyx_t_7)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+            __Pyx_INCREF(__pyx_t_7);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_8, function);
+            __pyx_t_9 = 1;
+          }
+        }
+        #if CYTHON_FAST_PYCALL
+        if (PyFunction_Check(__pyx_t_8)) {
+          PyObject *__pyx_temp[3] = {__pyx_t_7, __pyx_v_self->triangulation_points, __pyx_t_6};
+          __pyx_t_5 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_9, 2+__pyx_t_9); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 256, __pyx_L11_error)
+          __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+          __Pyx_GOTREF(__pyx_t_5);
+          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        } else
+        #endif
+        #if CYTHON_FAST_PYCCALL
+        if (__Pyx_PyFastCFunction_Check(__pyx_t_8)) {
+          PyObject *__pyx_temp[3] = {__pyx_t_7, __pyx_v_self->triangulation_points, __pyx_t_6};
+          __pyx_t_5 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_9, 2+__pyx_t_9); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 256, __pyx_L11_error)
+          __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+          __Pyx_GOTREF(__pyx_t_5);
+          __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        } else
+        #endif
+        {
+          __pyx_t_1 = PyTuple_New(2+__pyx_t_9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 256, __pyx_L11_error)
+          __Pyx_GOTREF(__pyx_t_1);
+          if (__pyx_t_7) {
+            __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_7); __pyx_t_7 = NULL;
+          }
+          __Pyx_INCREF(__pyx_v_self->triangulation_points);
+          __Pyx_GIVEREF(__pyx_v_self->triangulation_points);
+          PyTuple_SET_ITEM(__pyx_t_1, 0+__pyx_t_9, __pyx_v_self->triangulation_points);
+          __Pyx_GIVEREF(__pyx_t_6);
+          PyTuple_SET_ITEM(__pyx_t_1, 1+__pyx_t_9, __pyx_t_6);
+          __pyx_t_6 = 0;
+          __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_1, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 256, __pyx_L11_error)
+          __Pyx_GOTREF(__pyx_t_5);
+          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        }
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __pyx_v_ds = __pyx_t_5;
+        __pyx_t_5 = 0;
+
+        /* "GPA.pyx":257
+ * 				self.n_edges = len(neigh[1])/2
+ * 				ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
+ * 				ds = numpy.sort(ds)/numpy.max(ds)             # <<<<<<<<<<<<<<
+ * 				#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
+ * 				self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+ */
+        __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 257, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sort); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __pyx_t_8 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
+          __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_1);
+          if (likely(__pyx_t_8)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+            __Pyx_INCREF(__pyx_t_8);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_1, function);
+          }
+        }
+        __pyx_t_5 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_8, __pyx_v_ds) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_ds);
+        __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 257, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 257, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_max); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __pyx_t_8 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
+          __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_6);
+          if (likely(__pyx_t_8)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+            __Pyx_INCREF(__pyx_t_8);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_6, function);
+          }
+        }
+        __pyx_t_1 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_8, __pyx_v_ds) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_ds);
+        __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __pyx_t_6 = __Pyx_PyNumber_Divide(__pyx_t_5, __pyx_t_1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 257, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __Pyx_DECREF_SET(__pyx_v_ds, __pyx_t_6);
+        __pyx_t_6 = 0;
+
+        /* "GPA.pyx":259
+ * 				ds = numpy.sort(ds)/numpy.max(ds)
+ * 				#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
+ * 				self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)             # <<<<<<<<<<<<<<
+ * 			except QhullError:
+ * 				self.n_edges = 0
+ */
+        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_average); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __pyx_t_18 = PyObject_Length(__pyx_v_ds); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 259, __pyx_L11_error)
+        __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_v_ds, (__pyx_t_18 / 2), 0, NULL, NULL, NULL, 1, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_8 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
+          __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_5);
+          if (likely(__pyx_t_8)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+            __Pyx_INCREF(__pyx_t_8);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_5, function);
+          }
+        }
+        __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_8, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_1);
+        __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_average); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __pyx_t_18 = PyObject_Length(__pyx_v_ds); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 259, __pyx_L11_error)
+        __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_v_ds, 0, (__pyx_t_18 / 2), NULL, NULL, NULL, 0, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_7 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
+          __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_8);
+          if (likely(__pyx_t_7)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+            __Pyx_INCREF(__pyx_t_7);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_8, function);
+          }
+        }
+        __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_7, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_1);
+        __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __pyx_t_8 = PyNumber_Subtract(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_max); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __pyx_t_6 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
+          __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_1);
+          if (likely(__pyx_t_6)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+            __Pyx_INCREF(__pyx_t_6);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_1, function);
+          }
+        }
+        __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_6, __pyx_v_ds) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_ds);
+        __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_8, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __pyx_t_22 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_22 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 259, __pyx_L11_error)
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __pyx_v_self->G1 = __pyx_t_22;
+
+        /* "GPA.pyx":252
+ * 			self.G1 = 0.0
+ * 		else:
+ * 			try:             # <<<<<<<<<<<<<<
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ */
+      }
+      __Pyx_XDECREF(__pyx_t_19); __pyx_t_19 = 0;
+      __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
+      __Pyx_XDECREF(__pyx_t_21); __pyx_t_21 = 0;
+      goto __pyx_L16_try_end;
+      __pyx_L11_error:;
+      __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __PYX_XDEC_MEMVIEW(&__pyx_t_4, 1);
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+
+      /* "GPA.pyx":260
+ * 				#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
+ * 				self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+ * 			except QhullError:             # <<<<<<<<<<<<<<
+ * 				self.n_edges = 0
+ * 				self.G1 = 0.0
+ */
+      __Pyx_ErrFetch(&__pyx_t_1, &__pyx_t_5, &__pyx_t_8);
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_QhullError); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 260, __pyx_L13_except_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __pyx_t_9 = __Pyx_PyErr_GivenExceptionMatches(__pyx_t_1, __pyx_t_6);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_ErrRestore(__pyx_t_1, __pyx_t_5, __pyx_t_8);
+      __pyx_t_1 = 0; __pyx_t_5 = 0; __pyx_t_8 = 0;
+      if (__pyx_t_9) {
+        __Pyx_AddTraceback("GPA.GPA._G1", __pyx_clineno, __pyx_lineno, __pyx_filename);
+        if (__Pyx_GetException(&__pyx_t_8, &__pyx_t_5, &__pyx_t_1) < 0) __PYX_ERR(0, 260, __pyx_L13_except_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_GOTREF(__pyx_t_1);
+
+        /* "GPA.pyx":261
+ * 				self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+ * 			except QhullError:
+ * 				self.n_edges = 0             # <<<<<<<<<<<<<<
+ * 				self.G1 = 0.0
+ * 				self.n_points = 0
+ */
+        __pyx_v_self->n_edges = 0;
+
+        /* "GPA.pyx":262
+ * 			except QhullError:
+ * 				self.n_edges = 0
+ * 				self.G1 = 0.0             # <<<<<<<<<<<<<<
+ * 				self.n_points = 0
+ * 		if self.G1 < 0.0:
+ */
+        __pyx_v_self->G1 = 0.0;
+
+        /* "GPA.pyx":263
+ * 				self.n_edges = 0
+ * 				self.G1 = 0.0
+ * 				self.n_points = 0             # <<<<<<<<<<<<<<
  * 		if self.G1 < 0.0:
  * 			self.G1 = 0.0
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_average); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_18 = PyObject_Length(__pyx_v_ds); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 252, __pyx_L1_error)
-    __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_v_ds, (__pyx_t_18 / 2), 0, NULL, NULL, NULL, 1, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_8 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
-      __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_5);
-      if (likely(__pyx_t_8)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
-        __Pyx_INCREF(__pyx_t_8);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_5, function);
+        __pyx_v_self->n_points = 0;
+        __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+        __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L12_exception_handled;
       }
+      goto __pyx_L13_except_error;
+      __pyx_L13_except_error:;
+
+      /* "GPA.pyx":252
+ * 			self.G1 = 0.0
+ * 		else:
+ * 			try:             # <<<<<<<<<<<<<<
+ * 				self.triangles = Delaunay(self.triangulation_points)
+ * 				neigh = self.triangles.vertex_neighbor_vertices
+ */
+      __Pyx_XGIVEREF(__pyx_t_19);
+      __Pyx_XGIVEREF(__pyx_t_20);
+      __Pyx_XGIVEREF(__pyx_t_21);
+      __Pyx_ExceptionReset(__pyx_t_19, __pyx_t_20, __pyx_t_21);
+      goto __pyx_L1_error;
+      __pyx_L12_exception_handled:;
+      __Pyx_XGIVEREF(__pyx_t_19);
+      __Pyx_XGIVEREF(__pyx_t_20);
+      __Pyx_XGIVEREF(__pyx_t_21);
+      __Pyx_ExceptionReset(__pyx_t_19, __pyx_t_20, __pyx_t_21);
+      __pyx_L16_try_end:;
     }
-    __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_8, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_1);
-    __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_average); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_18 = PyObject_Length(__pyx_v_ds); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 252, __pyx_L1_error)
-    __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_v_ds, 0, (__pyx_t_18 / 2), NULL, NULL, NULL, 0, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
-      __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_8);
-      if (likely(__pyx_t_7)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
-        __Pyx_INCREF(__pyx_t_7);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_8, function);
-      }
-    }
-    __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_7, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_1);
-    __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = PyNumber_Subtract(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_8);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_max); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = NULL;
-    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_1))) {
-      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_1);
-      if (likely(__pyx_t_6)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
-        __Pyx_INCREF(__pyx_t_6);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_1, function);
-      }
-    }
-    __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_6, __pyx_v_ds) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_ds);
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_8, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_19 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_19 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 252, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_v_self->G1 = __pyx_t_19;
   }
   __pyx_L10:;
 
-  /* "GPA.pyx":253
- * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+  /* "GPA.pyx":264
+ * 				self.G1 = 0.0
+ * 				self.n_points = 0
  * 		if self.G1 < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1 = 0.0
  * 
@@ -6900,8 +7128,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_t_3 = ((__pyx_v_self->G1 < 0.0) != 0);
   if (__pyx_t_3) {
 
-    /* "GPA.pyx":254
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+    /* "GPA.pyx":265
+ * 				self.n_points = 0
  * 		if self.G1 < 0.0:
  * 			self.G1 = 0.0             # <<<<<<<<<<<<<<
  * 
@@ -6909,16 +7137,16 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
     __pyx_v_self->G1 = 0.0;
 
-    /* "GPA.pyx":253
- * 			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
- * 			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+    /* "GPA.pyx":264
+ * 				self.G1 = 0.0
+ * 				self.n_points = 0
  * 		if self.G1 < 0.0:             # <<<<<<<<<<<<<<
  * 			self.G1 = 0.0
  * 
  */
   }
 
-  /* "GPA.pyx":217
+  /* "GPA.pyx":223
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _G1(self,str symm):             # <<<<<<<<<<<<<<
@@ -6948,7 +7176,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10_G1(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   return __pyx_r;
 }
 
-/* "GPA.pyx":260
+/* "GPA.pyx":271
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _G2(self,str symm):             # <<<<<<<<<<<<<<
@@ -6995,7 +7223,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_G2", 0);
 
-  /* "GPA.pyx":265
+  /* "GPA.pyx":276
  * 		cdef int[:,:] targetMat,opositeMat
  * 		cdef double[:,:] probabilityMat
  * 		somax = 0.0             # <<<<<<<<<<<<<<
@@ -7004,7 +7232,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   __pyx_v_somax = 0.0;
 
-  /* "GPA.pyx":266
+  /* "GPA.pyx":277
  * 		cdef double[:,:] probabilityMat
  * 		somax = 0.0
  * 		somay = 0.0             # <<<<<<<<<<<<<<
@@ -7013,7 +7241,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   __pyx_v_somay = 0.0;
 
-  /* "GPA.pyx":267
+  /* "GPA.pyx":278
  * 		somax = 0.0
  * 		somay = 0.0
  * 		smod = 0.0             # <<<<<<<<<<<<<<
@@ -7022,46 +7250,46 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   __pyx_v_smod = 0.0;
 
-  /* "GPA.pyx":269
+  /* "GPA.pyx":280
  * 		smod = 0.0
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.symmetricalP
  * 			opositeMat = self.asymmetricalP
  */
-  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 269, __pyx_L1_error)
+  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 280, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":270
+    /* "GPA.pyx":281
  * 
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP             # <<<<<<<<<<<<<<
  * 			opositeMat = self.asymmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  */
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 270, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 281, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->symmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":271
+    /* "GPA.pyx":282
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP
  * 			opositeMat = self.asymmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  */
-    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 271, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 282, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->asymmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_opositeMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":269
+    /* "GPA.pyx":280
  * 		smod = 0.0
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
@@ -7071,46 +7299,46 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":272
+  /* "GPA.pyx":283
  * 			targetMat = self.symmetricalP
  * 			opositeMat = self.asymmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.asymmetricalP
  * 			opositeMat = self.symmetricalP
  */
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 272, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 283, __pyx_L1_error)
   __pyx_t_1 = (__pyx_t_2 != 0);
   if (__pyx_t_1) {
 
-    /* "GPA.pyx":273
+    /* "GPA.pyx":284
  * 			opositeMat = self.asymmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP             # <<<<<<<<<<<<<<
  * 			opositeMat = self.symmetricalP
  * 		elif symm == 'F':# Full Matrix, including unknown vectors
  */
-    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 273, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 284, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->asymmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":274
+    /* "GPA.pyx":285
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  * 			opositeMat = self.symmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'F':# Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  */
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 274, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 285, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->symmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_opositeMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":272
+    /* "GPA.pyx":283
  * 			targetMat = self.symmetricalP
  * 			opositeMat = self.asymmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
@@ -7120,36 +7348,36 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":275
+  /* "GPA.pyx":286
  * 			targetMat = self.asymmetricalP
  * 			opositeMat = self.symmetricalP
  * 		elif symm == 'F':# Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  */
-  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 275, __pyx_L1_error)
+  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 286, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (likely(__pyx_t_2)) {
 
-    /* "GPA.pyx":276
+    /* "GPA.pyx":287
  * 			opositeMat = self.symmetricalP
  * 		elif symm == 'F':# Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 276, __pyx_L1_error)}
-    __pyx_t_4 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 276, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 287, __pyx_L1_error)}
+    __pyx_t_4 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 276, __pyx_L1_error)}
-    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 276, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 287, __pyx_L1_error)}
+    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_4);
@@ -7157,50 +7385,50 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6);
     __pyx_t_4 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_7);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
     __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 276, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 276, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 287, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":277
+    /* "GPA.pyx":288
  * 		elif symm == 'F':# Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_zeros); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_zeros); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 277, __pyx_L1_error)}
-    __pyx_t_8 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 277, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 288, __pyx_L1_error)}
+    __pyx_t_8 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 277, __pyx_L1_error)}
-    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 277, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 288, __pyx_L1_error)}
+    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_8);
     PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_8);
@@ -7208,32 +7436,32 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_6);
     __pyx_t_8 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5);
     __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_int32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_int32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 277, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_opositeMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":275
+    /* "GPA.pyx":286
  * 			targetMat = self.asymmetricalP
  * 			opositeMat = self.symmetricalP
  * 		elif symm == 'F':# Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
@@ -7243,7 +7471,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":279
+  /* "GPA.pyx":290
  * 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)             # <<<<<<<<<<<<<<
@@ -7251,30 +7479,30 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  * 		if numpy.sum(targetMat)<1:
  */
   /*else*/ {
-    __pyx_t_4 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be_2, __pyx_v_symm); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 279, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be_2, __pyx_v_symm); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 290, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 279, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 290, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_Raise(__pyx_t_5, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __PYX_ERR(0, 279, __pyx_L1_error)
+    __PYX_ERR(0, 290, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "GPA.pyx":281
+  /* "GPA.pyx":292
  * 			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
  * 
  * 		if numpy.sum(targetMat)<1:             # <<<<<<<<<<<<<<
  * 			self.G2 = 0.0
  * 			return
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_7 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -7289,16 +7517,16 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_7, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 281, __pyx_L1_error)
+  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = PyObject_RichCompare(__pyx_t_5, __pyx_int_1, Py_LT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_t_6 = PyObject_RichCompare(__pyx_t_5, __pyx_int_1, Py_LT); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_6); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":282
+    /* "GPA.pyx":293
  * 
  * 		if numpy.sum(targetMat)<1:
  * 			self.G2 = 0.0             # <<<<<<<<<<<<<<
@@ -7307,7 +7535,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
     __pyx_v_self->G2 = 0.0;
 
-    /* "GPA.pyx":283
+    /* "GPA.pyx":294
  * 		if numpy.sum(targetMat)<1:
  * 			self.G2 = 0.0
  * 			return             # <<<<<<<<<<<<<<
@@ -7316,7 +7544,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
     goto __pyx_L0;
 
-    /* "GPA.pyx":281
+    /* "GPA.pyx":292
  * 			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
  * 
  * 		if numpy.sum(targetMat)<1:             # <<<<<<<<<<<<<<
@@ -7325,7 +7553,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   }
 
-  /* "GPA.pyx":285
+  /* "GPA.pyx":296
  * 			return
  * 
  * 		alinhamento = 0.0             # <<<<<<<<<<<<<<
@@ -7334,18 +7562,18 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   __pyx_v_alinhamento = 0.0;
 
-  /* "GPA.pyx":287
+  /* "GPA.pyx":298
  * 		alinhamento = 0.0
  * 
  * 		if symm != 'S':             # <<<<<<<<<<<<<<
  * 			for i in range(self.rows):
  * 				for j in range(self.cols):
  */
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_NE)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 287, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_NE)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 298, __pyx_L1_error)
   __pyx_t_1 = (__pyx_t_2 != 0);
   if (__pyx_t_1) {
 
-    /* "GPA.pyx":288
+    /* "GPA.pyx":299
  * 
  * 		if symm != 'S':
  * 			for i in range(self.rows):             # <<<<<<<<<<<<<<
@@ -7357,7 +7585,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
       __pyx_v_i = __pyx_t_11;
 
-      /* "GPA.pyx":289
+      /* "GPA.pyx":300
  * 		if symm != 'S':
  * 			for i in range(self.rows):
  * 				for j in range(self.cols):             # <<<<<<<<<<<<<<
@@ -7369,7 +7597,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
         __pyx_v_j = __pyx_t_14;
 
-        /* "GPA.pyx":290
+        /* "GPA.pyx":301
  * 			for i in range(self.rows):
  * 				for j in range(self.cols):
  * 					if targetMat[i,j] == 1:             # <<<<<<<<<<<<<<
@@ -7381,43 +7609,43 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
         __pyx_t_1 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetMat.data + __pyx_t_15 * __pyx_v_targetMat.strides[0]) ) + __pyx_t_16 * __pyx_v_targetMat.strides[1]) ))) == 1) != 0);
         if (__pyx_t_1) {
 
-          /* "GPA.pyx":291
+          /* "GPA.pyx":302
  * 				for j in range(self.cols):
  * 					if targetMat[i,j] == 1:
  * 						somax += self.gradient_dx[i,j]/self.maxGrad             # <<<<<<<<<<<<<<
  * 						somay += self.gradient_dy[i,j]/self.maxGrad
  * 						smod += self.mods[i,j]
  */
-          if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 291, __pyx_L1_error)}
+          if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 302, __pyx_L1_error)}
           __pyx_t_16 = __pyx_v_i;
           __pyx_t_15 = __pyx_v_j;
           __pyx_v_somax = (__pyx_v_somax + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_16 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_15 * __pyx_v_self->gradient_dx.strides[1]) ))) / __pyx_v_self->maxGrad));
 
-          /* "GPA.pyx":292
+          /* "GPA.pyx":303
  * 					if targetMat[i,j] == 1:
  * 						somax += self.gradient_dx[i,j]/self.maxGrad
  * 						somay += self.gradient_dy[i,j]/self.maxGrad             # <<<<<<<<<<<<<<
  * 						smod += self.mods[i,j]
  * 			if smod <= 0.0:
  */
-          if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 292, __pyx_L1_error)}
+          if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 303, __pyx_L1_error)}
           __pyx_t_15 = __pyx_v_i;
           __pyx_t_16 = __pyx_v_j;
           __pyx_v_somay = (__pyx_v_somay + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_15 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_16 * __pyx_v_self->gradient_dy.strides[1]) ))) / __pyx_v_self->maxGrad));
 
-          /* "GPA.pyx":293
+          /* "GPA.pyx":304
  * 						somax += self.gradient_dx[i,j]/self.maxGrad
  * 						somay += self.gradient_dy[i,j]/self.maxGrad
  * 						smod += self.mods[i,j]             # <<<<<<<<<<<<<<
  * 			if smod <= 0.0:
  * 				alinhamento = 0.0
  */
-          if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 293, __pyx_L1_error)}
+          if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 304, __pyx_L1_error)}
           __pyx_t_16 = __pyx_v_i;
           __pyx_t_15 = __pyx_v_j;
           __pyx_v_smod = (__pyx_v_smod + (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_16 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_15 * __pyx_v_self->mods.strides[1]) ))));
 
-          /* "GPA.pyx":290
+          /* "GPA.pyx":301
  * 			for i in range(self.rows):
  * 				for j in range(self.cols):
  * 					if targetMat[i,j] == 1:             # <<<<<<<<<<<<<<
@@ -7428,7 +7656,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       }
     }
 
-    /* "GPA.pyx":294
+    /* "GPA.pyx":305
  * 						somay += self.gradient_dy[i,j]/self.maxGrad
  * 						smod += self.mods[i,j]
  * 			if smod <= 0.0:             # <<<<<<<<<<<<<<
@@ -7438,7 +7666,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_1 = ((__pyx_v_smod <= 0.0) != 0);
     if (__pyx_t_1) {
 
-      /* "GPA.pyx":295
+      /* "GPA.pyx":306
  * 						smod += self.mods[i,j]
  * 			if smod <= 0.0:
  * 				alinhamento = 0.0             # <<<<<<<<<<<<<<
@@ -7447,7 +7675,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
       __pyx_v_alinhamento = 0.0;
 
-      /* "GPA.pyx":294
+      /* "GPA.pyx":305
  * 						somay += self.gradient_dy[i,j]/self.maxGrad
  * 						smod += self.mods[i,j]
  * 			if smod <= 0.0:             # <<<<<<<<<<<<<<
@@ -7457,7 +7685,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       goto __pyx_L11;
     }
 
-    /* "GPA.pyx":297
+    /* "GPA.pyx":308
  * 				alinhamento = 0.0
  * 			else:
  * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/(2*smod)             # <<<<<<<<<<<<<<
@@ -7469,19 +7697,19 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     }
     __pyx_L11:;
 
-    /* "GPA.pyx":298
+    /* "GPA.pyx":309
  * 			else:
  * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/(2*smod)
  * 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:             # <<<<<<<<<<<<<<
  * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)
  * 			else:
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_opositeMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_opositeMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_7 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -7496,15 +7724,15 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_6 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_7, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 298, __pyx_L1_error)
+    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_8 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -7519,32 +7747,32 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_4 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 298, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = PyNumber_Add(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_7 = PyNumber_Add(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = PyObject_RichCompare(__pyx_t_7, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_4 = PyObject_RichCompare(__pyx_t_7, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 309, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_1) {
 
-      /* "GPA.pyx":299
+      /* "GPA.pyx":310
  * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/(2*smod)
  * 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
  * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)             # <<<<<<<<<<<<<<
  * 			else:
  * 				self.G2 = 0.0
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_sum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_sum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __pyx_t_5 = NULL;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -7559,17 +7787,17 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       __pyx_t_4 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_5, __pyx_t_7) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 299, __pyx_L1_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_17 = __Pyx_PyObject_AsDouble(__pyx_t_4); if (unlikely(__pyx_t_17 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_17 = __Pyx_PyObject_AsDouble(__pyx_t_4); if (unlikely(__pyx_t_17 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_6 = __pyx_memoryview_fromslice(__pyx_v_opositeMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_6 = __pyx_memoryview_fromslice(__pyx_v_opositeMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __pyx_t_5 = NULL;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -7584,15 +7812,15 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       __pyx_t_4 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 299, __pyx_L1_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sum); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sum); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_6 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_6 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __pyx_t_8 = NULL;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -7607,18 +7835,18 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       __pyx_t_7 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_8, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6);
       __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
+      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_5 = PyNumber_Add(__pyx_t_4, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_5 = PyNumber_Add(__pyx_t_4, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_18 = __Pyx_PyObject_AsDouble(__pyx_t_5); if (unlikely(__pyx_t_18 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_18 = __Pyx_PyObject_AsDouble(__pyx_t_5); if (unlikely(__pyx_t_18 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __pyx_v_self->G2 = ((__pyx_t_17 / __pyx_t_18) * (1.0 - __pyx_v_alinhamento));
 
-      /* "GPA.pyx":298
+      /* "GPA.pyx":309
  * 			else:
  * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/(2*smod)
  * 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:             # <<<<<<<<<<<<<<
@@ -7628,7 +7856,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       goto __pyx_L12;
     }
 
-    /* "GPA.pyx":301
+    /* "GPA.pyx":312
  * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)
  * 			else:
  * 				self.G2 = 0.0             # <<<<<<<<<<<<<<
@@ -7640,7 +7868,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     }
     __pyx_L12:;
 
-    /* "GPA.pyx":287
+    /* "GPA.pyx":298
  * 		alinhamento = 0.0
  * 
  * 		if symm != 'S':             # <<<<<<<<<<<<<<
@@ -7650,7 +7878,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L5;
   }
 
-  /* "GPA.pyx":303
+  /* "GPA.pyx":314
  * 				self.G2 = 0.0
  * 		else:
  * 			probabilityMat = self.mods*numpy.array(targetMat,dtype=numpy.float64)             # <<<<<<<<<<<<<<
@@ -7658,60 +7886,60 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  * 			maxEntropy = numpy.log(numpy.float64(numpy.sum(targetMat)))
  */
   /*else*/ {
-    if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 303, __pyx_L1_error)}
-    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_self->mods, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 303, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 314, __pyx_L1_error)}
+    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_self->mods, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_7);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
     __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_float64); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_float64); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_19) < 0) __PYX_ERR(0, 303, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_19) < 0) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-    __pyx_t_19 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __pyx_t_19 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = PyNumber_Multiply(__pyx_t_5, __pyx_t_19); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __pyx_t_7 = PyNumber_Multiply(__pyx_t_5, __pyx_t_19); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-    __pyx_t_20 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_7, PyBUF_WRITABLE); if (unlikely(!__pyx_t_20.memview)) __PYX_ERR(0, 303, __pyx_L1_error)
+    __pyx_t_20 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_7, PyBUF_WRITABLE); if (unlikely(!__pyx_t_20.memview)) __PYX_ERR(0, 314, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_v_probabilityMat = __pyx_t_20;
     __pyx_t_20.memview = NULL;
     __pyx_t_20.data = NULL;
 
-    /* "GPA.pyx":304
+    /* "GPA.pyx":315
  * 		else:
  * 			probabilityMat = self.mods*numpy.array(targetMat,dtype=numpy.float64)
  * 			probabilityMat = probabilityMat/numpy.sum(probabilityMat)             # <<<<<<<<<<<<<<
  * 			maxEntropy = numpy.log(numpy.float64(numpy.sum(targetMat)))
  * 			for i in range(self.rows):
  */
-    __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_probabilityMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_probabilityMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 315, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 315, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 315, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_probabilityMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_probabilityMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 315, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_4 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -7726,43 +7954,43 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_19 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_4, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 304, __pyx_L1_error)
+    if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 315, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __pyx_t_6 = __Pyx_PyNumber_Divide(__pyx_t_7, __pyx_t_19); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyNumber_Divide(__pyx_t_7, __pyx_t_19); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 315, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-    __pyx_t_20 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_6, PyBUF_WRITABLE); if (unlikely(!__pyx_t_20.memview)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __pyx_t_20 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_6, PyBUF_WRITABLE); if (unlikely(!__pyx_t_20.memview)) __PYX_ERR(0, 315, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __PYX_XDEC_MEMVIEW(&__pyx_v_probabilityMat, 1);
     __pyx_v_probabilityMat = __pyx_t_20;
     __pyx_t_20.memview = NULL;
     __pyx_t_20.data = NULL;
 
-    /* "GPA.pyx":305
+    /* "GPA.pyx":316
  * 			probabilityMat = self.mods*numpy.array(targetMat,dtype=numpy.float64)
  * 			probabilityMat = probabilityMat/numpy.sum(probabilityMat)
  * 			maxEntropy = numpy.log(numpy.float64(numpy.sum(targetMat)))             # <<<<<<<<<<<<<<
  * 			for i in range(self.rows):
  * 				for j in range(self.cols):
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_19, __pyx_n_s_numpy); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_19, __pyx_n_s_numpy); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_19, __pyx_n_s_log); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_19, __pyx_n_s_log); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float64); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float64); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_21 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __pyx_t_21 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_21);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 305, __pyx_L1_error)
+    __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_22 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_21))) {
@@ -7777,7 +8005,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_5 = (__pyx_t_22) ? __Pyx_PyObject_Call2Args(__pyx_t_21, __pyx_t_22, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_21, __pyx_t_8);
     __Pyx_XDECREF(__pyx_t_22); __pyx_t_22 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 305, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
     __pyx_t_21 = NULL;
@@ -7793,7 +8021,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_19 = (__pyx_t_21) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_21, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_21); __pyx_t_21 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 305, __pyx_L1_error)
+    if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_4 = NULL;
@@ -7809,14 +8037,14 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_6 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_4, __pyx_t_19) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_19);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 305, __pyx_L1_error)
+    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_18 = __pyx_PyFloat_AsDouble(__pyx_t_6); if (unlikely((__pyx_t_18 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 305, __pyx_L1_error)
+    __pyx_t_18 = __pyx_PyFloat_AsDouble(__pyx_t_6); if (unlikely((__pyx_t_18 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 316, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_v_maxEntropy = __pyx_t_18;
 
-    /* "GPA.pyx":306
+    /* "GPA.pyx":317
  * 			probabilityMat = probabilityMat/numpy.sum(probabilityMat)
  * 			maxEntropy = numpy.log(numpy.float64(numpy.sum(targetMat)))
  * 			for i in range(self.rows):             # <<<<<<<<<<<<<<
@@ -7828,7 +8056,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
       __pyx_v_i = __pyx_t_11;
 
-      /* "GPA.pyx":307
+      /* "GPA.pyx":318
  * 			maxEntropy = numpy.log(numpy.float64(numpy.sum(targetMat)))
  * 			for i in range(self.rows):
  * 				for j in range(self.cols):             # <<<<<<<<<<<<<<
@@ -7840,7 +8068,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
         __pyx_v_j = __pyx_t_14;
 
-        /* "GPA.pyx":308
+        /* "GPA.pyx":319
  * 			for i in range(self.rows):
  * 				for j in range(self.cols):
  * 					if targetMat[i,j] == 1:             # <<<<<<<<<<<<<<
@@ -7852,27 +8080,27 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
         __pyx_t_1 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetMat.data + __pyx_t_15 * __pyx_v_targetMat.strides[0]) ) + __pyx_t_16 * __pyx_v_targetMat.strides[1]) ))) == 1) != 0);
         if (__pyx_t_1) {
 
-          /* "GPA.pyx":309
+          /* "GPA.pyx":320
  * 				for j in range(self.cols):
  * 					if targetMat[i,j] == 1:
  * 						alinhamento = alinhamento - probabilityMat[i,j]*numpy.log(probabilityMat[i,j])/maxEntropy             # <<<<<<<<<<<<<<
  * 			self.G2 = alinhamento
  * 
  */
-          __pyx_t_6 = PyFloat_FromDouble(__pyx_v_alinhamento); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_6 = PyFloat_FromDouble(__pyx_v_alinhamento); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __pyx_t_16 = __pyx_v_i;
           __pyx_t_15 = __pyx_v_j;
-          __pyx_t_7 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_probabilityMat.data + __pyx_t_16 * __pyx_v_probabilityMat.strides[0]) ) + __pyx_t_15 * __pyx_v_probabilityMat.strides[1]) )))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_7 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_probabilityMat.data + __pyx_t_16 * __pyx_v_probabilityMat.strides[0]) ) + __pyx_t_15 * __pyx_v_probabilityMat.strides[1]) )))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_7);
-          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_log); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_log); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __pyx_t_15 = __pyx_v_i;
           __pyx_t_16 = __pyx_v_j;
-          __pyx_t_4 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_probabilityMat.data + __pyx_t_15 * __pyx_v_probabilityMat.strides[0]) ) + __pyx_t_16 * __pyx_v_probabilityMat.strides[1]) )))); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_4 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_probabilityMat.data + __pyx_t_15 * __pyx_v_probabilityMat.strides[0]) ) + __pyx_t_16 * __pyx_v_probabilityMat.strides[1]) )))); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __pyx_t_21 = NULL;
           if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -7887,28 +8115,28 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
           __pyx_t_19 = (__pyx_t_21) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_21, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
           __Pyx_XDECREF(__pyx_t_21); __pyx_t_21 = 0;
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 309, __pyx_L1_error)
+          if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __pyx_t_5 = PyNumber_Multiply(__pyx_t_7, __pyx_t_19); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_5 = PyNumber_Multiply(__pyx_t_7, __pyx_t_19); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          __pyx_t_19 = PyFloat_FromDouble(__pyx_v_maxEntropy); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_19 = PyFloat_FromDouble(__pyx_v_maxEntropy); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
-          __pyx_t_7 = __Pyx_PyNumber_Divide(__pyx_t_5, __pyx_t_19); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_7 = __Pyx_PyNumber_Divide(__pyx_t_5, __pyx_t_19); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          __pyx_t_19 = PyNumber_Subtract(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_19 = PyNumber_Subtract(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          __pyx_t_18 = __pyx_PyFloat_AsDouble(__pyx_t_19); if (unlikely((__pyx_t_18 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 309, __pyx_L1_error)
+          __pyx_t_18 = __pyx_PyFloat_AsDouble(__pyx_t_19); if (unlikely((__pyx_t_18 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
           __pyx_v_alinhamento = __pyx_t_18;
 
-          /* "GPA.pyx":308
+          /* "GPA.pyx":319
  * 			for i in range(self.rows):
  * 				for j in range(self.cols):
  * 					if targetMat[i,j] == 1:             # <<<<<<<<<<<<<<
@@ -7919,7 +8147,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       }
     }
 
-    /* "GPA.pyx":310
+    /* "GPA.pyx":321
  * 					if targetMat[i,j] == 1:
  * 						alinhamento = alinhamento - probabilityMat[i,j]*numpy.log(probabilityMat[i,j])/maxEntropy
  * 			self.G2 = alinhamento             # <<<<<<<<<<<<<<
@@ -7930,7 +8158,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   }
   __pyx_L5:;
 
-  /* "GPA.pyx":260
+  /* "GPA.pyx":271
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _G2(self,str symm):             # <<<<<<<<<<<<<<
@@ -7959,7 +8187,7 @@ static void __pyx_f_3GPA_3GPA__G2(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   __Pyx_RefNannyFinishContext();
 }
 
-/* "GPA.pyx":316
+/* "GPA.pyx":327
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef double distAngle(self,double a1,double a2):             # <<<<<<<<<<<<<<
@@ -7972,7 +8200,7 @@ static double __pyx_f_3GPA_3GPA_distAngle(CYTHON_UNUSED struct __pyx_obj_3GPA_GP
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("distAngle", 0);
 
-  /* "GPA.pyx":317
+  /* "GPA.pyx":328
  * 	@cython.cdivision(True)
  * 	cdef double distAngle(self,double a1,double a2):
  * 		return (cos(a1)*cos(a2)+sin(a1)*sin(a2)+1)/2             # <<<<<<<<<<<<<<
@@ -7982,7 +8210,7 @@ static double __pyx_f_3GPA_3GPA_distAngle(CYTHON_UNUSED struct __pyx_obj_3GPA_GP
   __pyx_r = ((((cos(__pyx_v_a1) * cos(__pyx_v_a2)) + (sin(__pyx_v_a1) * sin(__pyx_v_a2))) + 1.0) / 2.0);
   goto __pyx_L0;
 
-  /* "GPA.pyx":316
+  /* "GPA.pyx":327
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef double distAngle(self,double a1,double a2):             # <<<<<<<<<<<<<<
@@ -7996,7 +8224,7 @@ static double __pyx_f_3GPA_3GPA_distAngle(CYTHON_UNUSED struct __pyx_obj_3GPA_GP
   return __pyx_r;
 }
 
-/* "GPA.pyx":323
+/* "GPA.pyx":334
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _G3(self,str symm):             # <<<<<<<<<<<<<<
@@ -8046,46 +8274,46 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_G3", 0);
 
-  /* "GPA.pyx":329
+  /* "GPA.pyx":340
  * 		cdef int[:,:] targetList
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.symmetricalP
  * 			opositeMat = self.asymmetricalP
  */
-  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 329, __pyx_L1_error)
+  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 340, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":330
+    /* "GPA.pyx":341
  * 
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP             # <<<<<<<<<<<<<<
  * 			opositeMat = self.asymmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  */
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 330, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 341, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->symmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":331
+    /* "GPA.pyx":342
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP
  * 			opositeMat = self.asymmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  */
-    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 331, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 342, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->asymmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_opositeMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":329
+    /* "GPA.pyx":340
  * 		cdef int[:,:] targetList
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
@@ -8095,46 +8323,46 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":332
+  /* "GPA.pyx":343
  * 			targetMat = self.symmetricalP
  * 			opositeMat = self.asymmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.asymmetricalP
  * 			opositeMat = self.symmetricalP
  */
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 332, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 343, __pyx_L1_error)
   __pyx_t_1 = (__pyx_t_2 != 0);
   if (__pyx_t_1) {
 
-    /* "GPA.pyx":333
+    /* "GPA.pyx":344
  * 			opositeMat = self.asymmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP             # <<<<<<<<<<<<<<
  * 			opositeMat = self.symmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  */
-    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 333, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 344, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->asymmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":334
+    /* "GPA.pyx":345
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  * 			opositeMat = self.symmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  */
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 334, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 345, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->symmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_opositeMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":332
+    /* "GPA.pyx":343
  * 			targetMat = self.symmetricalP
  * 			opositeMat = self.asymmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
@@ -8144,36 +8372,36 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":335
+  /* "GPA.pyx":346
  * 			targetMat = self.asymmetricalP
  * 			opositeMat = self.symmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  */
-  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 335, __pyx_L1_error)
+  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 346, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (likely(__pyx_t_2)) {
 
-    /* "GPA.pyx":336
+    /* "GPA.pyx":347
  * 			opositeMat = self.symmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 336, __pyx_L1_error)}
-    __pyx_t_4 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 336, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 347, __pyx_L1_error)}
+    __pyx_t_4 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 336, __pyx_L1_error)}
-    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 336, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 347, __pyx_L1_error)}
+    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_4);
@@ -8181,50 +8409,50 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6);
     __pyx_t_4 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_7);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
     __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 336, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 336, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":337
+    /* "GPA.pyx":348
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_zeros); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_zeros); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 337, __pyx_L1_error)}
-    __pyx_t_8 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 337, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 348, __pyx_L1_error)}
+    __pyx_t_8 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 337, __pyx_L1_error)}
-    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 337, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 348, __pyx_L1_error)}
+    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_8);
     PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_8);
@@ -8232,32 +8460,32 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_6);
     __pyx_t_8 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5);
     __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_int32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_int32); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 337, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_4) < 0) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_4, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 348, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_opositeMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":335
+    /* "GPA.pyx":346
  * 			targetMat = self.asymmetricalP
  * 			opositeMat = self.symmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
@@ -8267,7 +8495,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":339
+  /* "GPA.pyx":350
  * 			opositeMat = numpy.zeros((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or F), got: "+symm)             # <<<<<<<<<<<<<<
@@ -8275,35 +8503,35 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  * 
  */
   /*else*/ {
-    __pyx_t_4 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be_2, __pyx_v_symm); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be_2, __pyx_v_symm); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 350, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 350, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_Raise(__pyx_t_5, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __PYX_ERR(0, 339, __pyx_L1_error)
+    __PYX_ERR(0, 350, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "GPA.pyx":342
+  /* "GPA.pyx":353
  * 
  * 
  * 		targetList = numpy.zeros((numpy.sum(targetMat),2),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 
  * 		i = 0
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_6 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_t_8 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -8318,10 +8546,10 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   __pyx_t_5 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_6);
   __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 342, __pyx_L1_error)
+  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_GIVEREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5);
@@ -8329,32 +8557,32 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   __Pyx_GIVEREF(__pyx_int_2);
   PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_int_2);
   __pyx_t_5 = 0;
-  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_7);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_7);
   __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 342, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_5, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_5, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_targetList = __pyx_t_3;
   __pyx_t_3.memview = NULL;
   __pyx_t_3.data = NULL;
 
-  /* "GPA.pyx":344
+  /* "GPA.pyx":355
  * 		targetList = numpy.zeros((numpy.sum(targetMat),2),dtype=numpy.int32)
  * 
  * 		i = 0             # <<<<<<<<<<<<<<
@@ -8363,7 +8591,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   __pyx_v_i = 0;
 
-  /* "GPA.pyx":345
+  /* "GPA.pyx":356
  * 
  * 		i = 0
  * 		for ty in range(self.rows):             # <<<<<<<<<<<<<<
@@ -8375,7 +8603,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_ty = __pyx_t_11;
 
-    /* "GPA.pyx":346
+    /* "GPA.pyx":357
  * 		i = 0
  * 		for ty in range(self.rows):
  * 			for tx in range(self.cols):             # <<<<<<<<<<<<<<
@@ -8387,7 +8615,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
       __pyx_v_tx = __pyx_t_14;
 
-      /* "GPA.pyx":347
+      /* "GPA.pyx":358
  * 		for ty in range(self.rows):
  * 			for tx in range(self.cols):
  * 				if targetMat[ty,tx]>0:             # <<<<<<<<<<<<<<
@@ -8399,7 +8627,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       __pyx_t_2 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetMat.data + __pyx_t_15 * __pyx_v_targetMat.strides[0]) ) + __pyx_t_16 * __pyx_v_targetMat.strides[1]) ))) > 0) != 0);
       if (__pyx_t_2) {
 
-        /* "GPA.pyx":348
+        /* "GPA.pyx":359
  * 			for tx in range(self.cols):
  * 				if targetMat[ty,tx]>0:
  * 					targetList[i,0] = ty             # <<<<<<<<<<<<<<
@@ -8410,7 +8638,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
         __pyx_t_15 = 0;
         *((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetList.data + __pyx_t_16 * __pyx_v_targetList.strides[0]) ) + __pyx_t_15 * __pyx_v_targetList.strides[1]) )) = __pyx_v_ty;
 
-        /* "GPA.pyx":349
+        /* "GPA.pyx":360
  * 				if targetMat[ty,tx]>0:
  * 					targetList[i,0] = ty
  * 					targetList[i,1] = tx             # <<<<<<<<<<<<<<
@@ -8421,7 +8649,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
         __pyx_t_16 = 1;
         *((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetList.data + __pyx_t_15 * __pyx_v_targetList.strides[0]) ) + __pyx_t_16 * __pyx_v_targetList.strides[1]) )) = __pyx_v_tx;
 
-        /* "GPA.pyx":350
+        /* "GPA.pyx":361
  * 					targetList[i,0] = ty
  * 					targetList[i,1] = tx
  * 					i = i+1             # <<<<<<<<<<<<<<
@@ -8430,7 +8658,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
         __pyx_v_i = (__pyx_v_i + 1);
 
-        /* "GPA.pyx":347
+        /* "GPA.pyx":358
  * 		for ty in range(self.rows):
  * 			for tx in range(self.cols):
  * 				if targetMat[ty,tx]>0:             # <<<<<<<<<<<<<<
@@ -8441,7 +8669,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     }
   }
 
-  /* "GPA.pyx":352
+  /* "GPA.pyx":363
  * 					i = i+1
  * 
  * 		sumPhases = 0.0             # <<<<<<<<<<<<<<
@@ -8450,7 +8678,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   __pyx_v_sumPhases = 0.0;
 
-  /* "GPA.pyx":353
+  /* "GPA.pyx":364
  * 
  * 		sumPhases = 0.0
  * 		nterms = 0.0             # <<<<<<<<<<<<<<
@@ -8459,7 +8687,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   __pyx_v_nterms = 0.0;
 
-  /* "GPA.pyx":354
+  /* "GPA.pyx":365
  * 		sumPhases = 0.0
  * 		nterms = 0.0
  * 		alinhamento = 0.0             # <<<<<<<<<<<<<<
@@ -8468,7 +8696,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
   __pyx_v_alinhamento = 0.0;
 
-  /* "GPA.pyx":355
+  /* "GPA.pyx":366
  * 		nterms = 0.0
  * 		alinhamento = 0.0
  * 		for i in range(len(targetList)):             # <<<<<<<<<<<<<<
@@ -8480,7 +8708,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_18; __pyx_t_9+=1) {
     __pyx_v_i = __pyx_t_9;
 
-    /* "GPA.pyx":356
+    /* "GPA.pyx":367
  * 		alinhamento = 0.0
  * 		for i in range(len(targetList)):
  * 			x1, y1 = targetList[i,0],targetList[i,1]             # <<<<<<<<<<<<<<
@@ -8496,48 +8724,48 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_v_x1 = __pyx_t_10;
     __pyx_v_y1 = __pyx_t_11;
 
-    /* "GPA.pyx":357
+    /* "GPA.pyx":368
  * 		for i in range(len(targetList)):
  * 			x1, y1 = targetList[i,0],targetList[i,1]
  * 			y2, x2  = x1-int(self.cx), y1-int(self.cy)             # <<<<<<<<<<<<<<
  * 			angle = atan2(y2,x2) if atan2(y2,x2)>0 else atan2(y2,x2)+2.0*M_PI
  * 			sumPhases += self.distAngle(self.phases[x1,y1],angle)
  */
-    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_x1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_x1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = __Pyx_PyInt_FromDouble(__pyx_v_self->cx); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_FromDouble(__pyx_v_self->cx); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_5 = PyNumber_Subtract(__pyx_t_8, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_5 = PyNumber_Subtract(__pyx_t_8, __pyx_t_7); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_11 = __Pyx_PyInt_As_int(__pyx_t_5); if (unlikely((__pyx_t_11 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_11 = __Pyx_PyInt_As_int(__pyx_t_5); if (unlikely((__pyx_t_11 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_y1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_y1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyInt_FromDouble(__pyx_v_self->cy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyInt_FromDouble(__pyx_v_self->cy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_8 = PyNumber_Subtract(__pyx_t_5, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_8 = PyNumber_Subtract(__pyx_t_5, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_8); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_8); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_y2 = __pyx_t_11;
     __pyx_v_x2 = __pyx_t_10;
 
-    /* "GPA.pyx":358
+    /* "GPA.pyx":369
  * 			x1, y1 = targetList[i,0],targetList[i,1]
  * 			y2, x2  = x1-int(self.cx), y1-int(self.cy)
  * 			angle = atan2(y2,x2) if atan2(y2,x2)>0 else atan2(y2,x2)+2.0*M_PI             # <<<<<<<<<<<<<<
  * 			sumPhases += self.distAngle(self.phases[x1,y1],angle)
  * 			nterms = nterms + 1.0
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_atan2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 358, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_atan2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 369, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_y2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 358, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_y2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 369, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_x2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 358, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_x2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 369, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_6 = NULL;
     __pyx_t_10 = 0;
@@ -8554,7 +8782,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_7)) {
       PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_5, __pyx_t_4};
-      __pyx_t_8 = __Pyx_PyFunction_FastCall(__pyx_t_7, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyFunction_FastCall(__pyx_t_7, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -8564,7 +8792,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_7)) {
       PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_5, __pyx_t_4};
-      __pyx_t_8 = __Pyx_PyCFunction_FastCall(__pyx_t_7, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyCFunction_FastCall(__pyx_t_7, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -8572,7 +8800,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     } else
     #endif
     {
-      __pyx_t_20 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_20 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_20);
       if (__pyx_t_6) {
         __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_20, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -8583,21 +8811,21 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       PyTuple_SET_ITEM(__pyx_t_20, 1+__pyx_t_10, __pyx_t_4);
       __pyx_t_5 = 0;
       __pyx_t_4 = 0;
-      __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_20, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_7, __pyx_t_20, NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
     }
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_7 = PyObject_RichCompare(__pyx_t_8, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 358, __pyx_L1_error)
+    __pyx_t_7 = PyObject_RichCompare(__pyx_t_8, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 369, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 358, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 369, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     if (__pyx_t_2) {
-      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_atan2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_atan2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_20 = __Pyx_PyInt_From_int(__pyx_v_y2); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_20 = __Pyx_PyInt_From_int(__pyx_v_y2); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_20);
-      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_x2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_x2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_5 = NULL;
       __pyx_t_10 = 0;
@@ -8614,7 +8842,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_8)) {
         PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_20, __pyx_t_4};
-        __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 358, __pyx_L1_error)
+        __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
@@ -8624,7 +8852,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_8)) {
         PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_20, __pyx_t_4};
-        __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 358, __pyx_L1_error)
+        __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
@@ -8632,7 +8860,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       } else
       #endif
       {
-        __pyx_t_6 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 358, __pyx_L1_error)
+        __pyx_t_6 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         if (__pyx_t_5) {
           __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5); __pyx_t_5 = NULL;
@@ -8643,20 +8871,20 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
         PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_10, __pyx_t_4);
         __pyx_t_20 = 0;
         __pyx_t_4 = 0;
-        __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_6, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 358, __pyx_L1_error)
+        __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_6, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       }
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_21 = __pyx_PyFloat_AsDouble(__pyx_t_7); if (unlikely((__pyx_t_21 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_21 = __pyx_PyFloat_AsDouble(__pyx_t_7); if (unlikely((__pyx_t_21 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_t_19 = __pyx_t_21;
     } else {
-      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_atan2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_atan2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_y2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyInt_From_int(__pyx_v_y2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_x2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_x2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_20 = NULL;
       __pyx_t_10 = 0;
@@ -8673,7 +8901,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_8)) {
         PyObject *__pyx_temp[3] = {__pyx_t_20, __pyx_t_6, __pyx_t_4};
-        __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 358, __pyx_L1_error)
+        __pyx_t_7 = __Pyx_PyFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -8683,7 +8911,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_8)) {
         PyObject *__pyx_temp[3] = {__pyx_t_20, __pyx_t_6, __pyx_t_4};
-        __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 358, __pyx_L1_error)
+        __pyx_t_7 = __Pyx_PyCFunction_FastCall(__pyx_t_8, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -8691,7 +8919,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
       } else
       #endif
       {
-        __pyx_t_5 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 358, __pyx_L1_error)
+        __pyx_t_5 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         if (__pyx_t_20) {
           __Pyx_GIVEREF(__pyx_t_20); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_20); __pyx_t_20 = NULL;
@@ -8702,36 +8930,36 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
         PyTuple_SET_ITEM(__pyx_t_5, 1+__pyx_t_10, __pyx_t_4);
         __pyx_t_6 = 0;
         __pyx_t_4 = 0;
-        __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_5, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 358, __pyx_L1_error)
+        __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_8, __pyx_t_5, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 369, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       }
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_8 = PyFloat_FromDouble((2.0 * M_PI)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_8 = PyFloat_FromDouble((2.0 * M_PI)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_5 = PyNumber_Add(__pyx_t_7, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_5 = PyNumber_Add(__pyx_t_7, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_21 = __pyx_PyFloat_AsDouble(__pyx_t_5); if (unlikely((__pyx_t_21 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 358, __pyx_L1_error)
+      __pyx_t_21 = __pyx_PyFloat_AsDouble(__pyx_t_5); if (unlikely((__pyx_t_21 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __pyx_t_19 = __pyx_t_21;
     }
     __pyx_v_angle = __pyx_t_19;
 
-    /* "GPA.pyx":359
+    /* "GPA.pyx":370
  * 			y2, x2  = x1-int(self.cx), y1-int(self.cy)
  * 			angle = atan2(y2,x2) if atan2(y2,x2)>0 else atan2(y2,x2)+2.0*M_PI
  * 			sumPhases += self.distAngle(self.phases[x1,y1],angle)             # <<<<<<<<<<<<<<
  * 			nterms = nterms + 1.0
  * 		if nterms>0.0:
  */
-    if (unlikely(!__pyx_v_self->phases.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 359, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->phases.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 370, __pyx_L1_error)}
     __pyx_t_16 = __pyx_v_x1;
     __pyx_t_15 = __pyx_v_y1;
     __pyx_v_sumPhases = (__pyx_v_sumPhases + ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->distAngle(__pyx_v_self, (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->phases.data + __pyx_t_16 * __pyx_v_self->phases.strides[0]) ) + __pyx_t_15 * __pyx_v_self->phases.strides[1]) ))), __pyx_v_angle));
 
-    /* "GPA.pyx":360
+    /* "GPA.pyx":371
  * 			angle = atan2(y2,x2) if atan2(y2,x2)>0 else atan2(y2,x2)+2.0*M_PI
  * 			sumPhases += self.distAngle(self.phases[x1,y1],angle)
  * 			nterms = nterms + 1.0             # <<<<<<<<<<<<<<
@@ -8741,7 +8969,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_v_nterms = (__pyx_v_nterms + 1.0);
   }
 
-  /* "GPA.pyx":361
+  /* "GPA.pyx":372
  * 			sumPhases += self.distAngle(self.phases[x1,y1],angle)
  * 			nterms = nterms + 1.0
  * 		if nterms>0.0:             # <<<<<<<<<<<<<<
@@ -8751,7 +8979,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   __pyx_t_2 = ((__pyx_v_nterms > 0.0) != 0);
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":362
+    /* "GPA.pyx":373
  * 			nterms = nterms + 1.0
  * 		if nterms>0.0:
  * 			alinhamento = sumPhases / nterms             # <<<<<<<<<<<<<<
@@ -8760,7 +8988,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
  */
     __pyx_v_alinhamento = (__pyx_v_sumPhases / __pyx_v_nterms);
 
-    /* "GPA.pyx":361
+    /* "GPA.pyx":372
  * 			sumPhases += self.distAngle(self.phases[x1,y1],angle)
  * 			nterms = nterms + 1.0
  * 		if nterms>0.0:             # <<<<<<<<<<<<<<
@@ -8770,7 +8998,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L11;
   }
 
-  /* "GPA.pyx":364
+  /* "GPA.pyx":375
  * 			alinhamento = sumPhases / nterms
  * 		else:
  * 			alinhamento = 0.0             # <<<<<<<<<<<<<<
@@ -8782,19 +9010,19 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   }
   __pyx_L11:;
 
-  /* "GPA.pyx":365
+  /* "GPA.pyx":376
  * 		else:
  * 			alinhamento = 0.0
  * 		if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:             # <<<<<<<<<<<<<<
  * 			self.G3 = ((float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento)/2
  * 		else:
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_v_opositeMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_v_opositeMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_t_4 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -8809,15 +9037,15 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   __pyx_t_5 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_4, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_8);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 365, __pyx_L1_error)
+  if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_sum); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_t_6 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -8832,32 +9060,32 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   __pyx_t_7 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_6, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_8);
   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 365, __pyx_L1_error)
+  if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyNumber_Add(__pyx_t_5, __pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_4 = PyNumber_Add(__pyx_t_5, __pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = PyObject_RichCompare(__pyx_t_4, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_7 = PyObject_RichCompare(__pyx_t_4, __pyx_int_0, Py_GT); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":366
+    /* "GPA.pyx":377
  * 			alinhamento = 0.0
  * 		if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
  * 			self.G3 = ((float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento)/2             # <<<<<<<<<<<<<<
  * 		else:
  * 			self.G3 = 0.0
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sum); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sum); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_8 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_5))) {
@@ -8872,17 +9100,17 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_7 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_8, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 366, __pyx_L1_error)
+    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_19 = __Pyx_PyObject_AsDouble(__pyx_t_7); if (unlikely(__pyx_t_19 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_19 = __Pyx_PyObject_AsDouble(__pyx_t_7); if (unlikely(__pyx_t_19 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_opositeMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_opositeMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_8 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_4))) {
@@ -8897,15 +9125,15 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_7 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_8, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 366, __pyx_L1_error)
+    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_sum); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_targetMat, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_6 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_8))) {
@@ -8920,18 +9148,18 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     __pyx_t_4 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 366, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = PyNumber_Add(__pyx_t_7, __pyx_t_4); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_8 = PyNumber_Add(__pyx_t_7, __pyx_t_4); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_21 = __Pyx_PyObject_AsDouble(__pyx_t_8); if (unlikely(__pyx_t_21 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 366, __pyx_L1_error)
+    __pyx_t_21 = __Pyx_PyObject_AsDouble(__pyx_t_8); if (unlikely(__pyx_t_21 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 377, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_self->G3 = (((__pyx_t_19 / __pyx_t_21) + __pyx_v_alinhamento) / 2.0);
 
-    /* "GPA.pyx":365
+    /* "GPA.pyx":376
  * 		else:
  * 			alinhamento = 0.0
  * 		if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:             # <<<<<<<<<<<<<<
@@ -8941,7 +9169,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
     goto __pyx_L12;
   }
 
-  /* "GPA.pyx":368
+  /* "GPA.pyx":379
  * 			self.G3 = ((float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento)/2
  * 		else:
  * 			self.G3 = 0.0             # <<<<<<<<<<<<<<
@@ -8953,7 +9181,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   }
   __pyx_L12:;
 
-  /* "GPA.pyx":323
+  /* "GPA.pyx":334
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef void _G3(self,str symm):             # <<<<<<<<<<<<<<
@@ -8979,7 +9207,7 @@ static void __pyx_f_3GPA_3GPA__G3(struct __pyx_obj_3GPA_GPA *__pyx_v_self, PyObj
   __Pyx_RefNannyFinishContext();
 }
 
-/* "GPA.pyx":374
+/* "GPA.pyx":385
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _G4(self,str symm):             # <<<<<<<<<<<<<<
@@ -8996,7 +9224,7 @@ static PyObject *__pyx_pw_3GPA_3GPA_13_G4(PyObject *__pyx_v_self, PyObject *__py
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_G4 (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symm), (&PyString_Type), 1, "symm", 1))) __PYX_ERR(0, 374, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symm), (&PyString_Type), 1, "symm", 1))) __PYX_ERR(0, 385, __pyx_L1_error)
   __pyx_r = __pyx_pf_3GPA_3GPA_12_G4(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self), ((PyObject*)__pyx_v_symm));
 
   /* function exit code */
@@ -9042,32 +9270,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_G4", 0);
 
-  /* "GPA.pyx":380
+  /* "GPA.pyx":391
  * 		cdef float sumZ
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  */
-  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 380, __pyx_L1_error)
+  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_S, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 391, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":381
+    /* "GPA.pyx":392
  * 
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  */
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 381, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 392, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->symmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":380
+    /* "GPA.pyx":391
  * 		cdef float sumZ
  * 
  * 		if symm == 'S':# Symmetrical matrix             # <<<<<<<<<<<<<<
@@ -9077,32 +9305,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":382
+  /* "GPA.pyx":393
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  */
-  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 382, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_A, Py_EQ)); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(0, 393, __pyx_L1_error)
   __pyx_t_1 = (__pyx_t_2 != 0);
   if (__pyx_t_1) {
 
-    /* "GPA.pyx":383
+    /* "GPA.pyx":394
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP             # <<<<<<<<<<<<<<
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  */
-    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 383, __pyx_L1_error)}
+    if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 394, __pyx_L1_error)}
     __pyx_t_3 = __pyx_v_self->asymmetricalP;
     __PYX_INC_MEMVIEW(&__pyx_t_3, 1);
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":382
+    /* "GPA.pyx":393
  * 		if symm == 'S':# Symmetrical matrix
  * 			targetMat = self.symmetricalP
  * 		elif symm == 'A':# Asymmetrical matrix             # <<<<<<<<<<<<<<
@@ -9112,36 +9340,36 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":384
+  /* "GPA.pyx":395
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  */
-  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 384, __pyx_L1_error)
+  __pyx_t_1 = (__Pyx_PyString_Equals(__pyx_v_symm, __pyx_n_s_F, Py_EQ)); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 395, __pyx_L1_error)
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (likely(__pyx_t_2)) {
 
-    /* "GPA.pyx":385
+    /* "GPA.pyx":396
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)             # <<<<<<<<<<<<<<
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or F ), got: "+symm)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_ones); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 385, __pyx_L1_error)}
-    __pyx_t_4 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 385, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 396, __pyx_L1_error)}
+    __pyx_t_4 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 385, __pyx_L1_error)}
-    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 385, __pyx_L1_error)
+    if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 396, __pyx_L1_error)}
+    __pyx_t_6 = PyInt_FromSsize_t((__pyx_v_self->symmetricalP.shape[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_GIVEREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_4);
@@ -9149,32 +9377,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6);
     __pyx_t_4 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_GIVEREF(__pyx_t_7);
     PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_7);
     __pyx_t_7 = 0;
-    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 385, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_7, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 385, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_t_8, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 396, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_v_targetMat = __pyx_t_3;
     __pyx_t_3.memview = NULL;
     __pyx_t_3.data = NULL;
 
-    /* "GPA.pyx":384
+    /* "GPA.pyx":395
  * 		elif symm == 'A':# Asymmetrical matrix
  * 			targetMat = self.asymmetricalP
  * 		elif symm == 'F': # Full Matrix, including unknown vectors             # <<<<<<<<<<<<<<
@@ -9184,7 +9412,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     goto __pyx_L3;
   }
 
-  /* "GPA.pyx":387
+  /* "GPA.pyx":398
  * 			targetMat = numpy.ones((self.symmetricalP.shape[0],self.symmetricalP.shape[1]),dtype=numpy.int32)
  * 		else:
  * 			raise Exception("Unknown analysis type (should be S,A or F ), got: "+symm)             # <<<<<<<<<<<<<<
@@ -9192,18 +9420,18 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  * 		self.G4 = 0.0+0.0j
  */
   /*else*/ {
-    __pyx_t_8 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be_3, __pyx_v_symm); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 387, __pyx_L1_error)
+    __pyx_t_8 = PyNumber_Add(__pyx_kp_s_Unknown_analysis_type_should_be_3, __pyx_v_symm); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 398, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 387, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_t_8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 398, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_Raise(__pyx_t_7, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __PYX_ERR(0, 387, __pyx_L1_error)
+    __PYX_ERR(0, 398, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "GPA.pyx":389
+  /* "GPA.pyx":400
  * 			raise Exception("Unknown analysis type (should be S,A or F ), got: "+symm)
  * 
  * 		self.G4 = 0.0+0.0j             # <<<<<<<<<<<<<<
@@ -9211,7 +9439,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  * 
  */
   __pyx_t_9 = __Pyx_c_sum_double(__pyx_t_double_complex_from_parts(0.0, 0), __pyx_t_double_complex_from_parts(0, 0.0));
-  __pyx_t_7 = __pyx_PyComplex_FromComplex(__pyx_t_9); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 389, __pyx_L1_error)
+  __pyx_t_7 = __pyx_PyComplex_FromComplex(__pyx_t_9); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 400, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_GIVEREF(__pyx_t_7);
   __Pyx_GOTREF(__pyx_v_self->G4);
@@ -9219,7 +9447,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_v_self->G4 = __pyx_t_7;
   __pyx_t_7 = 0;
 
-  /* "GPA.pyx":390
+  /* "GPA.pyx":401
  * 
  * 		self.G4 = 0.0+0.0j
  * 		sumZ = 0.0             # <<<<<<<<<<<<<<
@@ -9228,7 +9456,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
   __pyx_v_sumZ = 0.0;
 
-  /* "GPA.pyx":392
+  /* "GPA.pyx":403
  * 		sumZ = 0.0
  * 
  * 		for i in range(self.rows):             # <<<<<<<<<<<<<<
@@ -9240,7 +9468,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
     __pyx_v_i = __pyx_t_12;
 
-    /* "GPA.pyx":393
+    /* "GPA.pyx":404
  * 
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):             # <<<<<<<<<<<<<<
@@ -9252,7 +9480,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     for (__pyx_t_15 = 0; __pyx_t_15 < __pyx_t_14; __pyx_t_15+=1) {
       __pyx_v_j = __pyx_t_15;
 
-      /* "GPA.pyx":394
+      /* "GPA.pyx":405
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 				if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
@@ -9264,48 +9492,48 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
       __pyx_t_2 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetMat.data + __pyx_t_16 * __pyx_v_targetMat.strides[0]) ) + __pyx_t_17 * __pyx_v_targetMat.strides[1]) ))) > 0) != 0);
       if (__pyx_t_2) {
 
-        /* "GPA.pyx":395
+        /* "GPA.pyx":406
  * 			for j in range(self.cols):
  * 				if targetMat[i,j] > 0:
  * 					if self.mods[i,j] > 1e-6:             # <<<<<<<<<<<<<<
  * 						sumZ += numpy.abs(self.mods[i,j]*numpy.exp(1j*self.phases[i,j]))
  * 		if sumZ<1e-5:
  */
-        if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 395, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 406, __pyx_L1_error)}
         __pyx_t_17 = __pyx_v_i;
         __pyx_t_16 = __pyx_v_j;
         __pyx_t_2 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_17 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_16 * __pyx_v_self->mods.strides[1]) ))) > 1e-6) != 0);
         if (__pyx_t_2) {
 
-          /* "GPA.pyx":396
+          /* "GPA.pyx":407
  * 				if targetMat[i,j] > 0:
  * 					if self.mods[i,j] > 1e-6:
  * 						sumZ += numpy.abs(self.mods[i,j]*numpy.exp(1j*self.phases[i,j]))             # <<<<<<<<<<<<<<
  * 		if sumZ<1e-5:
  * 			return self.G4
  */
-          __pyx_t_7 = PyFloat_FromDouble(__pyx_v_sumZ); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __pyx_t_7 = PyFloat_FromDouble(__pyx_v_sumZ); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_7);
-          __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_numpy); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_abs); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_abs); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 396, __pyx_L1_error)}
+          if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 407, __pyx_L1_error)}
           __pyx_t_16 = __pyx_v_i;
           __pyx_t_17 = __pyx_v_j;
-          __pyx_t_6 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_16 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_17 * __pyx_v_self->mods.strides[1]) )))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __pyx_t_6 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_16 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_17 * __pyx_v_self->mods.strides[1]) )))); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
-          __Pyx_GetModuleGlobalName(__pyx_t_18, __pyx_n_s_numpy); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_18, __pyx_n_s_numpy); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_18);
-          __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_t_18, __pyx_n_s_exp); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_t_18, __pyx_n_s_exp); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
-          if (unlikely(!__pyx_v_self->phases.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 396, __pyx_L1_error)}
+          if (unlikely(!__pyx_v_self->phases.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 407, __pyx_L1_error)}
           __pyx_t_17 = __pyx_v_i;
           __pyx_t_16 = __pyx_v_j;
           __pyx_t_9 = __Pyx_c_prod_double(__pyx_t_double_complex_from_parts(0, 1.0), __pyx_t_double_complex_from_parts((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->phases.data + __pyx_t_17 * __pyx_v_self->phases.strides[0]) ) + __pyx_t_16 * __pyx_v_self->phases.strides[1]) ))), 0));
-          __pyx_t_18 = __pyx_PyComplex_FromComplex(__pyx_t_9); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __pyx_t_18 = __pyx_PyComplex_FromComplex(__pyx_t_9); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_18);
           __pyx_t_20 = NULL;
           if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_19))) {
@@ -9320,10 +9548,10 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
           __pyx_t_4 = (__pyx_t_20) ? __Pyx_PyObject_Call2Args(__pyx_t_19, __pyx_t_20, __pyx_t_18) : __Pyx_PyObject_CallOneArg(__pyx_t_19, __pyx_t_18);
           __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
           __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
-          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 396, __pyx_L1_error)
+          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          __pyx_t_19 = PyNumber_Multiply(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __pyx_t_19 = PyNumber_Multiply(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -9340,18 +9568,18 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
           __pyx_t_8 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_4, __pyx_t_19) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_19);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 396, __pyx_L1_error)
+          if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_t_7, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 396, __pyx_L1_error)
+          __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_t_7, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-          __pyx_t_21 = __pyx_PyFloat_AsFloat(__pyx_t_5); if (unlikely((__pyx_t_21 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 396, __pyx_L1_error)
+          __pyx_t_21 = __pyx_PyFloat_AsFloat(__pyx_t_5); if (unlikely((__pyx_t_21 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 407, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
           __pyx_v_sumZ = __pyx_t_21;
 
-          /* "GPA.pyx":395
+          /* "GPA.pyx":406
  * 			for j in range(self.cols):
  * 				if targetMat[i,j] > 0:
  * 					if self.mods[i,j] > 1e-6:             # <<<<<<<<<<<<<<
@@ -9360,7 +9588,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
         }
 
-        /* "GPA.pyx":394
+        /* "GPA.pyx":405
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 				if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
@@ -9371,7 +9599,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     }
   }
 
-  /* "GPA.pyx":397
+  /* "GPA.pyx":408
  * 					if self.mods[i,j] > 1e-6:
  * 						sumZ += numpy.abs(self.mods[i,j]*numpy.exp(1j*self.phases[i,j]))
  * 		if sumZ<1e-5:             # <<<<<<<<<<<<<<
@@ -9381,7 +9609,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_t_2 = ((__pyx_v_sumZ < 1e-5) != 0);
   if (__pyx_t_2) {
 
-    /* "GPA.pyx":398
+    /* "GPA.pyx":409
  * 						sumZ += numpy.abs(self.mods[i,j]*numpy.exp(1j*self.phases[i,j]))
  * 		if sumZ<1e-5:
  * 			return self.G4             # <<<<<<<<<<<<<<
@@ -9393,7 +9621,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     __pyx_r = __pyx_v_self->G4;
     goto __pyx_L0;
 
-    /* "GPA.pyx":397
+    /* "GPA.pyx":408
  * 					if self.mods[i,j] > 1e-6:
  * 						sumZ += numpy.abs(self.mods[i,j]*numpy.exp(1j*self.phases[i,j]))
  * 		if sumZ<1e-5:             # <<<<<<<<<<<<<<
@@ -9402,7 +9630,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
   }
 
-  /* "GPA.pyx":400
+  /* "GPA.pyx":411
  * 			return self.G4
  * 
  * 		for i in range(self.rows):             # <<<<<<<<<<<<<<
@@ -9414,7 +9642,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
     __pyx_v_i = __pyx_t_12;
 
-    /* "GPA.pyx":401
+    /* "GPA.pyx":412
  * 
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):             # <<<<<<<<<<<<<<
@@ -9426,7 +9654,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     for (__pyx_t_15 = 0; __pyx_t_15 < __pyx_t_14; __pyx_t_15+=1) {
       __pyx_v_j = __pyx_t_15;
 
-      /* "GPA.pyx":402
+      /* "GPA.pyx":413
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 				if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
@@ -9438,41 +9666,41 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
       __pyx_t_2 = (((*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targetMat.data + __pyx_t_16 * __pyx_v_targetMat.strides[0]) ) + __pyx_t_17 * __pyx_v_targetMat.strides[1]) ))) > 0) != 0);
       if (__pyx_t_2) {
 
-        /* "GPA.pyx":403
+        /* "GPA.pyx":414
  * 			for j in range(self.cols):
  * 				if targetMat[i,j] > 0:
  * 					if self.mods[i,j] > 1e-6:             # <<<<<<<<<<<<<<
  * 						z = self.mods[i,j]*numpy.exp(1j*self.phases[i,j])/sumZ
  * 						self.G4 = self.G4 - z*numpy.log(z)
  */
-        if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 403, __pyx_L1_error)}
+        if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 414, __pyx_L1_error)}
         __pyx_t_17 = __pyx_v_i;
         __pyx_t_16 = __pyx_v_j;
         __pyx_t_2 = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_17 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_16 * __pyx_v_self->mods.strides[1]) ))) > 1e-6) != 0);
         if (__pyx_t_2) {
 
-          /* "GPA.pyx":404
+          /* "GPA.pyx":415
  * 				if targetMat[i,j] > 0:
  * 					if self.mods[i,j] > 1e-6:
  * 						z = self.mods[i,j]*numpy.exp(1j*self.phases[i,j])/sumZ             # <<<<<<<<<<<<<<
  * 						self.G4 = self.G4 - z*numpy.log(z)
  * 		return self.G4
  */
-          if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 404, __pyx_L1_error)}
+          if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 415, __pyx_L1_error)}
           __pyx_t_16 = __pyx_v_i;
           __pyx_t_17 = __pyx_v_j;
-          __pyx_t_5 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_16 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_17 * __pyx_v_self->mods.strides[1]) )))); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 404, __pyx_L1_error)
+          __pyx_t_5 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->mods.data + __pyx_t_16 * __pyx_v_self->mods.strides[0]) ) + __pyx_t_17 * __pyx_v_self->mods.strides[1]) )))); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 415, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
-          __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 404, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_numpy); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 415, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_7);
-          __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_exp); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 404, __pyx_L1_error)
+          __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_exp); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 415, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          if (unlikely(!__pyx_v_self->phases.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 404, __pyx_L1_error)}
+          if (unlikely(!__pyx_v_self->phases.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 415, __pyx_L1_error)}
           __pyx_t_17 = __pyx_v_i;
           __pyx_t_16 = __pyx_v_j;
           __pyx_t_9 = __Pyx_c_prod_double(__pyx_t_double_complex_from_parts(0, 1.0), __pyx_t_double_complex_from_parts((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->phases.data + __pyx_t_17 * __pyx_v_self->phases.strides[0]) ) + __pyx_t_16 * __pyx_v_self->phases.strides[1]) ))), 0));
-          __pyx_t_7 = __pyx_PyComplex_FromComplex(__pyx_t_9); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 404, __pyx_L1_error)
+          __pyx_t_7 = __pyx_PyComplex_FromComplex(__pyx_t_9); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 415, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_7);
           __pyx_t_4 = NULL;
           if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_19))) {
@@ -9487,32 +9715,32 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
           __pyx_t_8 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_19, __pyx_t_4, __pyx_t_7) : __Pyx_PyObject_CallOneArg(__pyx_t_19, __pyx_t_7);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-          if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 404, __pyx_L1_error)
+          if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 415, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          __pyx_t_19 = PyNumber_Multiply(__pyx_t_5, __pyx_t_8); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 404, __pyx_L1_error)
+          __pyx_t_19 = PyNumber_Multiply(__pyx_t_5, __pyx_t_8); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 415, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-          __pyx_t_8 = PyFloat_FromDouble(__pyx_v_sumZ); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 404, __pyx_L1_error)
+          __pyx_t_8 = PyFloat_FromDouble(__pyx_v_sumZ); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 415, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
-          __pyx_t_5 = __Pyx_PyNumber_Divide(__pyx_t_19, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 404, __pyx_L1_error)
+          __pyx_t_5 = __Pyx_PyNumber_Divide(__pyx_t_19, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 415, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
           __Pyx_XDECREF_SET(__pyx_v_z, __pyx_t_5);
           __pyx_t_5 = 0;
 
-          /* "GPA.pyx":405
+          /* "GPA.pyx":416
  * 					if self.mods[i,j] > 1e-6:
  * 						z = self.mods[i,j]*numpy.exp(1j*self.phases[i,j])/sumZ
  * 						self.G4 = self.G4 - z*numpy.log(z)             # <<<<<<<<<<<<<<
  * 		return self.G4
  * 
  */
-          __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 405, __pyx_L1_error)
+          __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_n_s_numpy); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 416, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
-          __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_log); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 405, __pyx_L1_error)
+          __pyx_t_19 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_log); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 416, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
           __pyx_t_8 = NULL;
@@ -9527,13 +9755,13 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
           }
           __pyx_t_5 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_19, __pyx_t_8, __pyx_v_z) : __Pyx_PyObject_CallOneArg(__pyx_t_19, __pyx_v_z);
           __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-          if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 405, __pyx_L1_error)
+          if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 416, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-          __pyx_t_19 = PyNumber_Multiply(__pyx_v_z, __pyx_t_5); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 405, __pyx_L1_error)
+          __pyx_t_19 = PyNumber_Multiply(__pyx_v_z, __pyx_t_5); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 416, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_19);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __pyx_t_5 = PyNumber_Subtract(__pyx_v_self->G4, __pyx_t_19); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 405, __pyx_L1_error)
+          __pyx_t_5 = PyNumber_Subtract(__pyx_v_self->G4, __pyx_t_19); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 416, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
           __Pyx_GIVEREF(__pyx_t_5);
@@ -9542,7 +9770,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
           __pyx_v_self->G4 = __pyx_t_5;
           __pyx_t_5 = 0;
 
-          /* "GPA.pyx":403
+          /* "GPA.pyx":414
  * 			for j in range(self.cols):
  * 				if targetMat[i,j] > 0:
  * 					if self.mods[i,j] > 1e-6:             # <<<<<<<<<<<<<<
@@ -9551,7 +9779,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
  */
         }
 
-        /* "GPA.pyx":402
+        /* "GPA.pyx":413
  * 		for i in range(self.rows):
  * 			for j in range(self.cols):
  * 				if targetMat[i,j] > 0:             # <<<<<<<<<<<<<<
@@ -9562,7 +9790,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
     }
   }
 
-  /* "GPA.pyx":406
+  /* "GPA.pyx":417
  * 						z = self.mods[i,j]*numpy.exp(1j*self.phases[i,j])/sumZ
  * 						self.G4 = self.G4 - z*numpy.log(z)
  * 		return self.G4             # <<<<<<<<<<<<<<
@@ -9574,7 +9802,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   __pyx_r = __pyx_v_self->G4;
   goto __pyx_L0;
 
-  /* "GPA.pyx":374
+  /* "GPA.pyx":385
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _G4(self,str symm):             # <<<<<<<<<<<<<<
@@ -9603,7 +9831,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_12_G4(struct __pyx_obj_3GPA_GPA *__pyx_v_sel
   return __pyx_r;
 }
 
-/* "GPA.pyx":412
+/* "GPA.pyx":423
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
@@ -9680,7 +9908,7 @@ static PyObject *__pyx_pw_3GPA_3GPA_15__call__(PyObject *__pyx_v_self, PyObject 
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__call__") < 0)) __PYX_ERR(0, 412, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__call__") < 0)) __PYX_ERR(0, 423, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -9699,19 +9927,19 @@ static PyObject *__pyx_pw_3GPA_3GPA_15__call__(PyObject *__pyx_v_self, PyObject 
       }
     }
     if (values[0]) {
-      __pyx_v_mat = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_mat.memview)) __PYX_ERR(0, 412, __pyx_L3_error)
+      __pyx_v_mat = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_mat.memview)) __PYX_ERR(0, 423, __pyx_L3_error)
     } else {
       __pyx_v_mat = __pyx_k__2;
       __PYX_INC_MEMVIEW(&__pyx_v_mat, 1);
     }
     if (values[1]) {
-      __pyx_v_gx = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_gx.memview)) __PYX_ERR(0, 412, __pyx_L3_error)
+      __pyx_v_gx = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_gx.memview)) __PYX_ERR(0, 423, __pyx_L3_error)
     } else {
       __pyx_v_gx = __pyx_k__3;
       __PYX_INC_MEMVIEW(&__pyx_v_gx, 1);
     }
     if (values[2]) {
-      __pyx_v_gy = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_gy.memview)) __PYX_ERR(0, 412, __pyx_L3_error)
+      __pyx_v_gy = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_gy.memview)) __PYX_ERR(0, 423, __pyx_L3_error)
     } else {
       __pyx_v_gy = __pyx_k__4;
       __PYX_INC_MEMVIEW(&__pyx_v_gy, 1);
@@ -9721,14 +9949,14 @@ static PyObject *__pyx_pw_3GPA_3GPA_15__call__(PyObject *__pyx_v_self, PyObject 
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__call__", 0, 0, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 412, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__call__", 0, 0, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 423, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("GPA.GPA.__call__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_moment), (&PyList_Type), 1, "moment", 1))) __PYX_ERR(0, 412, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symmetrycalGrad), (&PyString_Type), 1, "symmetrycalGrad", 1))) __PYX_ERR(0, 412, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_moment), (&PyList_Type), 1, "moment", 1))) __PYX_ERR(0, 423, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symmetrycalGrad), (&PyString_Type), 1, "symmetrycalGrad", 1))) __PYX_ERR(0, 423, __pyx_L1_error)
   __pyx_r = __pyx_pf_3GPA_3GPA_14__call__(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self), __pyx_v_mat, __pyx_v_gx, __pyx_v_gy, __pyx_v_moment, __pyx_v_symmetrycalGrad);
 
   /* function exit code */
@@ -9757,7 +9985,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__call__", 0);
 
-  /* "GPA.pyx":413
+  /* "GPA.pyx":424
  * 	@cython.cdivision(True)
  * 	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):
  * 		if (mat is None) and (gx is None) and (gy is None):             # <<<<<<<<<<<<<<
@@ -9781,20 +10009,20 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
   __pyx_L4_bool_binop_done:;
   if (unlikely(__pyx_t_1)) {
 
-    /* "GPA.pyx":414
+    /* "GPA.pyx":425
  * 	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):
  * 		if (mat is None) and (gx is None) and (gy is None):
  * 			raise Exception("Matrix or gradient must be stated!")             # <<<<<<<<<<<<<<
  * 		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
  * 			raise Exception("Gradient must have 2 components (gx and gy)")
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 414, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 425, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 414, __pyx_L1_error)
+    __PYX_ERR(0, 425, __pyx_L1_error)
 
-    /* "GPA.pyx":413
+    /* "GPA.pyx":424
  * 	@cython.cdivision(True)
  * 	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):
  * 		if (mat is None) and (gx is None) and (gy is None):             # <<<<<<<<<<<<<<
@@ -9803,7 +10031,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
  */
   }
 
-  /* "GPA.pyx":415
+  /* "GPA.pyx":426
  * 		if (mat is None) and (gx is None) and (gy is None):
  * 			raise Exception("Matrix or gradient must be stated!")
  * 		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):             # <<<<<<<<<<<<<<
@@ -9833,20 +10061,20 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
   __pyx_L8_bool_binop_done:;
   if (unlikely(__pyx_t_1)) {
 
-    /* "GPA.pyx":416
+    /* "GPA.pyx":427
  * 			raise Exception("Matrix or gradient must be stated!")
  * 		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
  * 			raise Exception("Gradient must have 2 components (gx and gy)")             # <<<<<<<<<<<<<<
  * 		if not(mat is None) and not(gx is None):
  * 			raise Exception("Matrix or gradient must be stated, not both")
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 416, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 427, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 416, __pyx_L1_error)
+    __PYX_ERR(0, 427, __pyx_L1_error)
 
-    /* "GPA.pyx":415
+    /* "GPA.pyx":426
  * 		if (mat is None) and (gx is None) and (gy is None):
  * 			raise Exception("Matrix or gradient must be stated!")
  * 		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):             # <<<<<<<<<<<<<<
@@ -9855,7 +10083,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
  */
   }
 
-  /* "GPA.pyx":417
+  /* "GPA.pyx":428
  * 		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
  * 			raise Exception("Gradient must have 2 components (gx and gy)")
  * 		if not(mat is None) and not(gx is None):             # <<<<<<<<<<<<<<
@@ -9873,20 +10101,20 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
   __pyx_L13_bool_binop_done:;
   if (unlikely(__pyx_t_1)) {
 
-    /* "GPA.pyx":418
+    /* "GPA.pyx":429
  * 			raise Exception("Gradient must have 2 components (gx and gy)")
  * 		if not(mat is None) and not(gx is None):
  * 			raise Exception("Matrix or gradient must be stated, not both")             # <<<<<<<<<<<<<<
  * 
  * 		if not(mat is None):
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 418, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 429, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 418, __pyx_L1_error)
+    __PYX_ERR(0, 429, __pyx_L1_error)
 
-    /* "GPA.pyx":417
+    /* "GPA.pyx":428
  * 		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
  * 			raise Exception("Gradient must have 2 components (gx and gy)")
  * 		if not(mat is None) and not(gx is None):             # <<<<<<<<<<<<<<
@@ -9895,7 +10123,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
  */
   }
 
-  /* "GPA.pyx":420
+  /* "GPA.pyx":431
  * 			raise Exception("Matrix or gradient must be stated, not both")
  * 
  * 		if not(mat is None):             # <<<<<<<<<<<<<<
@@ -9905,7 +10133,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
   __pyx_t_1 = ((((PyObject *) __pyx_v_mat.memview) != Py_None) != 0);
   if (__pyx_t_1) {
 
-    /* "GPA.pyx":421
+    /* "GPA.pyx":432
  * 
  * 		if not(mat is None):
  * 			return self._eval(mat,moment,symmetrycalGrad)             # <<<<<<<<<<<<<<
@@ -9913,9 +10141,9 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
  * 			return self._evalGradient(gx,gy,moment,symmetrycalGrad)
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_eval); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 421, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_eval); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 432, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_mat, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 421, __pyx_L1_error)
+    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_mat, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 432, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_6 = NULL;
     __pyx_t_7 = 0;
@@ -9932,7 +10160,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_4)) {
       PyObject *__pyx_temp[4] = {__pyx_t_6, __pyx_t_5, __pyx_v_moment, __pyx_v_symmetrycalGrad};
-      __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_7, 3+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 421, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_7, 3+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 432, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -9941,14 +10169,14 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
       PyObject *__pyx_temp[4] = {__pyx_t_6, __pyx_t_5, __pyx_v_moment, __pyx_v_symmetrycalGrad};
-      __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_7, 3+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 421, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_7, 3+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 432, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     } else
     #endif
     {
-      __pyx_t_8 = PyTuple_New(3+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 421, __pyx_L1_error)
+      __pyx_t_8 = PyTuple_New(3+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 432, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       if (__pyx_t_6) {
         __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -9962,7 +10190,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
       __Pyx_GIVEREF(__pyx_v_symmetrycalGrad);
       PyTuple_SET_ITEM(__pyx_t_8, 2+__pyx_t_7, __pyx_v_symmetrycalGrad);
       __pyx_t_5 = 0;
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_8, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 421, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_8, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 432, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     }
@@ -9971,7 +10199,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "GPA.pyx":420
+    /* "GPA.pyx":431
  * 			raise Exception("Matrix or gradient must be stated, not both")
  * 
  * 		if not(mat is None):             # <<<<<<<<<<<<<<
@@ -9980,7 +10208,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
  */
   }
 
-  /* "GPA.pyx":423
+  /* "GPA.pyx":434
  * 			return self._eval(mat,moment,symmetrycalGrad)
  * 		else:
  * 			return self._evalGradient(gx,gy,moment,symmetrycalGrad)             # <<<<<<<<<<<<<<
@@ -9989,11 +10217,11 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
  */
   /*else*/ {
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_evalGradient); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 423, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_evalGradient); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 434, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_v_gx, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 423, __pyx_L1_error)
+    __pyx_t_8 = __pyx_memoryview_fromslice(__pyx_v_gx, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 434, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_gy, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 423, __pyx_L1_error)
+    __pyx_t_5 = __pyx_memoryview_fromslice(__pyx_v_gy, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 434, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_6 = NULL;
     __pyx_t_7 = 0;
@@ -10010,7 +10238,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_4)) {
       PyObject *__pyx_temp[5] = {__pyx_t_6, __pyx_t_8, __pyx_t_5, __pyx_v_moment, __pyx_v_symmetrycalGrad};
-      __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 423, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 434, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -10020,7 +10248,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
       PyObject *__pyx_temp[5] = {__pyx_t_6, __pyx_t_8, __pyx_t_5, __pyx_v_moment, __pyx_v_symmetrycalGrad};
-      __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 423, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 434, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -10028,7 +10256,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
     } else
     #endif
     {
-      __pyx_t_9 = PyTuple_New(4+__pyx_t_7); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 423, __pyx_L1_error)
+      __pyx_t_9 = PyTuple_New(4+__pyx_t_7); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 434, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_9);
       if (__pyx_t_6) {
         __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -10045,7 +10273,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
       PyTuple_SET_ITEM(__pyx_t_9, 3+__pyx_t_7, __pyx_v_symmetrycalGrad);
       __pyx_t_8 = 0;
       __pyx_t_5 = 0;
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_9, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 423, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_9, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 434, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     }
@@ -10055,7 +10283,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
     goto __pyx_L0;
   }
 
-  /* "GPA.pyx":412
+  /* "GPA.pyx":423
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
@@ -10082,7 +10310,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_14__call__(struct __pyx_obj_3GPA_GPA *__pyx_
   return __pyx_r;
 }
 
-/* "GPA.pyx":429
+/* "GPA.pyx":440
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _eval(self,double[:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
@@ -10139,7 +10367,7 @@ static PyObject *__pyx_pw_3GPA_3GPA_17_eval(PyObject *__pyx_v_self, PyObject *__
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_eval") < 0)) __PYX_ERR(0, 429, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_eval") < 0)) __PYX_ERR(0, 440, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -10152,20 +10380,20 @@ static PyObject *__pyx_pw_3GPA_3GPA_17_eval(PyObject *__pyx_v_self, PyObject *__
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_mat = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_mat.memview)) __PYX_ERR(0, 429, __pyx_L3_error)
+    __pyx_v_mat = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_mat.memview)) __PYX_ERR(0, 440, __pyx_L3_error)
     __pyx_v_moment = ((PyObject*)values[1]);
     __pyx_v_symmetrycalGrad = ((PyObject*)values[2]);
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_eval", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 429, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_eval", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 440, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("GPA.GPA._eval", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_moment), (&PyList_Type), 1, "moment", 1))) __PYX_ERR(0, 429, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symmetrycalGrad), (&PyString_Type), 1, "symmetrycalGrad", 1))) __PYX_ERR(0, 429, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_moment), (&PyList_Type), 1, "moment", 1))) __PYX_ERR(0, 440, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symmetrycalGrad), (&PyString_Type), 1, "symmetrycalGrad", 1))) __PYX_ERR(0, 440, __pyx_L1_error)
   __pyx_r = __pyx_pf_3GPA_3GPA_16_eval(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self), __pyx_v_mat, __pyx_v_moment, __pyx_v_symmetrycalGrad);
 
   /* function exit code */
@@ -10214,7 +10442,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_16_eval(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_eval", 0);
 
-  /* "GPA.pyx":435
+  /* "GPA.pyx":446
  * 		cdef dict retorno
  * 
  * 		self.mat = mat             # <<<<<<<<<<<<<<
@@ -10225,14 +10453,14 @@ static PyObject *__pyx_pf_3GPA_3GPA_16_eval(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   __PYX_INC_MEMVIEW(&__pyx_v_mat, 0);
   __pyx_v_self->mat = __pyx_v_mat;
 
-  /* "GPA.pyx":436
+  /* "GPA.pyx":447
  * 
  * 		self.mat = mat
  * 		self.cols = len(self.mat[0])             # <<<<<<<<<<<<<<
  * 		self.rows = len(self.mat)
  * 		self.setPosition(float(self.rows/2),float(self.cols/2))
  */
-  if (unlikely(!__pyx_v_self->mat.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 436, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->mat.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 447, __pyx_L1_error)}
   __pyx_t_1.data = __pyx_v_self->mat.data;
   __pyx_t_1.memview = __pyx_v_self->mat.memview;
   __PYX_INC_MEMVIEW(&__pyx_t_1, 0);
@@ -10252,18 +10480,18 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_1.data = NULL;
   __pyx_v_self->cols = __pyx_t_2;
 
-  /* "GPA.pyx":437
+  /* "GPA.pyx":448
  * 		self.mat = mat
  * 		self.cols = len(self.mat[0])
  * 		self.rows = len(self.mat)             # <<<<<<<<<<<<<<
  * 		self.setPosition(float(self.rows/2),float(self.cols/2))
  * 		self._setGradients()
  */
-  if (unlikely(!__pyx_v_self->mat.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 437, __pyx_L1_error)}
+  if (unlikely(!__pyx_v_self->mat.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 448, __pyx_L1_error)}
   __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_v_self->mat); 
   __pyx_v_self->rows = __pyx_t_2;
 
-  /* "GPA.pyx":438
+  /* "GPA.pyx":449
  * 		self.cols = len(self.mat[0])
  * 		self.rows = len(self.mat)
  * 		self.setPosition(float(self.rows/2),float(self.cols/2))             # <<<<<<<<<<<<<<
@@ -10272,7 +10500,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->setPosition(__pyx_v_self, ((double)(__pyx_v_self->rows / 2)), ((double)(__pyx_v_self->cols / 2)), 0);
 
-  /* "GPA.pyx":439
+  /* "GPA.pyx":450
  * 		self.rows = len(self.mat)
  * 		self.setPosition(float(self.rows/2),float(self.cols/2))
  * 		self._setGradients()             # <<<<<<<<<<<<<<
@@ -10281,22 +10509,22 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_setGradients(__pyx_v_self);
 
-  /* "GPA.pyx":442
+  /* "GPA.pyx":453
  * 
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \             # <<<<<<<<<<<<<<
  * 												  for x in range(self.cols)] for y in range(self.rows)])
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 442, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 453, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 442, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 453, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 442, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 453, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "GPA.pyx":443
+  /* "GPA.pyx":454
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
  * 												  for x in range(self.cols)] for y in range(self.rows)])             # <<<<<<<<<<<<<<
@@ -10308,17 +10536,17 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_y = __pyx_t_8;
 
-    /* "GPA.pyx":442
+    /* "GPA.pyx":453
  * 
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \             # <<<<<<<<<<<<<<
  * 												  for x in range(self.cols)] for y in range(self.rows)])
  * 
  */
-    __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 442, __pyx_L1_error)
+    __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 453, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
 
-    /* "GPA.pyx":443
+    /* "GPA.pyx":454
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
  * 												  for x in range(self.cols)] for y in range(self.rows)])             # <<<<<<<<<<<<<<
@@ -10330,19 +10558,19 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
     for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
       __pyx_v_x = __pyx_t_12;
 
-      /* "GPA.pyx":442
+      /* "GPA.pyx":453
  * 
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \             # <<<<<<<<<<<<<<
  * 												  for x in range(self.cols)] for y in range(self.rows)])
  * 
  */
-      __pyx_t_13 = PyFloat_FromDouble(sqrt((pow((((double)__pyx_v_x) - __pyx_v_self->cx), 2.0) + pow((((double)__pyx_v_y) - __pyx_v_self->cy), 2.0)))); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 442, __pyx_L1_error)
+      __pyx_t_13 = PyFloat_FromDouble(sqrt((pow((((double)__pyx_v_x) - __pyx_v_self->cx), 2.0) + pow((((double)__pyx_v_y) - __pyx_v_self->cy), 2.0)))); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 453, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_13);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_9, (PyObject*)__pyx_t_13))) __PYX_ERR(0, 442, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_9, (PyObject*)__pyx_t_13))) __PYX_ERR(0, 453, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     }
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 442, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 453, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
   __pyx_t_9 = NULL;
@@ -10358,23 +10586,23 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_3 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_9, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 442, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 453, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 442, __pyx_L1_error)
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 453, __pyx_L1_error)
   __pyx_v_dists = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "GPA.pyx":445
+  /* "GPA.pyx":456
  * 												  for x in range(self.cols)] for y in range(self.rows)])
  * 
  * 		minimo, maximo = numpy.min(dists),numpy.max(dists)             # <<<<<<<<<<<<<<
  * 		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
  * 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 445, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_min); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 445, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_min); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = NULL;
@@ -10389,14 +10617,14 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   }
   __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, ((PyObject *)__pyx_v_dists)) : __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)__pyx_v_dists));
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 445, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_14 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_14 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 445, __pyx_L1_error)
+  __pyx_t_14 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_14 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 445, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_max); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 445, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_max); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -10411,29 +10639,29 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   }
   __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_4, ((PyObject *)__pyx_v_dists)) : __Pyx_PyObject_CallOneArg(__pyx_t_5, ((PyObject *)__pyx_v_dists));
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 445, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 445, __pyx_L1_error)
+  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_minimo = __pyx_t_14;
   __pyx_v_maximo = __pyx_t_15;
 
-  /* "GPA.pyx":446
+  /* "GPA.pyx":457
  * 
  * 		minimo, maximo = numpy.min(dists),numpy.max(dists)
  * 		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)             # <<<<<<<<<<<<<<
  * 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_arange); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_arange); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_minimo); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_minimo); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_9 = PyFloat_FromDouble(__pyx_v_maximo); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __pyx_t_9 = PyFloat_FromDouble(__pyx_v_maximo); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __pyx_t_13 = NULL;
   __pyx_t_6 = 0;
@@ -10450,7 +10678,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_4)) {
     PyObject *__pyx_temp[4] = {__pyx_t_13, __pyx_t_5, __pyx_t_9, __pyx_float_0_705};
-    __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_6, 3+__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 446, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_6, 3+__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 457, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -10460,7 +10688,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
     PyObject *__pyx_temp[4] = {__pyx_t_13, __pyx_t_5, __pyx_t_9, __pyx_float_0_705};
-    __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_6, 3+__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 446, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_6, 3+__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 457, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -10468,7 +10696,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_16 = PyTuple_New(3+__pyx_t_6); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 446, __pyx_L1_error)
+    __pyx_t_16 = PyTuple_New(3+__pyx_t_6); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 457, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_16);
     if (__pyx_t_13) {
       __Pyx_GIVEREF(__pyx_t_13); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_13); __pyx_t_13 = NULL;
@@ -10482,68 +10710,68 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_16, 2+__pyx_t_6, __pyx_float_0_705);
     __pyx_t_5 = 0;
     __pyx_t_9 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 446, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 457, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_astype); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_astype); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_16, __pyx_n_s_numpy); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_16, __pyx_n_s_numpy); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_16, __pyx_n_s_float64); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_16, __pyx_n_s_float64); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_9) < 0) __PYX_ERR(0, 446, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_9) < 0) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 446, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 457, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_sequence = __pyx_t_9;
   __pyx_t_9 = 0;
 
-  /* "GPA.pyx":447
+  /* "GPA.pyx":458
  * 		minimo, maximo = numpy.min(dists),numpy.max(dists)
  * 		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
  * 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])             # <<<<<<<<<<<<<<
  * 
  * 		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 447, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 458, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 447, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 458, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 447, __pyx_L1_error)
+  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 458, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   if (likely(PyList_CheckExact(__pyx_v_sequence)) || PyTuple_CheckExact(__pyx_v_sequence)) {
     __pyx_t_16 = __pyx_v_sequence; __Pyx_INCREF(__pyx_t_16); __pyx_t_17 = 0;
     __pyx_t_18 = NULL;
   } else {
-    __pyx_t_17 = -1; __pyx_t_16 = PyObject_GetIter(__pyx_v_sequence); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 447, __pyx_L1_error)
+    __pyx_t_17 = -1; __pyx_t_16 = PyObject_GetIter(__pyx_v_sequence); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_16);
-    __pyx_t_18 = Py_TYPE(__pyx_t_16)->tp_iternext; if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 447, __pyx_L1_error)
+    __pyx_t_18 = Py_TYPE(__pyx_t_16)->tp_iternext; if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 458, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_18)) {
       if (likely(PyList_CheckExact(__pyx_t_16))) {
         if (__pyx_t_17 >= PyList_GET_SIZE(__pyx_t_16)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_16, __pyx_t_17); __Pyx_INCREF(__pyx_t_5); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 447, __pyx_L1_error)
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_16, __pyx_t_17); __Pyx_INCREF(__pyx_t_5); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 458, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_16, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 447, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_16, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 458, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       } else {
         if (__pyx_t_17 >= PyTuple_GET_SIZE(__pyx_t_16)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_16, __pyx_t_17); __Pyx_INCREF(__pyx_t_5); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 447, __pyx_L1_error)
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_16, __pyx_t_17); __Pyx_INCREF(__pyx_t_5); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 458, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_16, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 447, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_16, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 458, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       }
@@ -10553,18 +10781,18 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 447, __pyx_L1_error)
+          else __PYX_ERR(0, 458, __pyx_L1_error)
         }
         break;
       }
       __Pyx_GOTREF(__pyx_t_5);
     }
-    __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_5); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 447, __pyx_L1_error)
+    __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_5); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_minimo = __pyx_t_15;
-    __pyx_t_5 = PyFloat_FromDouble(__pyx_v_minimo); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 447, __pyx_L1_error)
+    __pyx_t_5 = PyFloat_FromDouble(__pyx_v_minimo); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 447, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
@@ -10581,57 +10809,57 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_9 = (__pyx_t_16) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_16, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 447, __pyx_L1_error)
+  if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 458, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_9) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_9, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 447, __pyx_L1_error)
+  if (!(likely(((__pyx_t_9) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_9, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 458, __pyx_L1_error)
   __pyx_v_uniq = ((PyArrayObject *)__pyx_t_9);
   __pyx_t_9 = 0;
 
-  /* "GPA.pyx":450
+  /* "GPA.pyx":461
  * 
  * 		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
  * 		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float64), dists.astype(dtype=numpy.float64), self.tol, numpy.float64(1.41))             # <<<<<<<<<<<<<<
  * 
  * 		#gradient moments:
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_uniq), __pyx_n_s_astype); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_uniq), __pyx_n_s_astype); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_16) < 0) __PYX_ERR(0, 450, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_16) < 0) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_16, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_16, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_dists), __pyx_n_s_astype); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_dists), __pyx_n_s_astype); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numpy); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numpy); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_float64); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_float64); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_3) < 0) __PYX_ERR(0, 450, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_3) < 0) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_16, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_16, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_19 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_19.memview)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_19 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_19.memview)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -10646,10 +10874,10 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   }
   __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_16, __pyx_t_4, __pyx_float_1_41) : __Pyx_PyObject_CallOneArg(__pyx_t_16, __pyx_float_1_41);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 450, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 450, __pyx_L1_error)
+  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 461, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_update_asymmetric_mat(__pyx_v_self, __pyx_t_1, __pyx_t_19, __pyx_v_self->tol, __pyx_t_15);
   __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
@@ -10659,19 +10887,19 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_19.memview = NULL;
   __pyx_t_19.data = NULL;
 
-  /* "GPA.pyx":453
+  /* "GPA.pyx":464
  * 
  * 		#gradient moments:
  * 		retorno = {}             # <<<<<<<<<<<<<<
  * 		for gmoment in moment:
  * 			if("G4" == gmoment):
  */
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 453, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 464, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_v_retorno = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "GPA.pyx":454
+  /* "GPA.pyx":465
  * 		#gradient moments:
  * 		retorno = {}
  * 		for gmoment in moment:             # <<<<<<<<<<<<<<
@@ -10680,38 +10908,38 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
   if (unlikely(__pyx_v_moment == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 454, __pyx_L1_error)
+    __PYX_ERR(0, 465, __pyx_L1_error)
   }
   __pyx_t_3 = __pyx_v_moment; __Pyx_INCREF(__pyx_t_3); __pyx_t_17 = 0;
   for (;;) {
     if (__pyx_t_17 >= PyList_GET_SIZE(__pyx_t_3)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_16 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_17); __Pyx_INCREF(__pyx_t_16); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 454, __pyx_L1_error)
+    __pyx_t_16 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_17); __Pyx_INCREF(__pyx_t_16); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 465, __pyx_L1_error)
     #else
-    __pyx_t_16 = PySequence_ITEM(__pyx_t_3, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 454, __pyx_L1_error)
+    __pyx_t_16 = PySequence_ITEM(__pyx_t_3, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 465, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_16);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_gmoment, __pyx_t_16);
     __pyx_t_16 = 0;
 
-    /* "GPA.pyx":455
+    /* "GPA.pyx":466
  * 		retorno = {}
  * 		for gmoment in moment:
  * 			if("G4" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G4(symmetrycalGrad)
  * 				retorno["G4"] = self.G4
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G4, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 455, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G4, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 466, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":456
+      /* "GPA.pyx":467
  * 		for gmoment in moment:
  * 			if("G4" == gmoment):
  * 				self._G4(symmetrycalGrad)             # <<<<<<<<<<<<<<
  * 				retorno["G4"] = self.G4
  * 			if("G3" == gmoment):
  */
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G4_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 456, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G4_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 467, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_9 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -10725,12 +10953,12 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_t_16 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_9, __pyx_v_symmetrycalGrad) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_symmetrycalGrad);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 456, __pyx_L1_error)
+      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 467, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":457
+      /* "GPA.pyx":468
  * 			if("G4" == gmoment):
  * 				self._G4(symmetrycalGrad)
  * 				retorno["G4"] = self.G4             # <<<<<<<<<<<<<<
@@ -10739,10 +10967,10 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
       __pyx_t_16 = __pyx_v_self->G4;
       __Pyx_INCREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G4, __pyx_t_16) < 0)) __PYX_ERR(0, 457, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G4, __pyx_t_16) < 0)) __PYX_ERR(0, 468, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":455
+      /* "GPA.pyx":466
  * 		retorno = {}
  * 		for gmoment in moment:
  * 			if("G4" == gmoment):             # <<<<<<<<<<<<<<
@@ -10751,17 +10979,17 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":458
+    /* "GPA.pyx":469
  * 				self._G4(symmetrycalGrad)
  * 				retorno["G4"] = self.G4
  * 			if("G3" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G3(symmetrycalGrad)
  * 				retorno["G3"] = self.G3
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G3, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 458, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G3, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 469, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":459
+      /* "GPA.pyx":470
  * 				retorno["G4"] = self.G4
  * 			if("G3" == gmoment):
  * 				self._G3(symmetrycalGrad)             # <<<<<<<<<<<<<<
@@ -10770,19 +10998,19 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
       ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_G3(__pyx_v_self, __pyx_v_symmetrycalGrad);
 
-      /* "GPA.pyx":460
+      /* "GPA.pyx":471
  * 			if("G3" == gmoment):
  * 				self._G3(symmetrycalGrad)
  * 				retorno["G3"] = self.G3             # <<<<<<<<<<<<<<
  * 			if("G2" == gmoment):
  * 				self._G2(symmetrycalGrad)
  */
-      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G3); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 460, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G3); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 471, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G3, __pyx_t_16) < 0)) __PYX_ERR(0, 460, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G3, __pyx_t_16) < 0)) __PYX_ERR(0, 471, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":458
+      /* "GPA.pyx":469
  * 				self._G4(symmetrycalGrad)
  * 				retorno["G4"] = self.G4
  * 			if("G3" == gmoment):             # <<<<<<<<<<<<<<
@@ -10791,17 +11019,17 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":461
+    /* "GPA.pyx":472
  * 				self._G3(symmetrycalGrad)
  * 				retorno["G3"] = self.G3
  * 			if("G2" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G2(symmetrycalGrad)
  * 				retorno["G2"] = self.G2
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G2, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 461, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G2, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 472, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":462
+      /* "GPA.pyx":473
  * 				retorno["G3"] = self.G3
  * 			if("G2" == gmoment):
  * 				self._G2(symmetrycalGrad)             # <<<<<<<<<<<<<<
@@ -10810,19 +11038,19 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
       ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_G2(__pyx_v_self, __pyx_v_symmetrycalGrad);
 
-      /* "GPA.pyx":463
+      /* "GPA.pyx":474
  * 			if("G2" == gmoment):
  * 				self._G2(symmetrycalGrad)
  * 				retorno["G2"] = self.G2             # <<<<<<<<<<<<<<
  * 			if("G1" == gmoment):
  * 				self._G1(symmetrycalGrad)
  */
-      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G2); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 463, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G2); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 474, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G2, __pyx_t_16) < 0)) __PYX_ERR(0, 463, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G2, __pyx_t_16) < 0)) __PYX_ERR(0, 474, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":461
+      /* "GPA.pyx":472
  * 				self._G3(symmetrycalGrad)
  * 				retorno["G3"] = self.G3
  * 			if("G2" == gmoment):             # <<<<<<<<<<<<<<
@@ -10831,24 +11059,24 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":464
+    /* "GPA.pyx":475
  * 				self._G2(symmetrycalGrad)
  * 				retorno["G2"] = self.G2
  * 			if("G1" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G1(symmetrycalGrad)
  * 				retorno["G1"] = self.G1
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G1, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 464, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G1, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 475, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":465
+      /* "GPA.pyx":476
  * 				retorno["G2"] = self.G2
  * 			if("G1" == gmoment):
  * 				self._G1(symmetrycalGrad)             # <<<<<<<<<<<<<<
  * 				retorno["G1"] = self.G1
  * 			if("G1_Classic" == gmoment):
  */
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 465, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 476, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_9 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -10862,24 +11090,24 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_t_16 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_9, __pyx_v_symmetrycalGrad) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_symmetrycalGrad);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 465, __pyx_L1_error)
+      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 476, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":466
+      /* "GPA.pyx":477
  * 			if("G1" == gmoment):
  * 				self._G1(symmetrycalGrad)
  * 				retorno["G1"] = self.G1             # <<<<<<<<<<<<<<
  * 			if("G1_Classic" == gmoment):
  * 				self._G1_Classic(symmetrycalGrad)
  */
-      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 466, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 477, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1, __pyx_t_16) < 0)) __PYX_ERR(0, 466, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1, __pyx_t_16) < 0)) __PYX_ERR(0, 477, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":464
+      /* "GPA.pyx":475
  * 				self._G2(symmetrycalGrad)
  * 				retorno["G2"] = self.G2
  * 			if("G1" == gmoment):             # <<<<<<<<<<<<<<
@@ -10888,24 +11116,24 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":467
+    /* "GPA.pyx":478
  * 				self._G1(symmetrycalGrad)
  * 				retorno["G1"] = self.G1
  * 			if("G1_Classic" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G1_Classic(symmetrycalGrad)
  * 				retorno["G1_Classic"] = self.G1_Classic
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G1_Classic, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 467, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G1_Classic, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 478, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":468
+      /* "GPA.pyx":479
  * 				retorno["G1"] = self.G1
  * 			if("G1_Classic" == gmoment):
  * 				self._G1_Classic(symmetrycalGrad)             # <<<<<<<<<<<<<<
  * 				retorno["G1_Classic"] = self.G1_Classic
  * 		return retorno
  */
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_Classic_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 468, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_Classic_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 479, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_9 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -10919,24 +11147,24 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_t_16 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_9, __pyx_v_symmetrycalGrad) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_symmetrycalGrad);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 468, __pyx_L1_error)
+      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 479, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":469
+      /* "GPA.pyx":480
  * 			if("G1_Classic" == gmoment):
  * 				self._G1_Classic(symmetrycalGrad)
  * 				retorno["G1_Classic"] = self.G1_Classic             # <<<<<<<<<<<<<<
  * 		return retorno
  * 
  */
-      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 469, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 480, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1_Classic, __pyx_t_16) < 0)) __PYX_ERR(0, 469, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1_Classic, __pyx_t_16) < 0)) __PYX_ERR(0, 480, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":467
+      /* "GPA.pyx":478
  * 				self._G1(symmetrycalGrad)
  * 				retorno["G1"] = self.G1
  * 			if("G1_Classic" == gmoment):             # <<<<<<<<<<<<<<
@@ -10945,7 +11173,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":454
+    /* "GPA.pyx":465
  * 		#gradient moments:
  * 		retorno = {}
  * 		for gmoment in moment:             # <<<<<<<<<<<<<<
@@ -10955,7 +11183,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "GPA.pyx":470
+  /* "GPA.pyx":481
  * 				self._G1_Classic(symmetrycalGrad)
  * 				retorno["G1_Classic"] = self.G1_Classic
  * 		return retorno             # <<<<<<<<<<<<<<
@@ -10967,7 +11195,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_r = __pyx_v_retorno;
   goto __pyx_L0;
 
-  /* "GPA.pyx":429
+  /* "GPA.pyx":440
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _eval(self,double[:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
@@ -10999,7 +11227,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   return __pyx_r;
 }
 
-/* "GPA.pyx":476
+/* "GPA.pyx":487
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _evalGradient(self,double[:,:] gradient_dx, double[:,:] gradient_dy, list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
@@ -11049,7 +11277,7 @@ static PyObject *__pyx_pw_3GPA_3GPA_19_evalGradient(PyObject *__pyx_v_self, PyOb
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_gradient_dy)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("_evalGradient", 0, 2, 4, 1); __PYX_ERR(0, 476, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("_evalGradient", 0, 2, 4, 1); __PYX_ERR(0, 487, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -11065,7 +11293,7 @@ static PyObject *__pyx_pw_3GPA_3GPA_19_evalGradient(PyObject *__pyx_v_self, PyOb
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_evalGradient") < 0)) __PYX_ERR(0, 476, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "_evalGradient") < 0)) __PYX_ERR(0, 487, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -11079,21 +11307,21 @@ static PyObject *__pyx_pw_3GPA_3GPA_19_evalGradient(PyObject *__pyx_v_self, PyOb
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_gradient_dx = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_gradient_dx.memview)) __PYX_ERR(0, 476, __pyx_L3_error)
-    __pyx_v_gradient_dy = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_gradient_dy.memview)) __PYX_ERR(0, 476, __pyx_L3_error)
+    __pyx_v_gradient_dx = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_gradient_dx.memview)) __PYX_ERR(0, 487, __pyx_L3_error)
+    __pyx_v_gradient_dy = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_gradient_dy.memview)) __PYX_ERR(0, 487, __pyx_L3_error)
     __pyx_v_moment = ((PyObject*)values[2]);
     __pyx_v_symmetrycalGrad = ((PyObject*)values[3]);
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_evalGradient", 0, 2, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 476, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_evalGradient", 0, 2, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 487, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("GPA.GPA._evalGradient", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_moment), (&PyList_Type), 1, "moment", 1))) __PYX_ERR(0, 476, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symmetrycalGrad), (&PyString_Type), 1, "symmetrycalGrad", 1))) __PYX_ERR(0, 476, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_moment), (&PyList_Type), 1, "moment", 1))) __PYX_ERR(0, 487, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_symmetrycalGrad), (&PyString_Type), 1, "symmetrycalGrad", 1))) __PYX_ERR(0, 487, __pyx_L1_error)
   __pyx_r = __pyx_pf_3GPA_3GPA_18_evalGradient(((struct __pyx_obj_3GPA_GPA *)__pyx_v_self), __pyx_v_gradient_dx, __pyx_v_gradient_dy, __pyx_v_moment, __pyx_v_symmetrycalGrad);
 
   /* function exit code */
@@ -11142,7 +11370,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_18_evalGradient(struct __pyx_obj_3GPA_GPA *_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_evalGradient", 0);
 
-  /* "GPA.pyx":482
+  /* "GPA.pyx":493
  * 		cdef dict retorno
  * 
  * 		self.cols = len(gradient_dx[0])             # <<<<<<<<<<<<<<
@@ -11168,7 +11396,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_1.data = NULL;
   __pyx_v_self->cols = __pyx_t_2;
 
-  /* "GPA.pyx":483
+  /* "GPA.pyx":494
  * 
  * 		self.cols = len(gradient_dx[0])
  * 		self.rows = len(gradient_dx)             # <<<<<<<<<<<<<<
@@ -11178,7 +11406,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_v_gradient_dx); 
   __pyx_v_self->rows = __pyx_t_2;
 
-  /* "GPA.pyx":485
+  /* "GPA.pyx":496
  * 		self.rows = len(gradient_dx)
  * 
  * 		self.gradient_dx = gradient_dx             # <<<<<<<<<<<<<<
@@ -11189,7 +11417,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __PYX_INC_MEMVIEW(&__pyx_v_gradient_dx, 0);
   __pyx_v_self->gradient_dx = __pyx_v_gradient_dx;
 
-  /* "GPA.pyx":486
+  /* "GPA.pyx":497
  * 
  * 		self.gradient_dx = gradient_dx
  * 		self.gradient_dy = gradient_dy             # <<<<<<<<<<<<<<
@@ -11200,7 +11428,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __PYX_INC_MEMVIEW(&__pyx_v_gradient_dy, 0);
   __pyx_v_self->gradient_dy = __pyx_v_gradient_dy;
 
-  /* "GPA.pyx":488
+  /* "GPA.pyx":499
  * 		self.gradient_dy = gradient_dy
  * 
  * 		self._setMaxGrad()             # <<<<<<<<<<<<<<
@@ -11209,7 +11437,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_setMaxGrad(__pyx_v_self);
 
-  /* "GPA.pyx":489
+  /* "GPA.pyx":500
  * 
  * 		self._setMaxGrad()
  * 		self._setModulusPhase()             # <<<<<<<<<<<<<<
@@ -11218,7 +11446,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_setModulusPhase(__pyx_v_self);
 
-  /* "GPA.pyx":491
+  /* "GPA.pyx":502
  * 		self._setModulusPhase()
  * 
  * 		self.setPosition(float(self.rows/2),float(self.cols/2))             # <<<<<<<<<<<<<<
@@ -11227,22 +11455,22 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->setPosition(__pyx_v_self, ((double)(__pyx_v_self->rows / 2)), ((double)(__pyx_v_self->cols / 2)), 0);
 
-  /* "GPA.pyx":494
+  /* "GPA.pyx":505
  * 
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \             # <<<<<<<<<<<<<<
  * 												  for x in range(self.cols)] for y in range(self.rows)])
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 494, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 505, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 494, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 505, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 494, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 505, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "GPA.pyx":495
+  /* "GPA.pyx":506
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
  * 												  for x in range(self.cols)] for y in range(self.rows)])             # <<<<<<<<<<<<<<
@@ -11254,17 +11482,17 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_y = __pyx_t_8;
 
-    /* "GPA.pyx":494
+    /* "GPA.pyx":505
  * 
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \             # <<<<<<<<<<<<<<
  * 												  for x in range(self.cols)] for y in range(self.rows)])
  * 
  */
-    __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 494, __pyx_L1_error)
+    __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 505, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
 
-    /* "GPA.pyx":495
+    /* "GPA.pyx":506
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
  * 												  for x in range(self.cols)] for y in range(self.rows)])             # <<<<<<<<<<<<<<
@@ -11276,19 +11504,19 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
     for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
       __pyx_v_x = __pyx_t_12;
 
-      /* "GPA.pyx":494
+      /* "GPA.pyx":505
  * 
  * 
  * 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \             # <<<<<<<<<<<<<<
  * 												  for x in range(self.cols)] for y in range(self.rows)])
  * 
  */
-      __pyx_t_13 = PyFloat_FromDouble(sqrt((pow((((double)__pyx_v_x) - __pyx_v_self->cx), 2.0) + pow((((double)__pyx_v_y) - __pyx_v_self->cy), 2.0)))); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 494, __pyx_L1_error)
+      __pyx_t_13 = PyFloat_FromDouble(sqrt((pow((((double)__pyx_v_x) - __pyx_v_self->cx), 2.0) + pow((((double)__pyx_v_y) - __pyx_v_self->cy), 2.0)))); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 505, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_13);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_9, (PyObject*)__pyx_t_13))) __PYX_ERR(0, 494, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_9, (PyObject*)__pyx_t_13))) __PYX_ERR(0, 505, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     }
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 494, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 505, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
   __pyx_t_9 = NULL;
@@ -11304,23 +11532,23 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_3 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_9, __pyx_t_4) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_4);
   __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 494, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 505, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 494, __pyx_L1_error)
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 505, __pyx_L1_error)
   __pyx_v_dists = ((PyArrayObject *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "GPA.pyx":497
+  /* "GPA.pyx":508
  * 												  for x in range(self.cols)] for y in range(self.rows)])
  * 
  * 		minimo, maximo = numpy.min(dists),numpy.max(dists)             # <<<<<<<<<<<<<<
  * 		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
  * 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 497, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_min); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 497, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_min); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = NULL;
@@ -11335,14 +11563,14 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   }
   __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, ((PyObject *)__pyx_v_dists)) : __Pyx_PyObject_CallOneArg(__pyx_t_4, ((PyObject *)__pyx_v_dists));
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 497, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_14 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_14 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 497, __pyx_L1_error)
+  __pyx_t_14 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_14 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 497, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_max); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 497, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_max); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -11357,29 +11585,29 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   }
   __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_4, ((PyObject *)__pyx_v_dists)) : __Pyx_PyObject_CallOneArg(__pyx_t_5, ((PyObject *)__pyx_v_dists));
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 497, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 497, __pyx_L1_error)
+  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_minimo = __pyx_t_14;
   __pyx_v_maximo = __pyx_t_15;
 
-  /* "GPA.pyx":498
+  /* "GPA.pyx":509
  * 
  * 		minimo, maximo = numpy.min(dists),numpy.max(dists)
  * 		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)             # <<<<<<<<<<<<<<
  * 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_arange); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_arange); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_minimo); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_minimo); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_9 = PyFloat_FromDouble(__pyx_v_maximo); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __pyx_t_9 = PyFloat_FromDouble(__pyx_v_maximo); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __pyx_t_13 = NULL;
   __pyx_t_6 = 0;
@@ -11396,7 +11624,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_4)) {
     PyObject *__pyx_temp[4] = {__pyx_t_13, __pyx_t_5, __pyx_t_9, __pyx_float_0_705};
-    __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_6, 3+__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 498, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_6, 3+__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 509, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -11406,7 +11634,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_4)) {
     PyObject *__pyx_temp[4] = {__pyx_t_13, __pyx_t_5, __pyx_t_9, __pyx_float_0_705};
-    __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_6, 3+__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 498, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyCFunction_FastCall(__pyx_t_4, __pyx_temp+1-__pyx_t_6, 3+__pyx_t_6); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 509, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -11414,7 +11642,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   } else
   #endif
   {
-    __pyx_t_16 = PyTuple_New(3+__pyx_t_6); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 498, __pyx_L1_error)
+    __pyx_t_16 = PyTuple_New(3+__pyx_t_6); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 509, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_16);
     if (__pyx_t_13) {
       __Pyx_GIVEREF(__pyx_t_13); PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_13); __pyx_t_13 = NULL;
@@ -11428,68 +11656,68 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_16, 2+__pyx_t_6, __pyx_float_0_705);
     __pyx_t_5 = 0;
     __pyx_t_9 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 498, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 509, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_astype); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_astype); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_16, __pyx_n_s_numpy); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_16, __pyx_n_s_numpy); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_16, __pyx_n_s_float64); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_16, __pyx_n_s_float64); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_9) < 0) __PYX_ERR(0, 498, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_9) < 0) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 498, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_empty_tuple, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 509, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_sequence = __pyx_t_9;
   __pyx_t_9 = 0;
 
-  /* "GPA.pyx":499
+  /* "GPA.pyx":510
  * 		minimo, maximo = numpy.min(dists),numpy.max(dists)
  * 		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
  * 		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])             # <<<<<<<<<<<<<<
  * 
  * 		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 499, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 510, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 499, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 510, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 499, __pyx_L1_error)
+  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 510, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   if (likely(PyList_CheckExact(__pyx_v_sequence)) || PyTuple_CheckExact(__pyx_v_sequence)) {
     __pyx_t_16 = __pyx_v_sequence; __Pyx_INCREF(__pyx_t_16); __pyx_t_17 = 0;
     __pyx_t_18 = NULL;
   } else {
-    __pyx_t_17 = -1; __pyx_t_16 = PyObject_GetIter(__pyx_v_sequence); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 499, __pyx_L1_error)
+    __pyx_t_17 = -1; __pyx_t_16 = PyObject_GetIter(__pyx_v_sequence); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 510, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_16);
-    __pyx_t_18 = Py_TYPE(__pyx_t_16)->tp_iternext; if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 499, __pyx_L1_error)
+    __pyx_t_18 = Py_TYPE(__pyx_t_16)->tp_iternext; if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 510, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_18)) {
       if (likely(PyList_CheckExact(__pyx_t_16))) {
         if (__pyx_t_17 >= PyList_GET_SIZE(__pyx_t_16)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_16, __pyx_t_17); __Pyx_INCREF(__pyx_t_5); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 499, __pyx_L1_error)
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_16, __pyx_t_17); __Pyx_INCREF(__pyx_t_5); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 510, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_16, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 499, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_16, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 510, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       } else {
         if (__pyx_t_17 >= PyTuple_GET_SIZE(__pyx_t_16)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_16, __pyx_t_17); __Pyx_INCREF(__pyx_t_5); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 499, __pyx_L1_error)
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_16, __pyx_t_17); __Pyx_INCREF(__pyx_t_5); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 510, __pyx_L1_error)
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_16, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 499, __pyx_L1_error)
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_16, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 510, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_5);
         #endif
       }
@@ -11499,18 +11727,18 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 499, __pyx_L1_error)
+          else __PYX_ERR(0, 510, __pyx_L1_error)
         }
         break;
       }
       __Pyx_GOTREF(__pyx_t_5);
     }
-    __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_5); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 499, __pyx_L1_error)
+    __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_5); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 510, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_minimo = __pyx_t_15;
-    __pyx_t_5 = PyFloat_FromDouble(__pyx_v_minimo); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 499, __pyx_L1_error)
+    __pyx_t_5 = PyFloat_FromDouble(__pyx_v_minimo); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 510, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 499, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_5))) __PYX_ERR(0, 510, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
@@ -11527,57 +11755,57 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_9 = (__pyx_t_16) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_16, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 499, __pyx_L1_error)
+  if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 510, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_9) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_9, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 499, __pyx_L1_error)
+  if (!(likely(((__pyx_t_9) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_9, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 510, __pyx_L1_error)
   __pyx_v_uniq = ((PyArrayObject *)__pyx_t_9);
   __pyx_t_9 = 0;
 
-  /* "GPA.pyx":502
+  /* "GPA.pyx":513
  * 
  * 		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
  * 		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float64), dists.astype(dtype=numpy.float64), self.tol, numpy.float64(1.41))             # <<<<<<<<<<<<<<
  * 
  * 		#gradient moments:
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_uniq), __pyx_n_s_astype); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_uniq), __pyx_n_s_astype); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_16) < 0) __PYX_ERR(0, 502, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_16) < 0) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_16, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_16, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_dists), __pyx_n_s_astype); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_dists), __pyx_n_s_astype); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numpy); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numpy); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_float64); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_float64); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_3) < 0) __PYX_ERR(0, 502, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_3) < 0) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_16, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_16, __pyx_empty_tuple, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_19 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_19.memview)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_19 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_19.memview)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -11592,10 +11820,10 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   }
   __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_16, __pyx_t_4, __pyx_float_1_41) : __Pyx_PyObject_CallOneArg(__pyx_t_16, __pyx_float_1_41);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 502, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
-  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 513, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_update_asymmetric_mat(__pyx_v_self, __pyx_t_1, __pyx_t_19, __pyx_v_self->tol, __pyx_t_15);
   __PYX_XDEC_MEMVIEW(&__pyx_t_1, 1);
@@ -11605,19 +11833,19 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_19.memview = NULL;
   __pyx_t_19.data = NULL;
 
-  /* "GPA.pyx":505
+  /* "GPA.pyx":516
  * 
  * 		#gradient moments:
  * 		retorno = {}             # <<<<<<<<<<<<<<
  * 		for gmoment in moment:
  * 			if("G4" == gmoment):
  */
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 505, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 516, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_v_retorno = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "GPA.pyx":506
+  /* "GPA.pyx":517
  * 		#gradient moments:
  * 		retorno = {}
  * 		for gmoment in moment:             # <<<<<<<<<<<<<<
@@ -11626,38 +11854,38 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
   if (unlikely(__pyx_v_moment == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 506, __pyx_L1_error)
+    __PYX_ERR(0, 517, __pyx_L1_error)
   }
   __pyx_t_3 = __pyx_v_moment; __Pyx_INCREF(__pyx_t_3); __pyx_t_17 = 0;
   for (;;) {
     if (__pyx_t_17 >= PyList_GET_SIZE(__pyx_t_3)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_16 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_17); __Pyx_INCREF(__pyx_t_16); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 506, __pyx_L1_error)
+    __pyx_t_16 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_17); __Pyx_INCREF(__pyx_t_16); __pyx_t_17++; if (unlikely(0 < 0)) __PYX_ERR(0, 517, __pyx_L1_error)
     #else
-    __pyx_t_16 = PySequence_ITEM(__pyx_t_3, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 506, __pyx_L1_error)
+    __pyx_t_16 = PySequence_ITEM(__pyx_t_3, __pyx_t_17); __pyx_t_17++; if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 517, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_16);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_gmoment, __pyx_t_16);
     __pyx_t_16 = 0;
 
-    /* "GPA.pyx":507
+    /* "GPA.pyx":518
  * 		retorno = {}
  * 		for gmoment in moment:
  * 			if("G4" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G4(symmetrycalGrad)
  * 				retorno["G4"] = self.G4
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G4, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 507, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G4, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 518, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":508
+      /* "GPA.pyx":519
  * 		for gmoment in moment:
  * 			if("G4" == gmoment):
  * 				self._G4(symmetrycalGrad)             # <<<<<<<<<<<<<<
  * 				retorno["G4"] = self.G4
  * 			if("G3" == gmoment):
  */
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G4_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 508, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G4_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 519, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_9 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -11671,12 +11899,12 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_t_16 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_9, __pyx_v_symmetrycalGrad) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_symmetrycalGrad);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 508, __pyx_L1_error)
+      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 519, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":509
+      /* "GPA.pyx":520
  * 			if("G4" == gmoment):
  * 				self._G4(symmetrycalGrad)
  * 				retorno["G4"] = self.G4             # <<<<<<<<<<<<<<
@@ -11685,10 +11913,10 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
       __pyx_t_16 = __pyx_v_self->G4;
       __Pyx_INCREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G4, __pyx_t_16) < 0)) __PYX_ERR(0, 509, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G4, __pyx_t_16) < 0)) __PYX_ERR(0, 520, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":507
+      /* "GPA.pyx":518
  * 		retorno = {}
  * 		for gmoment in moment:
  * 			if("G4" == gmoment):             # <<<<<<<<<<<<<<
@@ -11697,17 +11925,17 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":510
+    /* "GPA.pyx":521
  * 				self._G4(symmetrycalGrad)
  * 				retorno["G4"] = self.G4
  * 			if("G3" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G3(symmetrycalGrad)
  * 				retorno["G3"] = self.G3
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G3, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 510, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G3, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 521, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":511
+      /* "GPA.pyx":522
  * 				retorno["G4"] = self.G4
  * 			if("G3" == gmoment):
  * 				self._G3(symmetrycalGrad)             # <<<<<<<<<<<<<<
@@ -11716,19 +11944,19 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
       ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_G3(__pyx_v_self, __pyx_v_symmetrycalGrad);
 
-      /* "GPA.pyx":512
+      /* "GPA.pyx":523
  * 			if("G3" == gmoment):
  * 				self._G3(symmetrycalGrad)
  * 				retorno["G3"] = self.G3             # <<<<<<<<<<<<<<
  * 			if("G2" == gmoment):
  * 				self._G2(symmetrycalGrad)
  */
-      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G3); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 512, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G3); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 523, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G3, __pyx_t_16) < 0)) __PYX_ERR(0, 512, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G3, __pyx_t_16) < 0)) __PYX_ERR(0, 523, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":510
+      /* "GPA.pyx":521
  * 				self._G4(symmetrycalGrad)
  * 				retorno["G4"] = self.G4
  * 			if("G3" == gmoment):             # <<<<<<<<<<<<<<
@@ -11737,17 +11965,17 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":513
+    /* "GPA.pyx":524
  * 				self._G3(symmetrycalGrad)
  * 				retorno["G3"] = self.G3
  * 			if("G2" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G2(symmetrycalGrad)
  * 				retorno["G2"] = self.G2
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G2, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 513, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G2, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 524, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":514
+      /* "GPA.pyx":525
  * 				retorno["G3"] = self.G3
  * 			if("G2" == gmoment):
  * 				self._G2(symmetrycalGrad)             # <<<<<<<<<<<<<<
@@ -11756,19 +11984,19 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
       ((struct __pyx_vtabstruct_3GPA_GPA *)__pyx_v_self->__pyx_vtab)->_G2(__pyx_v_self, __pyx_v_symmetrycalGrad);
 
-      /* "GPA.pyx":515
+      /* "GPA.pyx":526
  * 			if("G2" == gmoment):
  * 				self._G2(symmetrycalGrad)
  * 				retorno["G2"] = self.G2             # <<<<<<<<<<<<<<
  * 			if("G1" == gmoment):
  * 				self._G1(symmetrycalGrad)
  */
-      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G2); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 515, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G2); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 526, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G2, __pyx_t_16) < 0)) __PYX_ERR(0, 515, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G2, __pyx_t_16) < 0)) __PYX_ERR(0, 526, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":513
+      /* "GPA.pyx":524
  * 				self._G3(symmetrycalGrad)
  * 				retorno["G3"] = self.G3
  * 			if("G2" == gmoment):             # <<<<<<<<<<<<<<
@@ -11777,24 +12005,24 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":516
+    /* "GPA.pyx":527
  * 				self._G2(symmetrycalGrad)
  * 				retorno["G2"] = self.G2
  * 			if("G1" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G1(symmetrycalGrad)
  * 				retorno["G1"] = self.G1
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G1, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 516, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G1, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 527, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":517
+      /* "GPA.pyx":528
  * 				retorno["G2"] = self.G2
  * 			if("G1" == gmoment):
  * 				self._G1(symmetrycalGrad)             # <<<<<<<<<<<<<<
  * 				retorno["G1"] = self.G1
  * 			if("G1_Classic" == gmoment):
  */
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 517, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 528, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_9 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -11808,24 +12036,24 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_t_16 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_9, __pyx_v_symmetrycalGrad) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_symmetrycalGrad);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 517, __pyx_L1_error)
+      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 528, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":518
+      /* "GPA.pyx":529
  * 			if("G1" == gmoment):
  * 				self._G1(symmetrycalGrad)
  * 				retorno["G1"] = self.G1             # <<<<<<<<<<<<<<
  * 			if("G1_Classic" == gmoment):
  * 				self._G1_Classic(symmetrycalGrad)
  */
-      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 518, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 529, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1, __pyx_t_16) < 0)) __PYX_ERR(0, 518, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1, __pyx_t_16) < 0)) __PYX_ERR(0, 529, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":516
+      /* "GPA.pyx":527
  * 				self._G2(symmetrycalGrad)
  * 				retorno["G2"] = self.G2
  * 			if("G1" == gmoment):             # <<<<<<<<<<<<<<
@@ -11834,24 +12062,24 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":519
+    /* "GPA.pyx":530
  * 				self._G1(symmetrycalGrad)
  * 				retorno["G1"] = self.G1
  * 			if("G1_Classic" == gmoment):             # <<<<<<<<<<<<<<
  * 				self._G1_Classic(symmetrycalGrad)
  * 				retorno["G1_Classic"] = self.G1_Classic
  */
-    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G1_Classic, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 519, __pyx_L1_error)
+    __pyx_t_20 = (__Pyx_PyString_Equals(__pyx_n_s_G1_Classic, __pyx_v_gmoment, Py_EQ)); if (unlikely(__pyx_t_20 < 0)) __PYX_ERR(0, 530, __pyx_L1_error)
     if (__pyx_t_20) {
 
-      /* "GPA.pyx":520
+      /* "GPA.pyx":531
  * 				retorno["G1"] = self.G1
  * 			if("G1_Classic" == gmoment):
  * 				self._G1_Classic(symmetrycalGrad)             # <<<<<<<<<<<<<<
  * 				retorno["G1_Classic"] = self.G1_Classic
  * 		return retorno
  */
-      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_Classic_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 520, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_G1_Classic_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 531, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       __pyx_t_9 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -11865,24 +12093,24 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_t_16 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_9, __pyx_v_symmetrycalGrad) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_v_symmetrycalGrad);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 520, __pyx_L1_error)
+      if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 531, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":521
+      /* "GPA.pyx":532
  * 			if("G1_Classic" == gmoment):
  * 				self._G1_Classic(symmetrycalGrad)
  * 				retorno["G1_Classic"] = self.G1_Classic             # <<<<<<<<<<<<<<
  * 		return retorno
  * 
  */
-      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 521, __pyx_L1_error)
+      __pyx_t_16 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 532, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
-      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1_Classic, __pyx_t_16) < 0)) __PYX_ERR(0, 521, __pyx_L1_error)
+      if (unlikely(PyDict_SetItem(__pyx_v_retorno, __pyx_n_s_G1_Classic, __pyx_t_16) < 0)) __PYX_ERR(0, 532, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "GPA.pyx":519
+      /* "GPA.pyx":530
  * 				self._G1(symmetrycalGrad)
  * 				retorno["G1"] = self.G1
  * 			if("G1_Classic" == gmoment):             # <<<<<<<<<<<<<<
@@ -11891,7 +12119,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
  */
     }
 
-    /* "GPA.pyx":506
+    /* "GPA.pyx":517
  * 		#gradient moments:
  * 		retorno = {}
  * 		for gmoment in moment:             # <<<<<<<<<<<<<<
@@ -11901,7 +12129,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "GPA.pyx":522
+  /* "GPA.pyx":533
  * 				self._G1_Classic(symmetrycalGrad)
  * 				retorno["G1_Classic"] = self.G1_Classic
  * 		return retorno             # <<<<<<<<<<<<<<
@@ -11913,7 +12141,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_r = __pyx_v_retorno;
   goto __pyx_L0;
 
-  /* "GPA.pyx":476
+  /* "GPA.pyx":487
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _evalGradient(self,double[:,:] gradient_dx, double[:,:] gradient_dy, list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
@@ -11946,7 +12174,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   return __pyx_r;
 }
 
-/* "GPA.pyx":528
+/* "GPA.pyx":539
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef tuple gradient(self,double[:,:] mat):             # <<<<<<<<<<<<<<
@@ -11999,7 +12227,7 @@ static PyObject *__pyx_f_3GPA_3GPA_gradient(CYTHON_UNUSED struct __pyx_obj_3GPA_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("gradient", 0);
 
-  /* "GPA.pyx":532
+  /* "GPA.pyx":543
  * 		cdef double divx, divy
  * 		cdef int i, j,w,h,i1,j1,i2,j2
  * 		w, h = len(mat[0]),len(mat)             # <<<<<<<<<<<<<<
@@ -12027,115 +12255,115 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_v_w = __pyx_t_2;
   __pyx_v_h = __pyx_t_3;
 
-  /* "GPA.pyx":533
+  /* "GPA.pyx":544
  * 		cdef int i, j,w,h,i1,j1,i2,j2
  * 		w, h = len(mat[0]),len(mat)
  * 		dx = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)             # <<<<<<<<<<<<<<
  * 		dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		for i in range(w):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_numpy); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_array); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_6 = __pyx_v_h;
   __pyx_t_7 = __pyx_t_6;
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_j = __pyx_t_8;
-    __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 533, __pyx_L1_error)
+    __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 544, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __pyx_t_10 = __pyx_v_w;
     __pyx_t_11 = __pyx_t_10;
     for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
       __pyx_v_i = __pyx_t_12;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_9, (PyObject*)__pyx_float_0_0))) __PYX_ERR(0, 533, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_9, (PyObject*)__pyx_float_0_0))) __PYX_ERR(0, 544, __pyx_L1_error)
     }
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 533, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_4, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 544, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
-  __pyx_t_9 = PyTuple_New(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __pyx_t_9 = PyTuple_New(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_numpy); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_numpy); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_13);
-  __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_13, __pyx_n_s_float64); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_13, __pyx_n_s_float64); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_14) < 0) __PYX_ERR(0, 533, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_14) < 0) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
-  __pyx_t_14 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_9, __pyx_t_4); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __pyx_t_14 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_9, __pyx_t_4); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_15 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_14, PyBUF_WRITABLE); if (unlikely(!__pyx_t_15.memview)) __PYX_ERR(0, 533, __pyx_L1_error)
+  __pyx_t_15 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_14, PyBUF_WRITABLE); if (unlikely(!__pyx_t_15.memview)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
   __pyx_v_dx = __pyx_t_15;
   __pyx_t_15.memview = NULL;
   __pyx_t_15.data = NULL;
 
-  /* "GPA.pyx":534
+  /* "GPA.pyx":545
  * 		w, h = len(mat[0]),len(mat)
  * 		dx = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)             # <<<<<<<<<<<<<<
  * 		for i in range(w):
  * 			for j in range(h):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_14, __pyx_n_s_numpy); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_14, __pyx_n_s_numpy); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_14, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_14, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
-  __pyx_t_14 = PyList_New(0); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_14 = PyList_New(0); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
   __pyx_t_6 = __pyx_v_h;
   __pyx_t_7 = __pyx_t_6;
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_j = __pyx_t_8;
-    __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 534, __pyx_L1_error)
+    __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 545, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __pyx_t_10 = __pyx_v_w;
     __pyx_t_11 = __pyx_t_10;
     for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
       __pyx_v_i = __pyx_t_12;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_9, (PyObject*)__pyx_float_0_0))) __PYX_ERR(0, 534, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_9, (PyObject*)__pyx_float_0_0))) __PYX_ERR(0, 545, __pyx_L1_error)
     }
-    if (unlikely(__Pyx_ListComp_Append(__pyx_t_14, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 534, __pyx_L1_error)
+    if (unlikely(__Pyx_ListComp_Append(__pyx_t_14, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 545, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
-  __pyx_t_9 = PyTuple_New(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_9 = PyTuple_New(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_GIVEREF(__pyx_t_14);
   PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_14);
   __pyx_t_14 = 0;
-  __pyx_t_14 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_14 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_numpy); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float64); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float64); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (PyDict_SetItem(__pyx_t_14, __pyx_n_s_dtype, __pyx_t_13) < 0) __PYX_ERR(0, 534, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_14, __pyx_n_s_dtype, __pyx_t_13) < 0) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-  __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_9, __pyx_t_14); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_9, __pyx_t_14); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
-  __pyx_t_15 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_13, PyBUF_WRITABLE); if (unlikely(!__pyx_t_15.memview)) __PYX_ERR(0, 534, __pyx_L1_error)
+  __pyx_t_15 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_t_13, PyBUF_WRITABLE); if (unlikely(!__pyx_t_15.memview)) __PYX_ERR(0, 545, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
   __pyx_v_dy = __pyx_t_15;
   __pyx_t_15.memview = NULL;
   __pyx_t_15.data = NULL;
 
-  /* "GPA.pyx":535
+  /* "GPA.pyx":546
  * 		dx = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		for i in range(w):             # <<<<<<<<<<<<<<
@@ -12147,7 +12375,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_i = __pyx_t_8;
 
-    /* "GPA.pyx":536
+    /* "GPA.pyx":547
  * 		dy = numpy.array([[0.0 for i in range(w) ] for j in range(h)],dtype=numpy.float64)
  * 		for i in range(w):
  * 			for j in range(h):             # <<<<<<<<<<<<<<
@@ -12159,7 +12387,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
     for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
       __pyx_v_j = __pyx_t_12;
 
-      /* "GPA.pyx":537
+      /* "GPA.pyx":548
  * 		for i in range(w):
  * 			for j in range(h):
  * 				divy =  2.0 if (j<len(mat)-1 and j>0) else 1.0             # <<<<<<<<<<<<<<
@@ -12183,7 +12411,7 @@ __pyx_t_2 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_v_divy = __pyx_t_16;
 
-      /* "GPA.pyx":538
+      /* "GPA.pyx":549
  * 			for j in range(h):
  * 				divy =  2.0 if (j<len(mat)-1 and j>0) else 1.0
  * 				divx =  2.0 if (i<len(mat[j])-1 and i>0) else 1.0             # <<<<<<<<<<<<<<
@@ -12223,7 +12451,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_v_divx = __pyx_t_16;
 
-      /* "GPA.pyx":539
+      /* "GPA.pyx":550
  * 				divy =  2.0 if (j<len(mat)-1 and j>0) else 1.0
  * 				divx =  2.0 if (i<len(mat[j])-1 and i>0) else 1.0
  * 				i1 = (i+1) if i<len(mat[j])-1 else i             # <<<<<<<<<<<<<<
@@ -12254,7 +12482,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_v_i1 = __pyx_t_19;
 
-      /* "GPA.pyx":540
+      /* "GPA.pyx":551
  * 				divx =  2.0 if (i<len(mat[j])-1 and i>0) else 1.0
  * 				i1 = (i+1) if i<len(mat[j])-1 else i
  * 				j1 = (j+1) if j<len(mat)-1 else j             # <<<<<<<<<<<<<<
@@ -12269,7 +12497,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_v_j1 = __pyx_t_19;
 
-      /* "GPA.pyx":541
+      /* "GPA.pyx":552
  * 				i1 = (i+1) if i<len(mat[j])-1 else i
  * 				j1 = (j+1) if j<len(mat)-1 else j
  * 				i2 = (i-1) if i>0 else i             # <<<<<<<<<<<<<<
@@ -12283,7 +12511,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_v_i2 = __pyx_t_19;
 
-      /* "GPA.pyx":542
+      /* "GPA.pyx":553
  * 				j1 = (j+1) if j<len(mat)-1 else j
  * 				i2 = (i-1) if i>0 else i
  * 				j2 = (j-1) if j>0 else j             # <<<<<<<<<<<<<<
@@ -12297,7 +12525,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
       }
       __pyx_v_j2 = __pyx_t_19;
 
-      /* "GPA.pyx":543
+      /* "GPA.pyx":554
  * 				i2 = (i-1) if i>0 else i
  * 				j2 = (j-1) if j>0 else j
  * 				dy[j, i] = (mat[j1, i] - mat[j2, i])/divy             # <<<<<<<<<<<<<<
@@ -12312,7 +12540,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
       __pyx_t_25 = __pyx_v_i;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_dy.data + __pyx_t_24 * __pyx_v_dy.strides[0]) ) + __pyx_t_25 * __pyx_v_dy.strides[1]) )) = (((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mat.data + __pyx_t_20 * __pyx_v_mat.strides[0]) ) + __pyx_t_21 * __pyx_v_mat.strides[1]) ))) - (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_mat.data + __pyx_t_22 * __pyx_v_mat.strides[0]) ) + __pyx_t_23 * __pyx_v_mat.strides[1]) )))) / __pyx_v_divy);
 
-      /* "GPA.pyx":544
+      /* "GPA.pyx":555
  * 				j2 = (j-1) if j>0 else j
  * 				dy[j, i] = (mat[j1, i] - mat[j2, i])/divy
  * 				dx[j, i] = (mat[j, i1] - mat[j, i2])/divx             # <<<<<<<<<<<<<<
@@ -12329,7 +12557,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
     }
   }
 
-  /* "GPA.pyx":545
+  /* "GPA.pyx":556
  * 				dy[j, i] = (mat[j1, i] - mat[j2, i])/divy
  * 				dx[j, i] = (mat[j, i1] - mat[j, i2])/divx
  * 		return dy,dx             # <<<<<<<<<<<<<<
@@ -12337,11 +12565,11 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_13 = __pyx_memoryview_fromslice(__pyx_v_dy, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 545, __pyx_L1_error)
+  __pyx_t_13 = __pyx_memoryview_fromslice(__pyx_v_dy, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 556, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_13);
-  __pyx_t_14 = __pyx_memoryview_fromslice(__pyx_v_dx, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 545, __pyx_L1_error)
+  __pyx_t_14 = __pyx_memoryview_fromslice(__pyx_v_dx, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 556, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_14);
-  __pyx_t_9 = PyTuple_New(2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 545, __pyx_L1_error)
+  __pyx_t_9 = PyTuple_New(2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 556, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_GIVEREF(__pyx_t_13);
   PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_13);
@@ -12353,7 +12581,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
   __pyx_t_9 = 0;
   goto __pyx_L0;
 
-  /* "GPA.pyx":528
+  /* "GPA.pyx":539
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	cdef tuple gradient(self,double[:,:] mat):             # <<<<<<<<<<<<<<
@@ -12380,7 +12608,7 @@ __pyx_t_3 = __Pyx_MemoryView_Len(__pyx_t_1);
   return __pyx_r;
 }
 
-/* "GPA.pyx":16
+/* "GPA.pyx":17
  * @cython.cdivision(True)
  * cdef class GPA:
  * 	cdef public double[:,:] mat,gradient_dx, gradient_dy             # <<<<<<<<<<<<<<
@@ -12410,8 +12638,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_3mat___get__(struct __pyx_obj_3GPA_GPA *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_self->mat.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 16, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->mat, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->mat.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 17, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->mat, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12449,7 +12677,7 @@ static int __pyx_pf_3GPA_3GPA_3mat_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 17, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->mat, 0);
   __pyx_v_self->mat = __pyx_t_1;
   __pyx_t_1.memview = NULL;
@@ -12489,8 +12717,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_11gradient_dx___get__(struct __pyx_obj_3GPA_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 16, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->gradient_dx, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 17, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->gradient_dx, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12528,7 +12756,7 @@ static int __pyx_pf_3GPA_3GPA_11gradient_dx_2__set__(struct __pyx_obj_3GPA_GPA *
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 17, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->gradient_dx, 0);
   __pyx_v_self->gradient_dx = __pyx_t_1;
   __pyx_t_1.memview = NULL;
@@ -12568,8 +12796,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_11gradient_dy___get__(struct __pyx_obj_3GPA_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 16, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->gradient_dy, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 17, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->gradient_dy, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12607,7 +12835,7 @@ static int __pyx_pf_3GPA_3GPA_11gradient_dy_2__set__(struct __pyx_obj_3GPA_GPA *
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 17, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->gradient_dy, 0);
   __pyx_v_self->gradient_dy = __pyx_t_1;
   __pyx_t_1.memview = NULL;
@@ -12625,7 +12853,7 @@ static int __pyx_pf_3GPA_3GPA_11gradient_dy_2__set__(struct __pyx_obj_3GPA_GPA *
   return __pyx_r;
 }
 
-/* "GPA.pyx":17
+/* "GPA.pyx":18
  * cdef class GPA:
  * 	cdef public double[:,:] mat,gradient_dx, gradient_dy
  * 	cdef public double cx, cy             # <<<<<<<<<<<<<<
@@ -12655,7 +12883,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_2cx___get__(struct __pyx_obj_3GPA_GPA *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->cx); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->cx); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12693,7 +12921,7 @@ static int __pyx_pf_3GPA_3GPA_2cx_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_se
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L1_error)
   __pyx_v_self->cx = __pyx_t_1;
 
   /* function exit code */
@@ -12729,7 +12957,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_2cy___get__(struct __pyx_obj_3GPA_GPA *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->cy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->cy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12767,7 +12995,7 @@ static int __pyx_pf_3GPA_3GPA_2cy_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_se
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L1_error)
   __pyx_v_self->cy = __pyx_t_1;
 
   /* function exit code */
@@ -12781,7 +13009,7 @@ static int __pyx_pf_3GPA_3GPA_2cy_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_se
   return __pyx_r;
 }
 
-/* "GPA.pyx":18
+/* "GPA.pyx":19
  * 	cdef public double[:,:] mat,gradient_dx, gradient_dy
  * 	cdef public double cx, cy
  * 	cdef public int rows, cols             # <<<<<<<<<<<<<<
@@ -12811,7 +13039,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_4rows___get__(struct __pyx_obj_3GPA_GPA *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->rows); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->rows); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12849,7 +13077,7 @@ static int __pyx_pf_3GPA_3GPA_4rows_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 19, __pyx_L1_error)
   __pyx_v_self->rows = __pyx_t_1;
 
   /* function exit code */
@@ -12885,7 +13113,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_4cols___get__(struct __pyx_obj_3GPA_GPA *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->cols); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->cols); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12923,7 +13151,7 @@ static int __pyx_pf_3GPA_3GPA_4cols_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 19, __pyx_L1_error)
   __pyx_v_self->cols = __pyx_t_1;
 
   /* function exit code */
@@ -12937,7 +13165,7 @@ static int __pyx_pf_3GPA_3GPA_4cols_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_
   return __pyx_r;
 }
 
-/* "GPA.pyx":20
+/* "GPA.pyx":21
  * 	cdef public int rows, cols
  * 
  * 	cdef public double[:,:] phases, mods             # <<<<<<<<<<<<<<
@@ -12967,8 +13195,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_6phases___get__(struct __pyx_obj_3GPA_GPA *_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_self->phases.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 20, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->phases, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->phases.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 21, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->phases, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13006,7 +13234,7 @@ static int __pyx_pf_3GPA_3GPA_6phases_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 21, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->phases, 0);
   __pyx_v_self->phases = __pyx_t_1;
   __pyx_t_1.memview = NULL;
@@ -13046,8 +13274,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_4mods___get__(struct __pyx_obj_3GPA_GPA *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 20, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->mods, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->mods.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 21, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->mods, 2, (PyObject *(*)(char *)) __pyx_memview_get_double, (int (*)(char *, PyObject *)) __pyx_memview_set_double, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13085,7 +13313,7 @@ static int __pyx_pf_3GPA_3GPA_4mods_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 21, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->mods, 0);
   __pyx_v_self->mods = __pyx_t_1;
   __pyx_t_1.memview = NULL;
@@ -13103,7 +13331,7 @@ static int __pyx_pf_3GPA_3GPA_4mods_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_
   return __pyx_r;
 }
 
-/* "GPA.pyx":21
+/* "GPA.pyx":22
  * 
  * 	cdef public double[:,:] phases, mods
  * 	cdef public int[:,:] symmetricalP, asymmetricalP, unknownP             # <<<<<<<<<<<<<<
@@ -13133,8 +13361,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_12symmetricalP___get__(struct __pyx_obj_3GPA
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 21, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->symmetricalP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->symmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 22, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->symmetricalP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13172,7 +13400,7 @@ static int __pyx_pf_3GPA_3GPA_12symmetricalP_2__set__(struct __pyx_obj_3GPA_GPA 
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 22, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->symmetricalP, 0);
   __pyx_v_self->symmetricalP = __pyx_t_1;
   __pyx_t_1.memview = NULL;
@@ -13212,8 +13440,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_13asymmetricalP___get__(struct __pyx_obj_3GP
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 21, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->asymmetricalP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->asymmetricalP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 22, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->asymmetricalP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13251,7 +13479,7 @@ static int __pyx_pf_3GPA_3GPA_13asymmetricalP_2__set__(struct __pyx_obj_3GPA_GPA
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 22, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->asymmetricalP, 0);
   __pyx_v_self->asymmetricalP = __pyx_t_1;
   __pyx_t_1.memview = NULL;
@@ -13291,8 +13519,8 @@ static PyObject *__pyx_pf_3GPA_3GPA_8unknownP___get__(struct __pyx_obj_3GPA_GPA 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_self->unknownP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 21, __pyx_L1_error)}
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->unknownP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+  if (unlikely(!__pyx_v_self->unknownP.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 22, __pyx_L1_error)}
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_self->unknownP, 2, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13330,7 +13558,7 @@ static int __pyx_pf_3GPA_3GPA_8unknownP_2__set__(struct __pyx_obj_3GPA_GPA *__py
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_v_value, PyBUF_WRITABLE); if (unlikely(!__pyx_t_1.memview)) __PYX_ERR(0, 22, __pyx_L1_error)
   __PYX_XDEC_MEMVIEW(&__pyx_v_self->unknownP, 0);
   __pyx_v_self->unknownP = __pyx_t_1;
   __pyx_t_1.memview = NULL;
@@ -13348,7 +13576,7 @@ static int __pyx_pf_3GPA_3GPA_8unknownP_2__set__(struct __pyx_obj_3GPA_GPA *__py
   return __pyx_r;
 }
 
-/* "GPA.pyx":22
+/* "GPA.pyx":23
  * 	cdef public double[:,:] phases, mods
  * 	cdef public int[:,:] symmetricalP, asymmetricalP, unknownP
  * 	cdef public object triangulation_points,triangles             # <<<<<<<<<<<<<<
@@ -13530,7 +13758,7 @@ static int __pyx_pf_3GPA_3GPA_9triangles_4__del__(struct __pyx_obj_3GPA_GPA *__p
   return __pyx_r;
 }
 
-/* "GPA.pyx":23
+/* "GPA.pyx":24
  * 	cdef public int[:,:] symmetricalP, asymmetricalP, unknownP
  * 	cdef public object triangulation_points,triangles
  * 	cdef public double maxGrad, tol             # <<<<<<<<<<<<<<
@@ -13560,7 +13788,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_7maxGrad___get__(struct __pyx_obj_3GPA_GPA *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->maxGrad); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->maxGrad); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13598,7 +13826,7 @@ static int __pyx_pf_3GPA_3GPA_7maxGrad_2__set__(struct __pyx_obj_3GPA_GPA *__pyx
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 24, __pyx_L1_error)
   __pyx_v_self->maxGrad = __pyx_t_1;
 
   /* function exit code */
@@ -13634,7 +13862,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_3tol___get__(struct __pyx_obj_3GPA_GPA *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->tol); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->tol); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13672,7 +13900,7 @@ static int __pyx_pf_3GPA_3GPA_3tol_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 24, __pyx_L1_error)
   __pyx_v_self->tol = __pyx_t_1;
 
   /* function exit code */
@@ -13686,7 +13914,7 @@ static int __pyx_pf_3GPA_3GPA_3tol_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_s
   return __pyx_r;
 }
 
-/* "GPA.pyx":24
+/* "GPA.pyx":25
  * 	cdef public object triangulation_points,triangles
  * 	cdef public double maxGrad, tol
  * 	cdef public object cvet             # <<<<<<<<<<<<<<
@@ -13781,7 +14009,7 @@ static int __pyx_pf_3GPA_3GPA_4cvet_4__del__(struct __pyx_obj_3GPA_GPA *__pyx_v_
   return __pyx_r;
 }
 
-/* "GPA.pyx":26
+/* "GPA.pyx":27
  * 	cdef public object cvet
  * 
  * 	cdef public int n_edges, n_points             # <<<<<<<<<<<<<<
@@ -13811,7 +14039,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_7n_edges___get__(struct __pyx_obj_3GPA_GPA *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->n_edges); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->n_edges); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13849,7 +14077,7 @@ static int __pyx_pf_3GPA_3GPA_7n_edges_2__set__(struct __pyx_obj_3GPA_GPA *__pyx
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
   __pyx_v_self->n_edges = __pyx_t_1;
 
   /* function exit code */
@@ -13885,7 +14113,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_8n_points___get__(struct __pyx_obj_3GPA_GPA 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->n_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->n_points); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13923,7 +14151,7 @@ static int __pyx_pf_3GPA_3GPA_8n_points_2__set__(struct __pyx_obj_3GPA_GPA *__py
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
   __pyx_v_self->n_points = __pyx_t_1;
 
   /* function exit code */
@@ -13937,7 +14165,7 @@ static int __pyx_pf_3GPA_3GPA_8n_points_2__set__(struct __pyx_obj_3GPA_GPA *__py
   return __pyx_r;
 }
 
-/* "GPA.pyx":27
+/* "GPA.pyx":28
  * 
  * 	cdef public int n_edges, n_points
  * 	cdef public double G1, G2, G3, G1_Classic             # <<<<<<<<<<<<<<
@@ -13967,7 +14195,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_2G1___get__(struct __pyx_obj_3GPA_GPA *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -14005,7 +14233,7 @@ static int __pyx_pf_3GPA_3GPA_2G1_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_se
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 28, __pyx_L1_error)
   __pyx_v_self->G1 = __pyx_t_1;
 
   /* function exit code */
@@ -14041,7 +14269,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_2G2___get__(struct __pyx_obj_3GPA_GPA *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -14079,7 +14307,7 @@ static int __pyx_pf_3GPA_3GPA_2G2_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_se
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 28, __pyx_L1_error)
   __pyx_v_self->G2 = __pyx_t_1;
 
   /* function exit code */
@@ -14115,7 +14343,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_2G3___get__(struct __pyx_obj_3GPA_GPA *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -14153,7 +14381,7 @@ static int __pyx_pf_3GPA_3GPA_2G3_2__set__(struct __pyx_obj_3GPA_GPA *__pyx_v_se
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 28, __pyx_L1_error)
   __pyx_v_self->G3 = __pyx_t_1;
 
   /* function exit code */
@@ -14189,7 +14417,7 @@ static PyObject *__pyx_pf_3GPA_3GPA_10G1_Classic___get__(struct __pyx_obj_3GPA_G
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->G1_Classic); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -14227,7 +14455,7 @@ static int __pyx_pf_3GPA_3GPA_10G1_Classic_2__set__(struct __pyx_obj_3GPA_GPA *_
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = __pyx_PyFloat_AsDouble(__pyx_v_value); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 28, __pyx_L1_error)
   __pyx_v_self->G1_Classic = __pyx_t_1;
 
   /* function exit code */
@@ -14241,7 +14469,7 @@ static int __pyx_pf_3GPA_3GPA_10G1_Classic_2__set__(struct __pyx_obj_3GPA_GPA *_
   return __pyx_r;
 }
 
-/* "GPA.pyx":28
+/* "GPA.pyx":29
  * 	cdef public int n_edges, n_points
  * 	cdef public double G1, G2, G3, G1_Classic
  * 	cdef public object G4             # <<<<<<<<<<<<<<
@@ -29808,7 +30036,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Cannot_assign_to_read_only_memor, __pyx_k_Cannot_assign_to_read_only_memor, sizeof(__pyx_k_Cannot_assign_to_read_only_memor), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_create_writable_memory_vi, __pyx_k_Cannot_create_writable_memory_vi, sizeof(__pyx_k_Cannot_create_writable_memory_vi), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_index_with_type_s, __pyx_k_Cannot_index_with_type_s, sizeof(__pyx_k_Cannot_index_with_type_s), 0, 0, 1, 0},
-  {&__pyx_n_s_Delanuay, __pyx_k_Delanuay, sizeof(__pyx_k_Delanuay), 0, 0, 1, 1},
   {&__pyx_n_s_Delaunay, __pyx_k_Delaunay, sizeof(__pyx_k_Delaunay), 0, 0, 1, 1},
   {&__pyx_n_s_Ellipsis, __pyx_k_Ellipsis, sizeof(__pyx_k_Ellipsis), 0, 0, 1, 1},
   {&__pyx_kp_s_Empty_shape_tuple_for_cython_arr, __pyx_k_Empty_shape_tuple_for_cython_arr, sizeof(__pyx_k_Empty_shape_tuple_for_cython_arr), 0, 0, 1, 0},
@@ -29837,6 +30064,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_b_O, __pyx_k_O, sizeof(__pyx_k_O), 0, 0, 0, 1},
   {&__pyx_kp_s_Out_of_bounds_on_buffer_access_a, __pyx_k_Out_of_bounds_on_buffer_access_a, sizeof(__pyx_k_Out_of_bounds_on_buffer_access_a), 0, 0, 1, 0},
   {&__pyx_n_s_PickleError, __pyx_k_PickleError, sizeof(__pyx_k_PickleError), 0, 0, 1, 1},
+  {&__pyx_n_s_QhullError, __pyx_k_QhullError, sizeof(__pyx_k_QhullError), 0, 0, 1, 1},
   {&__pyx_n_s_S, __pyx_k_S, sizeof(__pyx_k_S), 0, 0, 1, 1},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_kp_s_Unable_to_convert_item_to_object, __pyx_k_Unable_to_convert_item_to_object, sizeof(__pyx_k_Unable_to_convert_item_to_object), 0, 0, 1, 0},
@@ -29960,7 +30188,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 71, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 72, __pyx_L1_error)
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(2, 944, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 133, __pyx_L1_error)
@@ -29978,36 +30206,36 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "GPA.pyx":414
+  /* "GPA.pyx":425
  * 	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):
  * 		if (mat is None) and (gx is None) and (gy is None):
  * 			raise Exception("Matrix or gradient must be stated!")             # <<<<<<<<<<<<<<
  * 		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
  * 			raise Exception("Gradient must have 2 components (gx and gy)")
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_Matrix_or_gradient_must_be_state); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 414, __pyx_L1_error)
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_Matrix_or_gradient_must_be_state); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 425, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "GPA.pyx":416
+  /* "GPA.pyx":427
  * 			raise Exception("Matrix or gradient must be stated!")
  * 		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
  * 			raise Exception("Gradient must have 2 components (gx and gy)")             # <<<<<<<<<<<<<<
  * 		if not(mat is None) and not(gx is None):
  * 			raise Exception("Matrix or gradient must be stated, not both")
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_Gradient_must_have_2_components); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 416, __pyx_L1_error)
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_Gradient_must_have_2_components); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 427, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "GPA.pyx":418
+  /* "GPA.pyx":429
  * 			raise Exception("Gradient must have 2 components (gx and gy)")
  * 		if not(mat is None) and not(gx is None):
  * 			raise Exception("Matrix or gradient must be stated, not both")             # <<<<<<<<<<<<<<
  * 
  * 		if not(mat is None):
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_Matrix_or_gradient_must_be_state_2); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 418, __pyx_L1_error)
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_Matrix_or_gradient_must_be_state_2); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 429, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
@@ -30386,16 +30614,16 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_3GPA_GPA.distAngle = (double (*)(struct __pyx_obj_3GPA_GPA *, double, double))__pyx_f_3GPA_3GPA_distAngle;
   __pyx_vtable_3GPA_GPA._G3 = (void (*)(struct __pyx_obj_3GPA_GPA *, PyObject *))__pyx_f_3GPA_3GPA__G3;
   __pyx_vtable_3GPA_GPA.gradient = (PyObject *(*)(struct __pyx_obj_3GPA_GPA *, __Pyx_memviewslice))__pyx_f_3GPA_3GPA_gradient;
-  if (PyType_Ready(&__pyx_type_3GPA_GPA) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_3GPA_GPA) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_3GPA_GPA.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_3GPA_GPA.tp_dictoffset && __pyx_type_3GPA_GPA.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_3GPA_GPA.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_3GPA_GPA.tp_dict, __pyx_vtabptr_3GPA_GPA) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_GPA, (PyObject *)&__pyx_type_3GPA_GPA) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_3GPA_GPA) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_3GPA_GPA.tp_dict, __pyx_vtabptr_3GPA_GPA) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_GPA, (PyObject *)&__pyx_type_3GPA_GPA) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_3GPA_GPA) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   __pyx_ptype_3GPA_GPA = &__pyx_type_3GPA_GPA;
   __pyx_vtabptr_array = &__pyx_vtable_array;
   __pyx_vtable_array.get_memview = (PyObject *(*)(struct __pyx_array_obj *))__pyx_array_get_memview;
@@ -30758,8 +30986,8 @@ if (!__Pyx_RefNanny) {
  * import numpy
  * from libc.math cimport pow, fabs, sqrt, M_PI, sin, cos,tan,floor
  * from math import radians, atan2,factorial             # <<<<<<<<<<<<<<
- * from scipy.spatial import Delaunay as Delanuay
- * import matplotlib.pyplot as plt
+ * from scipy.spatial import Delaunay as Delaunay
+ * from scipy.spatial import QhullError
  */
   __pyx_t_1 = PyList_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -30792,9 +31020,9 @@ if (!__Pyx_RefNanny) {
   /* "GPA.pyx":4
  * from libc.math cimport pow, fabs, sqrt, M_PI, sin, cos,tan,floor
  * from math import radians, atan2,factorial
- * from scipy.spatial import Delaunay as Delanuay             # <<<<<<<<<<<<<<
+ * from scipy.spatial import Delaunay as Delaunay             # <<<<<<<<<<<<<<
+ * from scipy.spatial import QhullError
  * import matplotlib.pyplot as plt
- * 
  */
   __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -30806,97 +31034,118 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = __Pyx_ImportFrom(__pyx_t_1, __pyx_n_s_Delaunay); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Delanuay, __pyx_t_2) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Delaunay, __pyx_t_2) < 0) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "GPA.pyx":5
  * from math import radians, atan2,factorial
- * from scipy.spatial import Delaunay as Delanuay
+ * from scipy.spatial import Delaunay as Delaunay
+ * from scipy.spatial import QhullError             # <<<<<<<<<<<<<<
+ * import matplotlib.pyplot as plt
+ * 
+ */
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_INCREF(__pyx_n_s_QhullError);
+  __Pyx_GIVEREF(__pyx_n_s_QhullError);
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_QhullError);
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_scipy_spatial, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 5, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_QhullError); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_QhullError, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "GPA.pyx":6
+ * from scipy.spatial import Delaunay as Delaunay
+ * from scipy.spatial import QhullError
  * import matplotlib.pyplot as plt             # <<<<<<<<<<<<<<
  * 
  * from cpython cimport bool
  */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_n_s__32);
   __Pyx_GIVEREF(__pyx_n_s__32);
-  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s__32);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_matplotlib_pyplot, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 5, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_plt, __pyx_t_2) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s__32);
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_matplotlib_pyplot, __pyx_t_2, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_plt, __pyx_t_1) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "GPA.pyx":412
+  /* "GPA.pyx":423
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
  * 		if (mat is None) and (gx is None) and (gy is None):
  * 			raise Exception("Matrix or gradient must be stated!")
  */
-  __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(Py_None, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(Py_None, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 423, __pyx_L1_error)
   __pyx_k__2 = __pyx_t_3;
   __pyx_t_3.memview = NULL;
   __pyx_t_3.data = NULL;
-  __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(Py_None, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(Py_None, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 423, __pyx_L1_error)
   __pyx_k__3 = __pyx_t_3;
   __pyx_t_3.memview = NULL;
   __pyx_t_3.data = NULL;
-  __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(Py_None, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 412, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(Py_None, PyBUF_WRITABLE); if (unlikely(!__pyx_t_3.memview)) __PYX_ERR(0, 423, __pyx_L1_error)
   __pyx_k__4 = __pyx_t_3;
   __pyx_t_3.memview = NULL;
   __pyx_t_3.data = NULL;
-  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 412, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 423, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_G2);
   __Pyx_GIVEREF(__pyx_n_s_G2);
-  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_G2);
-  __pyx_k_ = ((PyObject*)__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_G2);
+  __pyx_k_ = ((PyObject*)__pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __pyx_t_1 = 0;
 
-  /* "GPA.pyx":429
+  /* "GPA.pyx":440
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _eval(self,double[:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
  * 		cdef int[:] i
  * 		cdef int x, y
  */
-  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 429, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 440, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_G2);
   __Pyx_GIVEREF(__pyx_n_s_G2);
-  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_G2);
-  __pyx_k__8 = ((PyObject*)__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_G2);
+  __pyx_k__8 = ((PyObject*)__pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __pyx_t_1 = 0;
 
-  /* "GPA.pyx":476
+  /* "GPA.pyx":487
  * 	@cython.nonecheck(False)
  * 	@cython.cdivision(True)
  * 	def _evalGradient(self,double[:,:] gradient_dx, double[:,:] gradient_dy, list moment=["G2"],str symmetrycalGrad='A'):             # <<<<<<<<<<<<<<
  * 		cdef int[:] i
  * 		cdef int x, y
  */
-  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 476, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 487, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_G2);
   __Pyx_GIVEREF(__pyx_n_s_G2);
-  PyList_SET_ITEM(__pyx_t_2, 0, __pyx_n_s_G2);
-  __pyx_k__9 = ((PyObject*)__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_G2);
+  __pyx_k__9 = ((PyObject*)__pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __pyx_t_1 = 0;
 
   /* "GPA.pyx":1
  * import numpy             # <<<<<<<<<<<<<<
  * from libc.math cimport pow, fabs, sqrt, M_PI, sin, cos,tan,floor
  * from math import radians, atan2,factorial
  */
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "View.MemoryView":209
  *         info.obj = self
@@ -30905,10 +31154,10 @@ if (!__Pyx_RefNanny) {
  * 
  *     def __dealloc__(array self):
  */
-  __pyx_t_2 = __pyx_capsule_create(((void *)(&__pyx_array_getbuffer)), ((char *)"getbuffer(obj, view, flags)")); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 209, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_array_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_2) < 0) __PYX_ERR(1, 209, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __pyx_capsule_create(((void *)(&__pyx_array_getbuffer)), ((char *)"getbuffer(obj, view, flags)")); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 209, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem((PyObject *)__pyx_array_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_1) < 0) __PYX_ERR(1, 209, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   PyType_Modified(__pyx_array_type);
 
   /* "View.MemoryView":286
@@ -30918,12 +31167,12 @@ if (!__Pyx_RefNanny) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__33, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 286, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__33, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 286, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(generic);
-  __Pyx_DECREF_SET(generic, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(generic, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __pyx_t_1 = 0;
 
   /* "View.MemoryView":287
  * 
@@ -30932,12 +31181,12 @@ if (!__Pyx_RefNanny) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 287, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(strided);
-  __Pyx_DECREF_SET(strided, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(strided, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __pyx_t_1 = 0;
 
   /* "View.MemoryView":288
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -30946,12 +31195,12 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 288, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect);
-  __Pyx_DECREF_SET(indirect, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(indirect, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __pyx_t_1 = 0;
 
   /* "View.MemoryView":291
  * 
@@ -30960,12 +31209,12 @@ if (!__Pyx_RefNanny) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 291, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 291, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(contiguous);
-  __Pyx_DECREF_SET(contiguous, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(contiguous, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __pyx_t_1 = 0;
 
   /* "View.MemoryView":292
  * 
@@ -30974,12 +31223,12 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 292, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 292, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
   __Pyx_XGOTREF(indirect_contiguous);
-  __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __pyx_t_2 = 0;
+  __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __pyx_t_1 = 0;
 
   /* "View.MemoryView":316
  * 
@@ -31014,10 +31263,10 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_2 = __pyx_capsule_create(((void *)(&__pyx_memoryview_getbuffer)), ((char *)"getbuffer(obj, view, flags)")); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 549, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_memoryview_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_2) < 0) __PYX_ERR(1, 549, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __pyx_capsule_create(((void *)(&__pyx_memoryview_getbuffer)), ((char *)"getbuffer(obj, view, flags)")); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 549, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem((PyObject *)__pyx_memoryview_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_1) < 0) __PYX_ERR(1, 549, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   PyType_Modified(__pyx_memoryview_type);
 
   /* "View.MemoryView":995
@@ -31027,10 +31276,10 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_2 = __pyx_capsule_create(((void *)(&__pyx_memoryview_getbuffer)), ((char *)"getbuffer(obj, view, flags)")); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 995, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_memoryviewslice_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_2) < 0) __PYX_ERR(1, 995, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = __pyx_capsule_create(((void *)(&__pyx_memoryview_getbuffer)), ((char *)"getbuffer(obj, view, flags)")); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 995, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem((PyObject *)__pyx_memoryviewslice_type->tp_dict, __pyx_n_s_pyx_getbuffer, __pyx_t_1) < 0) __PYX_ERR(1, 995, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   PyType_Modified(__pyx_memoryviewslice_type);
 
   /* "(tree fragment)":1
@@ -31038,10 +31287,10 @@ if (!__Pyx_RefNanny) {
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_15View_dot_MemoryView_1__pyx_unpickle_Enum, NULL, __pyx_n_s_View_MemoryView); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyx_unpickle_Enum, __pyx_t_2) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_15View_dot_MemoryView_1__pyx_unpickle_Enum, NULL, __pyx_n_s_View_MemoryView); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyx_unpickle_Enum, __pyx_t_1) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "(tree fragment)":11
  *         __pyx_unpickle_Enum__set_state(<Enum> __pyx_result, __pyx_state)
@@ -32358,6 +32607,236 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, 
     return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
 }
 
+/* GetTopmostException */
+#if CYTHON_USE_EXC_INFO_STACK
+static _PyErr_StackItem *
+__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
+{
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
+           exc_info->previous_item != NULL)
+    {
+        exc_info = exc_info->previous_item;
+    }
+    return exc_info;
+}
+#endif
+
+/* SaveResetException */
+#if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
+    *type = exc_info->exc_type;
+    *value = exc_info->exc_value;
+    *tb = exc_info->exc_traceback;
+    #else
+    *type = tstate->exc_type;
+    *value = tstate->exc_value;
+    *tb = tstate->exc_traceback;
+    #endif
+    Py_XINCREF(*type);
+    Py_XINCREF(*value);
+    Py_XINCREF(*tb);
+}
+static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    #if CYTHON_USE_EXC_INFO_STACK
+    _PyErr_StackItem *exc_info = tstate->exc_info;
+    tmp_type = exc_info->exc_type;
+    tmp_value = exc_info->exc_value;
+    tmp_tb = exc_info->exc_traceback;
+    exc_info->exc_type = type;
+    exc_info->exc_value = value;
+    exc_info->exc_traceback = tb;
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = type;
+    tstate->exc_value = value;
+    tstate->exc_traceback = tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+#endif
+
+/* FastTypeChecks */
+#if CYTHON_COMPILING_IN_CPYTHON
+static int __Pyx_InBases(PyTypeObject *a, PyTypeObject *b) {
+    while (a) {
+        a = a->tp_base;
+        if (a == b)
+            return 1;
+    }
+    return b == &PyBaseObject_Type;
+}
+static CYTHON_INLINE int __Pyx_IsSubtype(PyTypeObject *a, PyTypeObject *b) {
+    PyObject *mro;
+    if (a == b) return 1;
+    mro = a->tp_mro;
+    if (likely(mro)) {
+        Py_ssize_t i, n;
+        n = PyTuple_GET_SIZE(mro);
+        for (i = 0; i < n; i++) {
+            if (PyTuple_GET_ITEM(mro, i) == (PyObject *)b)
+                return 1;
+        }
+        return 0;
+    }
+    return __Pyx_InBases(a, b);
+}
+#if PY_MAJOR_VERSION == 2
+static int __Pyx_inner_PyErr_GivenExceptionMatches2(PyObject *err, PyObject* exc_type1, PyObject* exc_type2) {
+    PyObject *exception, *value, *tb;
+    int res;
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&exception, &value, &tb);
+    res = exc_type1 ? PyObject_IsSubclass(err, exc_type1) : 0;
+    if (unlikely(res == -1)) {
+        PyErr_WriteUnraisable(err);
+        res = 0;
+    }
+    if (!res) {
+        res = PyObject_IsSubclass(err, exc_type2);
+        if (unlikely(res == -1)) {
+            PyErr_WriteUnraisable(err);
+            res = 0;
+        }
+    }
+    __Pyx_ErrRestore(exception, value, tb);
+    return res;
+}
+#else
+static CYTHON_INLINE int __Pyx_inner_PyErr_GivenExceptionMatches2(PyObject *err, PyObject* exc_type1, PyObject *exc_type2) {
+    int res = exc_type1 ? __Pyx_IsSubtype((PyTypeObject*)err, (PyTypeObject*)exc_type1) : 0;
+    if (!res) {
+        res = __Pyx_IsSubtype((PyTypeObject*)err, (PyTypeObject*)exc_type2);
+    }
+    return res;
+}
+#endif
+static int __Pyx_PyErr_GivenExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
+    Py_ssize_t i, n;
+    assert(PyExceptionClass_Check(exc_type));
+    n = PyTuple_GET_SIZE(tuple);
+#if PY_MAJOR_VERSION >= 3
+    for (i=0; i<n; i++) {
+        if (exc_type == PyTuple_GET_ITEM(tuple, i)) return 1;
+    }
+#endif
+    for (i=0; i<n; i++) {
+        PyObject *t = PyTuple_GET_ITEM(tuple, i);
+        #if PY_MAJOR_VERSION < 3
+        if (likely(exc_type == t)) return 1;
+        #endif
+        if (likely(PyExceptionClass_Check(t))) {
+            if (__Pyx_inner_PyErr_GivenExceptionMatches2(exc_type, NULL, t)) return 1;
+        } else {
+        }
+    }
+    return 0;
+}
+static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches(PyObject *err, PyObject* exc_type) {
+    if (likely(err == exc_type)) return 1;
+    if (likely(PyExceptionClass_Check(err))) {
+        if (likely(PyExceptionClass_Check(exc_type))) {
+            return __Pyx_inner_PyErr_GivenExceptionMatches2(err, NULL, exc_type);
+        } else if (likely(PyTuple_Check(exc_type))) {
+            return __Pyx_PyErr_GivenExceptionMatchesTuple(err, exc_type);
+        } else {
+        }
+    }
+    return PyErr_GivenExceptionMatches(err, exc_type);
+}
+static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObject *exc_type1, PyObject *exc_type2) {
+    assert(PyExceptionClass_Check(exc_type1));
+    assert(PyExceptionClass_Check(exc_type2));
+    if (likely(err == exc_type1 || err == exc_type2)) return 1;
+    if (likely(PyExceptionClass_Check(err))) {
+        return __Pyx_inner_PyErr_GivenExceptionMatches2(err, exc_type1, exc_type2);
+    }
+    return (PyErr_GivenExceptionMatches(err, exc_type1) || PyErr_GivenExceptionMatches(err, exc_type2));
+}
+#endif
+
+/* GetException */
+#if CYTHON_FAST_THREAD_STATE
+static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb)
+#else
+static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb)
+#endif
+{
+    PyObject *local_type, *local_value, *local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    local_type = tstate->curexc_type;
+    local_value = tstate->curexc_value;
+    local_tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+#else
+    PyErr_Fetch(&local_type, &local_value, &local_tb);
+#endif
+    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
+#if CYTHON_FAST_THREAD_STATE
+    if (unlikely(tstate->curexc_type))
+#else
+    if (unlikely(PyErr_Occurred()))
+#endif
+        goto bad;
+    #if PY_MAJOR_VERSION >= 3
+    if (local_tb) {
+        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
+            goto bad;
+    }
+    #endif
+    Py_XINCREF(local_tb);
+    Py_XINCREF(local_type);
+    Py_XINCREF(local_value);
+    *type = local_type;
+    *value = local_value;
+    *tb = local_tb;
+#if CYTHON_FAST_THREAD_STATE
+    #if CYTHON_USE_EXC_INFO_STACK
+    {
+        _PyErr_StackItem *exc_info = tstate->exc_info;
+        tmp_type = exc_info->exc_type;
+        tmp_value = exc_info->exc_value;
+        tmp_tb = exc_info->exc_traceback;
+        exc_info->exc_type = local_type;
+        exc_info->exc_value = local_value;
+        exc_info->exc_traceback = local_tb;
+    }
+    #else
+    tmp_type = tstate->exc_type;
+    tmp_value = tstate->exc_value;
+    tmp_tb = tstate->exc_traceback;
+    tstate->exc_type = local_type;
+    tstate->exc_value = local_value;
+    tstate->exc_traceback = local_tb;
+    #endif
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+#else
+    PyErr_SetExcInfo(local_type, local_value, local_tb);
+#endif
+    return 0;
+bad:
+    *type = 0;
+    *value = 0;
+    *tb = 0;
+    Py_XDECREF(local_type);
+    Py_XDECREF(local_value);
+    Py_XDECREF(local_tb);
+    return -1;
+}
+
 /* ObjectGetItem */
 #if CYTHON_USE_TYPE_SLOTS
 static PyObject *__Pyx_PyObject_GetIndex(PyObject *obj, PyObject* index) {
@@ -32547,62 +33026,6 @@ static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type) {
     return 0;
 }
 
-/* GetTopmostException */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem *
-__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
-{
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
-           exc_info->previous_item != NULL)
-    {
-        exc_info = exc_info->previous_item;
-    }
-    return exc_info;
-}
-#endif
-
-/* SaveResetException */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
-    *type = exc_info->exc_type;
-    *value = exc_info->exc_value;
-    *tb = exc_info->exc_traceback;
-    #else
-    *type = tstate->exc_type;
-    *value = tstate->exc_value;
-    *tb = tstate->exc_traceback;
-    #endif
-    Py_XINCREF(*type);
-    Py_XINCREF(*value);
-    Py_XINCREF(*tb);
-}
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    tmp_type = exc_info->exc_type;
-    tmp_value = exc_info->exc_value;
-    tmp_tb = exc_info->exc_traceback;
-    exc_info->exc_type = type;
-    exc_info->exc_value = value;
-    exc_info->exc_traceback = tb;
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = type;
-    tstate->exc_value = value;
-    tstate->exc_traceback = tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-#endif
-
 /* PyErrExceptionMatches */
 #if CYTHON_FAST_THREAD_STATE
 static int __Pyx_PyErr_ExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
@@ -32627,80 +33050,6 @@ static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tsta
     return __Pyx_PyErr_GivenExceptionMatches(exc_type, err);
 }
 #endif
-
-/* GetException */
-#if CYTHON_FAST_THREAD_STATE
-static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb)
-#else
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb)
-#endif
-{
-    PyObject *local_type, *local_value, *local_tb;
-#if CYTHON_FAST_THREAD_STATE
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    local_type = tstate->curexc_type;
-    local_value = tstate->curexc_value;
-    local_tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
-#else
-    PyErr_Fetch(&local_type, &local_value, &local_tb);
-#endif
-    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
-#if CYTHON_FAST_THREAD_STATE
-    if (unlikely(tstate->curexc_type))
-#else
-    if (unlikely(PyErr_Occurred()))
-#endif
-        goto bad;
-    #if PY_MAJOR_VERSION >= 3
-    if (local_tb) {
-        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
-            goto bad;
-    }
-    #endif
-    Py_XINCREF(local_tb);
-    Py_XINCREF(local_type);
-    Py_XINCREF(local_value);
-    *type = local_type;
-    *value = local_value;
-    *tb = local_tb;
-#if CYTHON_FAST_THREAD_STATE
-    #if CYTHON_USE_EXC_INFO_STACK
-    {
-        _PyErr_StackItem *exc_info = tstate->exc_info;
-        tmp_type = exc_info->exc_type;
-        tmp_value = exc_info->exc_value;
-        tmp_tb = exc_info->exc_traceback;
-        exc_info->exc_type = local_type;
-        exc_info->exc_value = local_value;
-        exc_info->exc_traceback = local_tb;
-    }
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = local_type;
-    tstate->exc_value = local_value;
-    tstate->exc_traceback = local_tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-#else
-    PyErr_SetExcInfo(local_type, local_value, local_tb);
-#endif
-    return 0;
-bad:
-    *type = 0;
-    *value = 0;
-    *tb = 0;
-    Py_XDECREF(local_type);
-    Py_XDECREF(local_value);
-    Py_XDECREF(local_tb);
-    return -1;
-}
 
 /* DivInt[Py_ssize_t] */
 static CYTHON_INLINE Py_ssize_t __Pyx_div_Py_ssize_t(Py_ssize_t a, Py_ssize_t b) {
@@ -32870,106 +33219,6 @@ bad:
     Py_XDECREF(empty_dict);
     return module;
 }
-
-/* FastTypeChecks */
-#if CYTHON_COMPILING_IN_CPYTHON
-static int __Pyx_InBases(PyTypeObject *a, PyTypeObject *b) {
-    while (a) {
-        a = a->tp_base;
-        if (a == b)
-            return 1;
-    }
-    return b == &PyBaseObject_Type;
-}
-static CYTHON_INLINE int __Pyx_IsSubtype(PyTypeObject *a, PyTypeObject *b) {
-    PyObject *mro;
-    if (a == b) return 1;
-    mro = a->tp_mro;
-    if (likely(mro)) {
-        Py_ssize_t i, n;
-        n = PyTuple_GET_SIZE(mro);
-        for (i = 0; i < n; i++) {
-            if (PyTuple_GET_ITEM(mro, i) == (PyObject *)b)
-                return 1;
-        }
-        return 0;
-    }
-    return __Pyx_InBases(a, b);
-}
-#if PY_MAJOR_VERSION == 2
-static int __Pyx_inner_PyErr_GivenExceptionMatches2(PyObject *err, PyObject* exc_type1, PyObject* exc_type2) {
-    PyObject *exception, *value, *tb;
-    int res;
-    __Pyx_PyThreadState_declare
-    __Pyx_PyThreadState_assign
-    __Pyx_ErrFetch(&exception, &value, &tb);
-    res = exc_type1 ? PyObject_IsSubclass(err, exc_type1) : 0;
-    if (unlikely(res == -1)) {
-        PyErr_WriteUnraisable(err);
-        res = 0;
-    }
-    if (!res) {
-        res = PyObject_IsSubclass(err, exc_type2);
-        if (unlikely(res == -1)) {
-            PyErr_WriteUnraisable(err);
-            res = 0;
-        }
-    }
-    __Pyx_ErrRestore(exception, value, tb);
-    return res;
-}
-#else
-static CYTHON_INLINE int __Pyx_inner_PyErr_GivenExceptionMatches2(PyObject *err, PyObject* exc_type1, PyObject *exc_type2) {
-    int res = exc_type1 ? __Pyx_IsSubtype((PyTypeObject*)err, (PyTypeObject*)exc_type1) : 0;
-    if (!res) {
-        res = __Pyx_IsSubtype((PyTypeObject*)err, (PyTypeObject*)exc_type2);
-    }
-    return res;
-}
-#endif
-static int __Pyx_PyErr_GivenExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
-    Py_ssize_t i, n;
-    assert(PyExceptionClass_Check(exc_type));
-    n = PyTuple_GET_SIZE(tuple);
-#if PY_MAJOR_VERSION >= 3
-    for (i=0; i<n; i++) {
-        if (exc_type == PyTuple_GET_ITEM(tuple, i)) return 1;
-    }
-#endif
-    for (i=0; i<n; i++) {
-        PyObject *t = PyTuple_GET_ITEM(tuple, i);
-        #if PY_MAJOR_VERSION < 3
-        if (likely(exc_type == t)) return 1;
-        #endif
-        if (likely(PyExceptionClass_Check(t))) {
-            if (__Pyx_inner_PyErr_GivenExceptionMatches2(exc_type, NULL, t)) return 1;
-        } else {
-        }
-    }
-    return 0;
-}
-static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches(PyObject *err, PyObject* exc_type) {
-    if (likely(err == exc_type)) return 1;
-    if (likely(PyExceptionClass_Check(err))) {
-        if (likely(PyExceptionClass_Check(exc_type))) {
-            return __Pyx_inner_PyErr_GivenExceptionMatches2(err, NULL, exc_type);
-        } else if (likely(PyTuple_Check(exc_type))) {
-            return __Pyx_PyErr_GivenExceptionMatchesTuple(err, exc_type);
-        } else {
-        }
-    }
-    return PyErr_GivenExceptionMatches(err, exc_type);
-}
-static CYTHON_INLINE int __Pyx_PyErr_GivenExceptionMatches2(PyObject *err, PyObject *exc_type1, PyObject *exc_type2) {
-    assert(PyExceptionClass_Check(exc_type1));
-    assert(PyExceptionClass_Check(exc_type2));
-    if (likely(err == exc_type1 || err == exc_type2)) return 1;
-    if (likely(PyExceptionClass_Check(err))) {
-        return __Pyx_inner_PyErr_GivenExceptionMatches2(err, exc_type1, exc_type2);
-    }
-    return (PyErr_GivenExceptionMatches(err, exc_type1) || PyErr_GivenExceptionMatches(err, exc_type2));
-}
-#endif
 
 /* PyIntBinop */
 #if !CYTHON_COMPILING_IN_PYPY

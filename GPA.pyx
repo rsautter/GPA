@@ -1,7 +1,8 @@
 import numpy
 from libc.math cimport pow, fabs, sqrt, M_PI, sin, cos,tan,floor
 from math import radians, atan2,factorial
-from scipy.spatial import Delaunay as Delanuay
+from scipy.spatial import Delaunay as Delaunay
+from scipy.spatial import QhullError
 import matplotlib.pyplot as plt
 
 from cpython cimport bool
@@ -188,10 +189,15 @@ cdef class GPA:
 			self.n_edges = 0
 			self.G1_Classic = 0.0
 		else:
-			self.triangles = Delanuay(self.triangulation_points)
-			neigh = self.triangles.vertex_neighbor_vertices
-			self.n_edges = len(neigh[1])/2
-			self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+			try:
+				self.triangles = Delaunay(self.triangulation_points)
+				neigh = self.triangles.vertex_neighbor_vertices
+				self.n_edges = len(neigh[1])/2
+				self.G1_Classic = (float(self.n_edges)-float(self.n_points))/float(self.n_points)
+			except QhullError:
+				self.n_edges = 0
+				self.G1_Classic = 0.0
+				self.n_points = 0
 		if self.G1_Classic < 0.0:
 			self.G1_Classic = 0.0
 
@@ -243,13 +249,18 @@ cdef class GPA:
 			self.n_edges = 0
 			self.G1 = 0.0
 		else:
-			self.triangles = Delanuay(self.triangulation_points)
-			neigh = self.triangles.vertex_neighbor_vertices
-			self.n_edges = len(neigh[1])/2
-			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
-			ds = numpy.sort(ds)/numpy.max(ds)
-			#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
-			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+			try:
+				self.triangles = Delaunay(self.triangulation_points)
+				neigh = self.triangles.vertex_neighbor_vertices
+				self.n_edges = len(neigh[1])/2
+				ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
+				ds = numpy.sort(ds)/numpy.max(ds)
+				#print(numpy.average(ds[len(ds)//2:]),numpy.average(ds[:len(ds)//2]))
+				self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+			except QhullError:
+				self.n_edges = 0
+				self.G1 = 0.0
+				self.n_points = 0
 		if self.G1 < 0.0:
 			self.G1 = 0.0
 
