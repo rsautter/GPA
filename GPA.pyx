@@ -53,7 +53,8 @@ cdef class GPA:
 	@cython.cdivision(True)
 	cdef void _setGradients(self):
 		cdef double[:,:] gx, gy
-		gy, gx = self.gradient(self.mat)
+		gy, gx = numpy.gradient(self.mat)
+		#gy, gx = self.gradient(self.mat)
 		#initialization
 		self.gradient_dx = gx
 		self.gradient_dy = gy
@@ -146,6 +147,7 @@ cdef class GPA:
 					# Vetores sao simetricos
 					if self.getMod(dx,dy)<= tol:
 						self.symmetricalP[py,px] = 1
+						#print("{",py, px,"}{",py2, px2,"} -> ", self.gradient_dx[py, px], self.gradient_dy[py, px], self.gradient_dx[py2, px2], self.gradient_dy[py2, px2])
 						# se outro for simetrico ele vai se marcar
 						break
 						
@@ -446,7 +448,7 @@ cdef class GPA:
 		self.mat = mat
 		self.cols = len(self.mat[0])
 		self.rows = len(self.mat)
-		self.setPosition(float(self.rows/2),float(self.cols/2))
+		self.setPosition(float(self.rows-1)/2.0,float(self.cols-1)/2.0)
 		self._setGradients()
 		
 
@@ -479,6 +481,21 @@ cdef class GPA:
 				self._G1_Classic(symmetrycalGrad)
 				retorno["G1_Classic"] = self.G1_Classic
 		return retorno
+		
+	def getAsymmetricalMask(self):
+		return numpy.array(self.asymmetricalP)
+	
+	def getSymmetricalMask(self):
+		return numpy.array(self.symmetricalP)
+	
+	def getUnknownMask(self):
+		return numpy.array(self.unknownP)	
+	
+	def getDx(self):
+		return numpy.array(self.gradient_dx)
+
+	def getDy(self):
+		return numpy.array(self.gradient_dy)
 	
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
@@ -499,7 +516,7 @@ cdef class GPA:
 		self._setMaxGrad()
 		self._setModulusPhase()
 		
-		self.setPosition(float(self.rows/2),float(self.cols/2))
+		self.setPosition(float(self.rows-1)/2.0,float(self.cols-1)/2.0)
 		
 
 		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
