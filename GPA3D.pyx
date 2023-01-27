@@ -242,16 +242,16 @@ cdef class GPA3D:
 				for j in range(self.cols):
 					for k in range(self.depth):
 						if targetMat[i,j,k] == 1:
-							somax += self.gradient_dx[i,j,k]
-							somay += self.gradient_dy[i,j,k]
-							somaz += self.gradient_dz[i,j,k]
+							somax += self.gradient_dx[i,j,k]/self.maxGrad
+							somay += self.gradient_dy[i,j,k]/self.maxGrad
+							somaz += self.gradient_dz[i,j,k]/self.maxGrad
 							smod += self.mods[i,j,k]
 			if smod <= 0.0:
 				alinhamento = 0.0
 			else:
-				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod
+				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0)+pow(somaz,2.0))/(2*smod)
 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
-				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(2.0-alinhamento)
+				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)
 			else: 
 				self.G2 = 0.0
 		else:
@@ -331,7 +331,7 @@ cdef class GPA3D:
 		else:
 			alinhamento = 0.0
 		if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
-			self.G3 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento
+			self.G3 = ((float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) ) + alinhamento)/2.0
 		else: 
 			self.G3 = 0.0
 			

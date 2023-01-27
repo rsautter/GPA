@@ -6482,7 +6482,7 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
  * 				for j in range(self.cols):
  * 					for k in range(self.depth):             # <<<<<<<<<<<<<<
  * 						if targetMat[i,j,k] == 1:
- * 							somax += self.gradient_dx[i,j,k]
+ * 							somax += self.gradient_dx[i,j,k]/self.maxGrad
  */
         __pyx_t_16 = __pyx_v_self->depth;
         __pyx_t_17 = __pyx_t_16;
@@ -6493,8 +6493,8 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
  * 				for j in range(self.cols):
  * 					for k in range(self.depth):
  * 						if targetMat[i,j,k] == 1:             # <<<<<<<<<<<<<<
- * 							somax += self.gradient_dx[i,j,k]
- * 							somay += self.gradient_dy[i,j,k]
+ * 							somax += self.gradient_dx[i,j,k]/self.maxGrad
+ * 							somay += self.gradient_dy[i,j,k]/self.maxGrad
  */
           __pyx_t_19 = __pyx_v_i;
           __pyx_t_20 = __pyx_v_j;
@@ -6505,33 +6505,33 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
             /* "GPA3D.pyx":245
  * 					for k in range(self.depth):
  * 						if targetMat[i,j,k] == 1:
- * 							somax += self.gradient_dx[i,j,k]             # <<<<<<<<<<<<<<
- * 							somay += self.gradient_dy[i,j,k]
- * 							somaz += self.gradient_dz[i,j,k]
+ * 							somax += self.gradient_dx[i,j,k]/self.maxGrad             # <<<<<<<<<<<<<<
+ * 							somay += self.gradient_dy[i,j,k]/self.maxGrad
+ * 							somaz += self.gradient_dz[i,j,k]/self.maxGrad
  */
             if (unlikely(!__pyx_v_self->gradient_dx.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 245, __pyx_L1_error)}
             __pyx_t_21 = __pyx_v_i;
             __pyx_t_20 = __pyx_v_j;
             __pyx_t_19 = __pyx_v_k;
-            __pyx_v_somax = (__pyx_v_somax + (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_21 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_20 * __pyx_v_self->gradient_dx.strides[1]) ) + __pyx_t_19 * __pyx_v_self->gradient_dx.strides[2]) ))));
+            __pyx_v_somax = (__pyx_v_somax + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dx.data + __pyx_t_21 * __pyx_v_self->gradient_dx.strides[0]) ) + __pyx_t_20 * __pyx_v_self->gradient_dx.strides[1]) ) + __pyx_t_19 * __pyx_v_self->gradient_dx.strides[2]) ))) / __pyx_v_self->maxGrad));
 
             /* "GPA3D.pyx":246
  * 						if targetMat[i,j,k] == 1:
- * 							somax += self.gradient_dx[i,j,k]
- * 							somay += self.gradient_dy[i,j,k]             # <<<<<<<<<<<<<<
- * 							somaz += self.gradient_dz[i,j,k]
+ * 							somax += self.gradient_dx[i,j,k]/self.maxGrad
+ * 							somay += self.gradient_dy[i,j,k]/self.maxGrad             # <<<<<<<<<<<<<<
+ * 							somaz += self.gradient_dz[i,j,k]/self.maxGrad
  * 							smod += self.mods[i,j,k]
  */
             if (unlikely(!__pyx_v_self->gradient_dy.memview)) {PyErr_SetString(PyExc_AttributeError,"Memoryview is not initialized");__PYX_ERR(0, 246, __pyx_L1_error)}
             __pyx_t_19 = __pyx_v_i;
             __pyx_t_20 = __pyx_v_j;
             __pyx_t_21 = __pyx_v_k;
-            __pyx_v_somay = (__pyx_v_somay + (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_19 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_20 * __pyx_v_self->gradient_dy.strides[1]) ) + __pyx_t_21 * __pyx_v_self->gradient_dy.strides[2]) ))));
+            __pyx_v_somay = (__pyx_v_somay + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dy.data + __pyx_t_19 * __pyx_v_self->gradient_dy.strides[0]) ) + __pyx_t_20 * __pyx_v_self->gradient_dy.strides[1]) ) + __pyx_t_21 * __pyx_v_self->gradient_dy.strides[2]) ))) / __pyx_v_self->maxGrad));
 
             /* "GPA3D.pyx":247
- * 							somax += self.gradient_dx[i,j,k]
- * 							somay += self.gradient_dy[i,j,k]
- * 							somaz += self.gradient_dz[i,j,k]             # <<<<<<<<<<<<<<
+ * 							somax += self.gradient_dx[i,j,k]/self.maxGrad
+ * 							somay += self.gradient_dy[i,j,k]/self.maxGrad
+ * 							somaz += self.gradient_dz[i,j,k]/self.maxGrad             # <<<<<<<<<<<<<<
  * 							smod += self.mods[i,j,k]
  * 			if smod <= 0.0:
  */
@@ -6539,11 +6539,11 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
             __pyx_t_21 = __pyx_v_i;
             __pyx_t_20 = __pyx_v_j;
             __pyx_t_19 = __pyx_v_k;
-            __pyx_v_somaz = (__pyx_v_somaz + (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dz.data + __pyx_t_21 * __pyx_v_self->gradient_dz.strides[0]) ) + __pyx_t_20 * __pyx_v_self->gradient_dz.strides[1]) ) + __pyx_t_19 * __pyx_v_self->gradient_dz.strides[2]) ))));
+            __pyx_v_somaz = (__pyx_v_somaz + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_self->gradient_dz.data + __pyx_t_21 * __pyx_v_self->gradient_dz.strides[0]) ) + __pyx_t_20 * __pyx_v_self->gradient_dz.strides[1]) ) + __pyx_t_19 * __pyx_v_self->gradient_dz.strides[2]) ))) / __pyx_v_self->maxGrad));
 
             /* "GPA3D.pyx":248
- * 							somay += self.gradient_dy[i,j,k]
- * 							somaz += self.gradient_dz[i,j,k]
+ * 							somay += self.gradient_dy[i,j,k]/self.maxGrad
+ * 							somaz += self.gradient_dz[i,j,k]/self.maxGrad
  * 							smod += self.mods[i,j,k]             # <<<<<<<<<<<<<<
  * 			if smod <= 0.0:
  * 				alinhamento = 0.0
@@ -6558,8 +6558,8 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
  * 				for j in range(self.cols):
  * 					for k in range(self.depth):
  * 						if targetMat[i,j,k] == 1:             # <<<<<<<<<<<<<<
- * 							somax += self.gradient_dx[i,j,k]
- * 							somay += self.gradient_dy[i,j,k]
+ * 							somax += self.gradient_dx[i,j,k]/self.maxGrad
+ * 							somay += self.gradient_dy[i,j,k]/self.maxGrad
  */
           }
         }
@@ -6567,7 +6567,7 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
     }
 
     /* "GPA3D.pyx":249
- * 							somaz += self.gradient_dz[i,j,k]
+ * 							somaz += self.gradient_dz[i,j,k]/self.maxGrad
  * 							smod += self.mods[i,j,k]
  * 			if smod <= 0.0:             # <<<<<<<<<<<<<<
  * 				alinhamento = 0.0
@@ -6581,12 +6581,12 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
  * 			if smod <= 0.0:
  * 				alinhamento = 0.0             # <<<<<<<<<<<<<<
  * 			else:
- * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod
+ * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0)+pow(somaz,2.0))/(2*smod)
  */
       __pyx_v_alinhamento = 0.0;
 
       /* "GPA3D.pyx":249
- * 							somaz += self.gradient_dz[i,j,k]
+ * 							somaz += self.gradient_dz[i,j,k]/self.maxGrad
  * 							smod += self.mods[i,j,k]
  * 			if smod <= 0.0:             # <<<<<<<<<<<<<<
  * 				alinhamento = 0.0
@@ -6598,20 +6598,20 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
     /* "GPA3D.pyx":252
  * 				alinhamento = 0.0
  * 			else:
- * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod             # <<<<<<<<<<<<<<
+ * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0)+pow(somaz,2.0))/(2*smod)             # <<<<<<<<<<<<<<
  * 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
- * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(2.0-alinhamento)
+ * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)
  */
     /*else*/ {
-      __pyx_v_alinhamento = (sqrt((pow(__pyx_v_somax, 2.0) + pow(__pyx_v_somay, 2.0))) / __pyx_v_smod);
+      __pyx_v_alinhamento = (sqrt(((pow(__pyx_v_somax, 2.0) + pow(__pyx_v_somay, 2.0)) + pow(__pyx_v_somaz, 2.0))) / (2.0 * __pyx_v_smod));
     }
     __pyx_L13:;
 
     /* "GPA3D.pyx":253
  * 			else:
- * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod
+ * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0)+pow(somaz,2.0))/(2*smod)
  * 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:             # <<<<<<<<<<<<<<
- * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(2.0-alinhamento)
+ * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)
  * 			else:
  */
     __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_numpy); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 253, __pyx_L1_error)
@@ -6671,9 +6671,9 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
     if (__pyx_t_2) {
 
       /* "GPA3D.pyx":254
- * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod
+ * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0)+pow(somaz,2.0))/(2*smod)
  * 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:
- * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(2.0-alinhamento)             # <<<<<<<<<<<<<<
+ * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)             # <<<<<<<<<<<<<<
  * 			else:
  * 				self.G2 = 0.0
  */
@@ -6754,20 +6754,20 @@ static void __pyx_f_5GPA3D_5GPA3D__G2(struct __pyx_obj_5GPA3D_GPA3D *__pyx_v_sel
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_23 = __Pyx_PyObject_AsDouble(__pyx_t_10); if (unlikely(__pyx_t_23 == ((double)((double)-1)) && PyErr_Occurred())) __PYX_ERR(0, 254, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-      __pyx_v_self->G2 = ((__pyx_t_22 / __pyx_t_23) * (2.0 - __pyx_v_alinhamento));
+      __pyx_v_self->G2 = ((__pyx_t_22 / __pyx_t_23) * (1.0 - __pyx_v_alinhamento));
 
       /* "GPA3D.pyx":253
  * 			else:
- * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0))/smod
+ * 				alinhamento = sqrt(pow(somax,2.0)+pow(somay,2.0)+pow(somaz,2.0))/(2*smod)
  * 			if numpy.sum(opositeMat)+numpy.sum(targetMat)> 0:             # <<<<<<<<<<<<<<
- * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(2.0-alinhamento)
+ * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)
  * 			else:
  */
       goto __pyx_L14;
     }
 
     /* "GPA3D.pyx":256
- * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(2.0-alinhamento)
+ * 				self.G2 = (float(numpy.sum(targetMat))/float(numpy.sum(opositeMat)+numpy.sum(targetMat)) )*(1.0-alinhamento)
  * 			else:
  * 				self.G2 = 0.0             # <<<<<<<<<<<<<<
  * 		else:
