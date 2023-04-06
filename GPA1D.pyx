@@ -3,6 +3,7 @@ from libc.math cimport pow, fabs, sqrt, M_PI, sin, cos,tan,floor
 from math import radians, atan2,factorial
 from scipy.spatial import Delaunay as Delaunay
 from scipy.spatial import QhullError
+import gilbert
 import matplotlib.pyplot as plt
 
 from cpython cimport bool
@@ -13,25 +14,36 @@ cimport cython
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef class GPA:
+cdef class GPA1D:
 	cdef public double[:,:] mat,gradient_dx, gradient_dy
 	cdef public double cx, cy
-	cdef public int rows, cols
+	cdef public int rows, cols, splitWidth
 	
 	cdef public double[:,:] phases, mods
 	cdef public int[:,:] symmetricalP, asymmetricalP, unknownP
 	cdef public object triangulation_points,triangles
 	cdef public double maxGrad, tol
 	cdef public object cvet
+	cdef public str spacefilling
 
 	cdef public int n_edges, n_points
 	cdef public double G1, G2, G3, G1_Classic
 	cdef public object G4
 
 	#@profile
-	def __cinit__(self, double tol=0.03):
+	def __cinit__(self, double tol=0.03,str spacefilling='lines', int splitWidth=3):
+		'''
+			tol - muduli tolerance
+			spaceFilling - spatial curve to transform the time series into matrices ('lines','hilbert') 
+			scale - lattice size generated for spacefilling curve
+		'''
+	
 		# setting matrix,and calculating the gradient field
 		self.tol = tol
+		self.rows = splitWidth
+		self.cols = splitWidth
+		self.splitWidth = splitWidth
+		self.spaceFilling = spaceFilling
 
 		# percentual Ga proprieties
 		self.symmetricalP = numpy.array([[]],dtype=numpy.int32)
@@ -333,7 +345,7 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	cdef void _G3C(self,str symm):
+	cdef void _G3(self,str symm):
 		cdef int x1, y1, x2, y2, i, j, div
 		cdef double sumPhases, alinhamento,nterms,angle
 		cdef int[:,:] targetMat,opositeMat
@@ -417,73 +429,86 @@ cdef class GPA:
 						z = self.mods[i,j]*numpy.exp(1j*self.phases[i,j])/sumZ
 						self.G4 = self.G4 - z*numpy.log(z)
 		return self.G4
-
-	@cython.boundscheck(False)
-	@cython.wraparound(False)
-	@cython.nonecheck(False)
-	@cython.cdivision(True)
-	def __call__(self,double[:,:] mat=None, double[:,:] gx=None,double[:,:] gy=None,list moment=["G2"],str symmetrycalGrad='A'):
-		if (mat is None) and (gx is None) and (gy is None):
-			raise Exception("Matrix or gradient must be stated!")
-		if ((gx is None) and not(gy is None)) or (not(gx is None) and (gy is None)):
-			raise Exception("Gradient must have 2 components (gx and gy)")
-		if not(mat is None) and not(gx is None):
-			raise Exception("Matrix or gradient must be stated, not both")
 		
-		if not(mat is None):
-			return self._eval(mat,moment,symmetrycalGrad)
-		else:
-			return self._evalGradient(gx,gy,moment,symmetrycalGrad)
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def verifyPower2(self,value):
+		i = int(numpy.log2(value))//2
+		while (i>=1):
+			if value % (2**i) > 0:
+				return False
+			i= i-1
+		return True
 
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	def _eval(self,double[:,:] mat,list moment=["G2"],str symmetrycalGrad='A'):
+	def _transformData(self,double[:] vet):
+		cdef double[:,:] mat
+		if self.spacefilling == 'hilbert':
+			mat = gilbert.vec2mat(vet, self.splitWidth)
+		else:
+			mat = vet.reshape(self.splitWidth,self.splitWidth)
+		return mat
+
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
+	def __call__(self,double[:] timeSeries,list moment=["G2"],str symmetrycalGrad='A'):
 		cdef int[:] i
 		cdef int x, y
 		cdef double minimo, maximo
 		cdef dict retorno
+		cdef object results 
+		cdef numpy.ndarray dists
+		cdef numpy.ndarray uniq
 		
-		self.mat = mat
-		self.cols = len(self.mat[0])
-		self.rows = len(self.mat)
+		
+		if len(timeSeries) % (self.splitWidth**2) != 0:
+			raise Exception(f"The time series must be multiple of {self.splitWidth**2}. You can interpolate or remove some elements.")
+		splitted = numpy.split(timeSeries, len(timeSeries) // (self.splitWidth**2))
+		
 		self.setPosition(float(self.rows-1)/2.0,float(self.cols-1)/2.0)
-		self._setGradients()
-		
-
-		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
-												  for x in range(self.cols)] for y in range(self.rows)])
-		
-		minimo, maximo = numpy.min(dists),numpy.max(dists)
-		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
-		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
-		
-		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
-		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float64), dists.astype(dtype=numpy.float64), self.tol, numpy.float64(1.41))
-		
-		#gradient moments:
-		retorno = {}
-		for gmoment in moment:
-			if("G4" == gmoment):
-				self._G4(symmetrycalGrad)
-				retorno["G4"] = self.G4
-			if("G3C" == gmoment):
-				self._G3(symmetrycalGrad)
-				retorno["G3_C"] = self.G3
-			if("G3" == gmoment):
-				self._G3C(symmetrycalGrad)
-				retorno["G3"] = self.G3_Classical
-			if("G2" == gmoment):
-				self._G2(symmetrycalGrad)
-				retorno["G2"] = self.G2
-			if("G1" == gmoment):
-				self._G1(symmetrycalGrad)
-				retorno["G1"] = self.G1
-			if("G1C" == gmoment):
-				self._G1_Classic(symmetrycalGrad)
-				retorno["G1C"] = self.G1_Classic
-		return retorno
+		results = []	
+		for sp in splitted:
+			self.mat = self._transformData(sp)
+			
+			self._setGradients()
+			
+			dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
+													  for x in range(self.cols)] for y in range(self.rows)])
+			
+			minimo, maximo = numpy.min(dists),numpy.max(dists)
+			sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
+			uniq = numpy.array([minimo for minimo in  sequence])
+			
+			# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
+			self._update_asymmetric_mat(uniq.astype(dtype=numpy.float64), dists.astype(dtype=numpy.float64), self.tol, numpy.float64(1.41))
+			
+			#gradient moments:
+			retorno = {}
+			for gmoment in moment:
+				if("G4" == gmoment):
+					self._G4(symmetrycalGrad)
+					retorno["G4"] = self.G4
+				if("G3" == gmoment):
+					self._G3(symmetrycalGrad)
+					retorno["G3"] = self.G3
+				if("G2" == gmoment):
+					self._G2(symmetrycalGrad)
+					retorno["G2"] = self.G2
+				if("G1" == gmoment):
+					self._G1(symmetrycalGrad)
+					retorno["G1"] = self.G1
+				if("G1_Classic" == gmoment):
+					self._G1_Classic(symmetrycalGrad)
+					retorno["G1_Classic"] = self.G1_Classic
+			results.append(retorno)
+		return results
 		
 	def getAsymmetricalMask(self):
 		return numpy.array(self.asymmetricalP)
@@ -499,61 +524,6 @@ cdef class GPA:
 
 	def getDy(self):
 		return numpy.array(self.gradient_dy)
-	
-	@cython.boundscheck(False)
-	@cython.wraparound(False)
-	@cython.nonecheck(False)
-	@cython.cdivision(True)
-	def _evalGradient(self,double[:,:] gradient_dx, double[:,:] gradient_dy, list moment=["G2"],str symmetrycalGrad='A'):
-		cdef int[:] i
-		cdef int x, y
-		cdef double minimo, maximo
-		cdef dict retorno
-		
-		self.cols = len(gradient_dx[0])
-		self.rows = len(gradient_dx)
-		
-		self.gradient_dx = gradient_dx
-		self.gradient_dy = gradient_dy
-		
-		self._setMaxGrad()
-		self._setModulusPhase()
-		
-		self.setPosition(float(self.rows-1)/2.0,float(self.cols-1)/2.0)
-		
-
-		cdef numpy.ndarray dists = numpy.array([[sqrt(pow(float(x)-self.cx, 2.0)+pow(float(y)-self.cy, 2.0)) \
-												  for x in range(self.cols)] for y in range(self.rows)])
-		
-		minimo, maximo = numpy.min(dists),numpy.max(dists)
-		sequence = numpy.arange(minimo,maximo,0.705).astype(dtype=numpy.float64)
-		cdef numpy.ndarray uniq = numpy.array([minimo for minimo in  sequence])
-		
-		# removes the symmetry in gradient_asymmetric_dx and gradient_asymmetric_dy:
-		self._update_asymmetric_mat(uniq.astype(dtype=numpy.float64), dists.astype(dtype=numpy.float64), self.tol, numpy.float64(1.41))
-		
-		#gradient moments:
-		retorno = {}
-		for gmoment in moment:
-			if("G4" == gmoment):
-				self._G4(symmetrycalGrad)
-				retorno["G4"] = self.G4
-			if("G3C" == gmoment):
-				self._G3C(symmetrycalGrad)
-				retorno["G3C"] = self.G3_Classical
-			if("G3" == gmoment):
-				self._G3C(symmetrycalGrad)
-				retorno["G3"] = self.G3_Classical
-			if("G2" == gmoment):
-				self._G2(symmetrycalGrad)
-				retorno["G2"] = self.G2
-			if("G1" == gmoment):
-				self._G1(symmetrycalGrad)
-				retorno["G1"] = self.G1
-			if("G1C" == gmoment):
-				self._G1_Classic(symmetrycalGrad)
-				retorno["G1C"] = self.G1_Classic
-		return retorno
    
 	@cython.boundscheck(False)
 	@cython.wraparound(False)
