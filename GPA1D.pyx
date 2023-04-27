@@ -24,14 +24,14 @@ cdef class GPA1D:
 	cdef public object triangulation_points,triangles
 	cdef public double maxGrad, tol
 	cdef public object cvet
-	cdef public str spacefilling
+	cdef public str spaceFilling
 
 	cdef public int n_edges, n_points
 	cdef public double G1, G2, G3, G1_Classic
 	cdef public object G4
 
 	#@profile
-	def __cinit__(self, double tol=0.03,str spacefilling='lines', int splitWidth=3):
+	def __cinit__(self, double tol=0.03,str spaceFilling='lines', int splitWidth=3):
 		'''
 			tol - muduli tolerance
 			spaceFilling - spatial curve to transform the time series into matrices ('lines','hilbert') 
@@ -448,8 +448,12 @@ cdef class GPA1D:
 	@cython.cdivision(True)
 	def _transformData(self,double[:] vet):
 		cdef double[:,:] mat
-		if self.spacefilling == 'hilbert':
+		if self.spaceFilling == 'hilbert':
 			mat = gilbert.vec2mat(vet, self.splitWidth)
+		elif self.spaceFilling == 'lines':
+			mat = vet.reshape(self.splitWidth,self.splitWidth)
+			for i in range(1,len(mat),2):
+				mat[i] = numpy.flip(mat[i])
 		else:
 			mat = vet.reshape(self.splitWidth,self.splitWidth)
 		return mat
@@ -466,7 +470,6 @@ cdef class GPA1D:
 		cdef object results 
 		cdef numpy.ndarray dists
 		cdef numpy.ndarray uniq
-		
 		
 		if len(timeSeries) % (self.splitWidth**2) != 0:
 			raise Exception(f"The time series must be multiple of {self.splitWidth**2}. You can interpolate or remove some elements.")
