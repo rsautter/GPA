@@ -333,7 +333,7 @@ cdef class GPA:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
-	cdef void _G3C(self,str symm):
+	cdef void _G3(self,str symm):
 		cdef int x1, y1, x2, y2, i, j, div
 		cdef double sumPhases, alinhamento,nterms,angle
 		cdef int[:,:] targetMat,opositeMat
@@ -468,12 +468,9 @@ cdef class GPA:
 			if("G4" == gmoment):
 				self._G4(symmetrycalGrad)
 				retorno["G4"] = self.G4
-			if("G3C" == gmoment):
-				self._G3(symmetrycalGrad)
-				retorno["G3_C"] = self.G3
 			if("G3" == gmoment):
-				self._G3C(symmetrycalGrad)
-				retorno["G3"] = self.G3_Classical
+				self._G3(symmetrycalGrad)
+				retorno["G3"] = self.G3
 			if("G2" == gmoment):
 				self._G2(symmetrycalGrad)
 				retorno["G2"] = self.G2
@@ -538,12 +535,9 @@ cdef class GPA:
 			if("G4" == gmoment):
 				self._G4(symmetrycalGrad)
 				retorno["G4"] = self.G4
-			if("G3C" == gmoment):
-				self._G3C(symmetrycalGrad)
-				retorno["G3C"] = self.G3_Classical
 			if("G3" == gmoment):
-				self._G3C(symmetrycalGrad)
-				retorno["G3"] = self.G3_Classical
+				self._G3(symmetrycalGrad)
+				retorno["G3"] = self.G3
 			if("G2" == gmoment):
 				self._G2(symmetrycalGrad)
 				retorno["G2"] = self.G2
