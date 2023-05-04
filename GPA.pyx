@@ -105,7 +105,7 @@ cdef class GPA:
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
 	cpdef char* version(self):
-		return "GPA - 3.4"
+		return "GPA - 3.5"
 	
 	@cython.boundscheck(False)
 	@cython.wraparound(False)

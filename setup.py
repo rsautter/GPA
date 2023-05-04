@@ -5,11 +5,11 @@ from Cython.Build import cythonize
 import numpy
 
 setup(name="GPA",
-      version="3.4",
+      version="3.5",
       ext_modules=cythonize("*.pyx"),
       author='Rubens Andreas Sautter',
       author_email='rubens.sautter@gmail.com',
       url='https://github.com/rsautter/GPA',
-      include_dirs=[numpy.get_include()],
+      include_dirs=[numpy.get_include(),'pxd'],
       packages=find_packages())
 
