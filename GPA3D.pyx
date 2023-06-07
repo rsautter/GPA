@@ -24,7 +24,7 @@ cdef class GPA3D:
 	cdef public object cvet
 
 	cdef public int n_edges, n_points
-	cdef public double G1, G2, G3
+	cdef public double G1, G2, G3, G1_Classic
 	cdef public object G4
 
 	#@profile
@@ -166,6 +166,26 @@ cdef class GPA3D:
 	@cython.wraparound(False)
 	@cython.nonecheck(False)
 	@cython.cdivision(True)
+	def _getDistancesTriang(self,points,simplices):
+		ds = []
+		for p in simplices:
+			p1 = points[p[0]]
+			p2 = points[p[1]]
+			p3 = points[p[2]]
+			p4 = points[p[3]]
+			ds.append(numpy.sqrt(numpy.sum((p1-p2)**2)))
+			ds.append(numpy.sqrt(numpy.sum((p2-p3)**2)))
+			ds.append(numpy.sqrt(numpy.sum((p3-p1)**2)))
+			
+			ds.append(numpy.sqrt(numpy.sum((p4-p1)**2)))
+			ds.append(numpy.sqrt(numpy.sum((p4-p2)**2)))
+			ds.append(numpy.sqrt(numpy.sum((p4-p3)**2)))
+		return ds	
+
+	@cython.boundscheck(False)
+	@cython.wraparound(False)
+	@cython.nonecheck(False)
+	@cython.cdivision(True)
 	def _G1(self,str symm):
 		cdef int w, h, i, j, k
 		cdef int[:,:,:] targetMat
@@ -191,14 +211,19 @@ cdef class GPA3D:
 					
 		self.triangulation_points = numpy.array(self.triangulation_points)
 		self.n_points = len(self.triangulation_points)
-		if self.n_points < 3:
+		if self.n_points < 5:
 			self.n_edges = 0
 			self.G1 = 0.0
+			self.G1_Classic = 0.0
 		else:
 			self.triangles = Delanuay(self.triangulation_points)
 			neigh = self.triangles.vertex_neighbor_vertices
 			self.n_edges = len(neigh[1])/2
-			self.G1 = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
+			ds = self._getDistancesTriang(self.triangulation_points,self.triangles.simplices)
+			ds = numpy.sort(ds)/numpy.max(ds)
+			self.G1_Classic = round(float(self.n_edges-self.n_points)/float(self.n_points),3)
+			self.G1 = (numpy.average(ds[len(ds)//2:])-numpy.average(ds[:len(ds)//2]))/numpy.max(ds)
+			
 		if self.G1<0.0:
 			self.G1 = 0.0
 
@@ -397,6 +422,7 @@ cdef class GPA3D:
 			if("G1" == gmoment):
 				self._G1(symmetrycalGrad)
 				retorno["G1"] = self.G1
+				retorno["G1C"] = self.G1_Classic
 		return retorno
 		
 	@cython.boundscheck(False)
