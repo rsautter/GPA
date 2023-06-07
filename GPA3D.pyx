@@ -82,7 +82,7 @@ cdef class GPA3D:
 			for j in range(h):
 				for k in range(d):
 					if self.maxGrad<0.0 or sqrt(pow(gx[i,j,k],2.0)+pow(gy[i,j,k],2.0)+pow(gz[i,j,k],2.0))>self.maxGrad:
-						self.maxGrad = abs(self.getMod(gx[i,j,k],gy[i,j,k],gz[i,j,k]))
+						self.maxGrad = abs(sqrt(pow(gx[i,j,k],2.0)+pow(gy[i,j,k],2.0)+pow(gz[i,j,k],2.0)))
 		if self.maxGrad < 1e-5:
 			self.maxGrad = 1.0
 
